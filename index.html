@@ -31,9 +31,171 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .auth-shell{max-width:520px;margin:36px auto}.auth-card h2{margin-top:0}.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}.auth-error{color:#b91c1c;font-size:13px;margin-top:10px}
 .share-box{border:1px dashed var(--line);border-radius:16px;padding:12px;background:var(--surface2);word-break:break-all}.setting-row{border-bottom:1px solid var(--line);padding:14px 0}.setting-row:last-child{border-bottom:0}.public-banner{background:#171717;color:white;text-align:center;padding:12px}
 .loading{text-align:center;padding:40px;color:var(--muted)}.empty{text-align:center;padding:30px;color:var(--muted);grid-column:1/-1}
-.type-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}.type-badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;background:var(--surface2);border:1px solid var(--line)}
+.type-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.type-badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;border:1px solid rgba(0,0,0,.12);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.22)}
+.type-normal{background:#A8A77A}.type-fire{background:#EE8130}.type-water{background:#6390F0}.type-electric{background:#F7D02C;color:#2b2410;text-shadow:none}.type-grass{background:#7AC74C;color:#17310b;text-shadow:none}.type-ice{background:#96D9D6;color:#173536;text-shadow:none}.type-fighting{background:#C22E28}.type-poison{background:#A33EA1}.type-ground{background:#E2BF65;color:#34280d;text-shadow:none}.type-flying{background:#A98FF3}.type-psychic{background:#F95587}.type-bug{background:#A6B91A;color:#213000;text-shadow:none}.type-rock{background:#B6A136}.type-ghost{background:#735797}.type-dragon{background:#6F35FC}.type-dark{background:#705746}.type-steel{background:#B7B7CE;color:#252538;text-shadow:none}.type-fairy{background:#D685AD}
 .dex-fact{margin-top:14px;padding:14px;border-radius:16px;background:var(--surface2);line-height:1.45}.dex-fact strong{display:block;margin-bottom:5px}.global-badge{display:inline-block;margin-top:7px;font-size:10px;padding:4px 7px;border-radius:999px;background:#e0ecff;color:#244a78;font-weight:800}.admin-card{border:2px solid rgba(185,28,28,.22)}.admin-note{font-size:12px;color:var(--muted);margin-bottom:10px}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-grid label{margin-top:8px}.placeholder-mon{font-size:46px;opacity:.45}
 @media(min-width:700px){.dex-grid{grid-template-columns:repeat(4,1fr)}.region-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ===== Pokédex visual upgrade ===== */
+:root{
+  --dex-red:#c61f26;
+  --dex-red-dark:#89151a;
+  --dex-screen:#eaf2ef;
+  --dex-screen-dark:#dbe6e2;
+  --dex-metal:#d9d5ce;
+  --dex-ink:#1d1d1f;
+  --dex-accent:#4da3ff;
+}
+.pokemon-card{
+  position:relative;
+  overflow:hidden;
+  border:2px solid rgba(90,70,55,.22);
+  box-shadow:0 8px 20px rgba(0,0,0,.08), inset 0 0 0 2px rgba(255,255,255,.45);
+}
+.pokemon-card:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;
+  height:10px;
+  background:linear-gradient(90deg,var(--dex-red),var(--dex-red-dark));
+}
+.pokemon-card:after{
+  content:"";
+  position:absolute;
+  top:16px;left:16px;
+  width:11px;height:11px;border-radius:50%;
+  background:#72d2ff;
+  border:2px solid rgba(255,255,255,.9);
+  box-shadow:0 0 0 2px rgba(45,75,95,.25);
+}
+.pokemon-card .pokemon-img-wrap{
+  margin-top:8px;
+  border:2px solid rgba(75,90,85,.12);
+  background:
+    linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,.3)),
+    repeating-linear-gradient(0deg,rgba(70,110,95,.035) 0,rgba(70,110,95,.035) 1px,transparent 1px,transparent 5px),
+    var(--dex-screen);
+  box-shadow:inset 0 0 16px rgba(50,85,75,.07);
+}
+.pokemon-card .pokemon-name{
+  letter-spacing:-.01em;
+}
+.pokemon-card .dex-number{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.detail-top{
+  position:relative;
+  overflow:hidden;
+  border:3px solid rgba(90,70,55,.22);
+  border-radius:24px;
+  padding:24px 20px 20px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.56)),
+    var(--dex-screen);
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.5),0 10px 24px rgba(0,0,0,.08);
+}
+.detail-top:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;
+  height:14px;
+  background:linear-gradient(90deg,var(--dex-red),var(--dex-red-dark));
+}
+.detail-top:after{
+  content:"";
+  position:absolute;
+  left:22px;top:22px;
+  width:14px;height:14px;border-radius:50%;
+  background:#6bd2ff;
+  border:3px solid #fff;
+  box-shadow:0 0 0 2px rgba(42,78,98,.25);
+}
+.detail-top img{
+  filter:drop-shadow(0 8px 10px rgba(0,0,0,.16));
+}
+.detail-meta{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+
+/* Rotom Dex fact bubble */
+.rotom-fact{
+  position:relative;
+  display:grid;
+  grid-template-columns:64px 1fr;
+  gap:12px;
+  align-items:center;
+  margin-top:16px;
+  padding:16px 18px 16px 14px;
+  border-radius:22px;
+  background:linear-gradient(135deg,#f04444,#cf232c 62%,#a91921);
+  color:white;
+  box-shadow:0 10px 24px rgba(128,20,24,.18);
+  border:2px solid rgba(111,15,20,.2);
+}
+.rotom-fact:after{
+  content:"";
+  position:absolute;
+  left:56px;
+  bottom:-12px;
+  width:24px;height:24px;
+  background:#cf232c;
+  transform:rotate(45deg);
+  border-radius:3px;
+  z-index:0;
+}
+.rotom-avatar{
+  position:relative;
+  z-index:1;
+  width:58px;height:58px;
+  border-radius:18px;
+  background:#fff7ef;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:3px solid rgba(255,255,255,.75);
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
+}
+.rotom-avatar img{
+  width:54px;height:54px;
+  object-fit:contain;
+}
+.rotom-copy{
+  position:relative;
+  z-index:1;
+  line-height:1.42;
+}
+.rotom-copy strong{
+  display:block;
+  margin-bottom:4px;
+  font-size:14px;
+  letter-spacing:.01em;
+}
+.rotom-copy span{
+  display:block;
+  font-size:14px;
+}
+.dex-panel-label{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:10px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(20,20,20,.06);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+
+/* Keep cards readable on small phones */
+@media (max-width:420px){
+  .rotom-fact{grid-template-columns:52px 1fr;padding:14px}
+  .rotom-avatar{width:48px;height:48px;border-radius:14px}
+  .rotom-avatar img{width:45px;height:45px}
+}
+
 </style>
 </head>
 <body>
@@ -126,6 +288,15 @@ function refreshGlobalEditor(){
   if([...globalEditSelect.options].some(o=>o.value===current))globalEditSelect.value=current;
 }
 function slugify(s){return String(s||"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")}
+function typeClass(t){return "type-"+String(t||"").toLowerCase().trim().replace(/[^a-z]/g,"")}
+function rotomFactHtml(fact){
+  if(!fact)return "";
+  const rotomSprite="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/479.png";
+  return `<div class="rotom-fact">
+    <div class="rotom-avatar"><img src="${rotomSprite}" alt="Rotom"></div>
+    <div class="rotom-copy"><strong>Rotom Dex</strong><span>${esc(fact)}</span></div>
+  </div>`;
+}
 function loadGlobalEditor(slug){
   const p=globalPokemon.find(x=>x.slug===slug);
   globalName.value=p?.name||"";
@@ -189,15 +360,15 @@ async function loadPokemon(force=false){dexLoading.style.display="block";if(!for
 function fillRegions(){[regionFilter,randomRegion].forEach(s=>{const v=s.value;s.innerHTML='<option value="all">All Regions</option>';REGIONS.forEach(r=>s.add(new Option(r,r)));s.value=v||"all"});[addRegion,globalRegion].forEach(s=>{if(!s)return;const v=s.value;s.innerHTML="";REGIONS.forEach(r=>s.add(new Option(r,r)));s.value=v||"Pokopia"})}
 function finishLoad(){fillRegions();renderHome();renderDex();renderStats();dexLoading.style.display="none";if(genreList)genreList.value=genres.join("\n")}
 function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homePercent.textContent=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";homeProgress.style.width=p+"%";homeCount.textContent=`${c} / ${a.length} caught`;regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
-function renderDex(){let l=all(),q=(searchInput.value||"").toLowerCase();l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));if(sortFilter.value==="az")l.sort((a,b)=>a.name.localeCompare(b.name));else if(sortFilter.value==="caught")l.sort((a,b)=>+caught(b)-+caught(a));else if(sortFilter.value==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));else l.sort((a,b)=>(+a.dex||99999)-(+b.dex||99999));dexGrid.innerHTML="";if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}l.forEach(p=>{const b=document.createElement("button");b.className="pokemon-card"+(caught(p)?" caught":"");const media=p.image?`<img loading="lazy" src="${esc(p.image)}">`:`<div class="placeholder-mon">?</div>`;const types=(p.types||[]).map(t=>`<span class="type-badge">${esc(t)}</span>`).join("");b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global"}</span>`:""}`;b.onclick=()=>openPokemon(p.id);dexGrid.appendChild(b)})}
+function renderDex(){let l=all(),q=(searchInput.value||"").toLowerCase();l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));if(sortFilter.value==="az")l.sort((a,b)=>a.name.localeCompare(b.name));else if(sortFilter.value==="caught")l.sort((a,b)=>+caught(b)-+caught(a));else if(sortFilter.value==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));else l.sort((a,b)=>(+a.dex||99999)-(+b.dex||99999));dexGrid.innerHTML="";if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}l.forEach(p=>{const b=document.createElement("button");b.className="pokemon-card"+(caught(p)?" caught":"");const media=p.image?`<img loading="lazy" src="${esc(p.image)}">`:`<div class="placeholder-mon">?</div>`;const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global"}</span>`:""}`;b.onclick=()=>openPokemon(p.id);dexGrid.appendChild(b)})}
 function openPokemon(id){
   currentPokemonId=id;
   const p=all().find(x=>x.id===id),e=entry(id);
   if(!p)return toast("Pokémon entry not found.");
   const promptValue=e.prompt||p.prompt||"";
-  const types=(p.types||[]).map(t=>`<span class="type-badge">${esc(t)}</span>`).join("");
+  const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
   const media=p.image?`<img src="${esc(p.image)}">`:`<div class="placeholder-mon" style="padding:50px 0">?</div>`;
-  detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div>${p.fact?`<div class="dex-fact"><strong>Pokédex Fact</strong>${esc(p.fact)}</div>`:""}<label>Reading Prompt</label><textarea id="detailPrompt" ${publicMode?"disabled":""}>${esc(promptValue)}</textarea>${p.prompt&&!e.prompt?`<div class="muted" style="font-size:12px;margin-top:5px">Global challenge prompt</div>`:""}${publicMode?"":`<label>Notes</label><textarea id="detailNotes">${esc(e.notes||"")}</textarea><button class="secondary" style="width:100%;margin-top:12px" onclick="saveText()">Save Prompt & Notes</button>`}</div><div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>${publicMode?"":`<div class="form-card"><h3>Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" style="width:100%;margin-top:12px" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button>${p.custom?`<button class="danger" style="width:100%;margin-top:10px" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" style="width:100%;margin-top:10px" onclick="goPage('add');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}')">Edit Global Entry</button>`:""}</div>`}`;
+  detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div>${rotomFactHtml(p.fact)}<label>Reading Prompt</label><textarea id="detailPrompt" ${publicMode?"disabled":""}>${esc(promptValue)}</textarea>${p.prompt&&!e.prompt?`<div class="muted" style="font-size:12px;margin-top:5px">Global challenge prompt</div>`:""}${publicMode?"":`<label>Notes</label><textarea id="detailNotes">${esc(e.notes||"")}</textarea><button class="secondary" style="width:100%;margin-top:12px" onclick="saveText()">Save Prompt & Notes</button>`}</div><div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>${publicMode?"":`<div class="form-card"><h3>Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" style="width:100%;margin-top:12px" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button>${p.custom?`<button class="danger" style="width:100%;margin-top:10px" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" style="width:100%;margin-top:10px" onclick="goPage('add');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}')">Edit Global Entry</button>`:""}</div>`}`;
   renderBooks();
   goPage("detail");
   applyRegionTheme(p.region);
