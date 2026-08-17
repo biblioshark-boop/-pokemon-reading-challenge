@@ -209,6 +209,11 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .faction-card-badge{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
 .faction-card-desc{font-size:13px;line-height:1.4;color:var(--muted);margin-top:6px}
 .faction-current{margin-top:10px;padding:11px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-size:13px}
+
+.faction-card.locked:not(.selected){opacity:.38;filter:grayscale(1);cursor:not-allowed}
+.faction-card.locked:not(.selected):active{transform:none}
+.team-change-wrap{margin-top:12px}
+.team-change-select{width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-weight:800}
 </style>
 </head>
 <body>
@@ -246,7 +251,7 @@ const TEAM_THEMES={
   "poke-dolls":["#faeaf3","#fff8fc","#efd7e5","#38212e","#856578","#d96aa7","#7e3a63","#dfbdd1"]
 };
 const DEFAULT_GENRES=["Horror","Thriller","Science Fiction","Fantasy","Mystery","Romance","Contemporary","Historical Fiction","Nonfiction","Graphic Novel / Manga"];
-let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,bookSaving=false,isAdmin=false,factions=[],currentFactionId=null;
+let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,bookSaving=false,isAdmin=false,factions=[],currentFactionId=null,teamChangeUnlocked=false;
 const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 const title=s=>s.replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
 function region(n){n=+n;if(n<=151)return"Kanto";if(n<=251)return"Johto";if(n<=386)return"Hoenn";if(n<=493)return"Sinnoh";if(n<=649)return"Unova";if(n<=721)return"Kalos";if(n<=809)return"Alola";if(n<=905)return"Galar";if(n<=1025)return"Paldea";return"Special"}
@@ -496,17 +501,38 @@ function applyTeamTheme(){
 function renderFactions(){
   const list=document.getElementById("factionList"),cur=document.getElementById("factionCurrent");
   if(!list)return;
-  if(!factions.length){list.innerHTML='<div class="muted">No teams are available yet.</div>';if(cur)cur.classList.add("hidden");return}
+  if(!factions.length){
+    list.innerHTML='<div class="muted">No teams are available yet.</div>';
+    if(cur)cur.classList.add("hidden");
+    return;
+  }
+
+  const hasTeam=!!currentFactionId;
+  const locked=hasTeam&&!teamChangeUnlocked;
+
   list.innerHTML=factions.map(f=>{
     const selected=String(f.id)===String(currentFactionId);
     const badge=factionAlignment(f);
-    return `<button class="faction-card ${selected?"selected":""}" onclick="chooseFaction('${esc(f.id)}')"><div class="faction-card-top"><span class="faction-card-name">${esc(factionName(f))}</span>${badge?`<span class="faction-card-badge">${esc(badge)}</span>`:""}</div>${factionDescription(f)?`<div class="faction-card-desc">${esc(factionDescription(f))}</div>`:""}</button>`;
+    const isLocked=locked&&!selected;
+    return `<button class="faction-card ${selected?"selected":""} ${isLocked?"locked":""}" ${isLocked?"disabled":""} onclick="chooseFaction('${esc(f.id)}')"><div class="faction-card-top"><span class="faction-card-name">${esc(factionName(f))}</span>${badge?`<span class="faction-card-badge">${esc(badge)}</span>`:""}</div>${factionDescription(f)?`<div class="faction-card-desc">${esc(factionDescription(f))}</div>`:""}</button>`;
   }).join("");
+
   const picked=factions.find(f=>String(f.id)===String(currentFactionId));
   if(cur){
-    if(picked){cur.innerHTML=`Current team: <strong>${esc(factionName(picked))}</strong>`;cur.classList.remove("hidden")}
-    else cur.classList.add("hidden");
+    if(picked){
+      cur.innerHTML=`Current team: <strong>${esc(factionName(picked))}</strong>${locked?`<div class="team-change-wrap"><select class="team-change-select" onchange="handleTeamChangeMenu(this)"><option value="">Change Team</option><option value="unlock">Unlock team choices</option></select></div>`:""}`;
+      cur.classList.remove("hidden");
+    }else{
+      cur.classList.add("hidden");
+    }
   }
+}
+
+function handleTeamChangeMenu(el){
+  if(el.value!=="unlock")return;
+  teamChangeUnlocked=true;
+  renderFactions();
+  toast("Team choices unlocked.");
 }
 async function loadFactions(){
   if(!user||publicMode)return;
@@ -517,6 +543,7 @@ async function loadFactions(){
   if(fErr){console.error(fErr);factions=[];renderFactions();return}
   factions=allFactions||[];
   if(!uErr&&userFaction)currentFactionId=userFaction.faction_id;
+  teamChangeUnlocked=false;
   renderFactions();
   applyTeamTheme();
 }
@@ -528,10 +555,25 @@ async function chooseFaction(id){
   currentFactionId=id;
   renderFactions();
   applyTeamTheme();
-  const{error:delError}=await sb.from("user_factions").delete().eq("user_id",user.id);
-  if(delError){console.error(delError);currentFactionId=old;renderFactions();if(old)applyTeamTheme();toast("Could not change team.");return}
-  const{error}=await sb.from("user_factions").insert({user_id:user.id,faction_id:id});
-  if(error){console.error(error);currentFactionId=old;renderFactions();if(old)applyTeamTheme();toast("Could not save team.");return}
+
+  const{error}=await sb
+    .from("user_factions")
+    .upsert(
+      {user_id:user.id,faction_id:id,selected_at:new Date().toISOString()},
+      {onConflict:"user_id"}
+    );
+
+  if(error){
+    console.error(error);
+    currentFactionId=old;
+    renderFactions();
+    if(old)applyTeamTheme();
+    toast("Could not save team.");
+    return;
+  }
+
+  teamChangeUnlocked=false;
+  renderFactions();
   toast(`Joined ${factionName(f)}!`);
 }
 
