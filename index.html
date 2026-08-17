@@ -622,14 +622,14 @@ function fillRegions(){
 }
 function finishLoad(){applyGlobalMetadata();fillRegions();renderHome();renderDex();renderStats();dexLoading.style.display="none"}
 function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homePercent.textContent=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";homeProgress.style.width=p+"%";homeCount.textContent=`${c} / ${a.length} caught`;regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
-function renderDex(){let l=all(),q=(searchInput.value||"").toLowerCase();l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));if(sortFilter.value==="az")l.sort((a,b)=>a.name.localeCompare(b.name));else if(sortFilter.value==="caught")l.sort((a,b)=>+caught(b)-+caught(a));else if(sortFilter.value==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));else l.sort((a,b)=>(+a.dex||99999)-(+b.dex||99999));dexGrid.innerHTML="";if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}l.forEach(p=>{const b=document.createElement("button");b.className="pokemon-card"+(caught(p)?" caught":"");const media=p.image?`<img loading="lazy" src="${esc(p.image)}">`:`<div class="placeholder-mon">?</div>`;const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global"}</span>`:""}`;b.onclick=()=>openPokemon(p.id);dexGrid.appendChild(b)})}
+function renderDex(){let l=all(),q=(searchInput.value||"").toLowerCase();l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));if(sortFilter.value==="az")l.sort((a,b)=>a.name.localeCompare(b.name));else if(sortFilter.value==="caught")l.sort((a,b)=>+caught(b)-+caught(a));else if(sortFilter.value==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));else l.sort((a,b)=>(+a.dex||99999)-(+b.dex||99999));dexGrid.innerHTML="";if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}l.forEach(p=>{const b=document.createElement("button");b.className="pokemon-card"+(caught(p)?" caught":"");const media=p.image?`<img loading="lazy" src="${esc(p.image)}" data-stage="0" onerror="pokemonImgError(this,${+p.dex||0})"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global"}</span>`:""}`;b.onclick=()=>openPokemon(p.id);dexGrid.appendChild(b)})}
 function openPokemon(id){
   currentPokemonId=id;
   const p=all().find(x=>x.id===id),e=entry(id);
   if(!p)return toast("Pokémon entry not found.");
   const promptValue=e.prompt||p.prompt||"";
   const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
-  const media=p.image?`<img src="${esc(p.image)}">`:`<div class="placeholder-mon" style="padding:50px 0">?</div>`;
+  const media=p.image?`<img src="${esc(p.image)}" data-stage="0" onerror="pokemonImgError(this,${+p.dex||0})"><div class="placeholder-mon" style="padding:50px 0;display:none">?</div>`:`<div class="placeholder-mon" style="padding:50px 0">?</div>`;
 
   const promptBlock=`<div class="prompt-display"><div class="prompt-label">Reading Prompt</div><div class="prompt-text">${promptValue?esc(promptValue):"Prompt coming soon."}</div></div>`;
   const booksBlock=`<div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>`;
@@ -718,7 +718,7 @@ function searchSafari(){
   const e=entry(p.id);
   const prompt=e.prompt||p.prompt||"Prompt coming soon.";
   const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
-  const media=p.image?`<img src="${esc(p.image)}" alt="${esc(p.name)}">`:`<div class="placeholder-mon">?</div>`;
+  const media=p.image?`<img src="${esc(p.image)}" data-stage="0" onerror="pokemonImgError(this,${+p.dex||0})" alt="${esc(p.name)}"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;
   box.innerHTML=`<div class="safari-encounter"><div class="wild-label">The grass is rustling...</div><h3>A wild ${esc(p.name)} appeared!</h3>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}<div class="safari-mon-wrap">${media}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="safari-prompt"><div class="prompt-label">Reading Prompt</div><div class="prompt-text">${esc(prompt)}</div></div><div class="safari-actions"><button class="primary" onclick="openPokemon('${esc(p.id)}')">View Pokémon</button><button class="secondary" onclick="searchSafari()">Search Again</button></div></div>`;
   box.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
@@ -779,7 +779,8 @@ function badgeImgFail(img){
   const fb=img.nextElementSibling;
   if(fb)fb.style.display="flex";
 }
-function gymMonImgError(img,dex){
+
+function pokemonImgError(img,dex){
   const stage=+(img.dataset.stage||0);
   if(stage===0){
     img.dataset.stage="1";
@@ -795,6 +796,7 @@ function gymMonImgError(img,dex){
   const fb=img.nextElementSibling;
   if(fb)fb.style.display="flex";
 }
+function gymMonImgError(img,dex){pokemonImgError(img,dex)}
 function gymRewardName(g){
   if(g.badge_name)return g.badge_name;
   const kind=String(g.challenge_type||"Challenge");
