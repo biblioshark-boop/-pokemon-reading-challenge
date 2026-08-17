@@ -200,6 +200,15 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .prompt-display{margin-top:18px;padding:16px 18px;border-radius:20px;border:2px solid rgba(90,70,55,.18);background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.52)),var(--dex-screen);box-shadow:inset 0 0 12px rgba(50,85,75,.05)}
 .prompt-label{font-size:13px;font-weight:900;margin-bottom:7px}
 .prompt-text{font-size:17px;line-height:1.45;font-weight:650}
+
+.faction-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
+.faction-card{width:100%;text-align:left;border:2px solid var(--line);background:var(--surface2);color:var(--text);border-radius:18px;padding:14px 15px;box-shadow:none}
+.faction-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.faction-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.faction-card-name{font-weight:900;font-size:17px}
+.faction-card-badge{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.faction-card-desc{font-size:13px;line-height:1.4;color:var(--muted);margin-top:6px}
+.faction-current{margin-top:10px;padding:11px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-size:13px}
 </style>
 </head>
 <body>
@@ -214,7 +223,7 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 <div id="adminGlobalCard" class="form-card admin-card hidden"><h3>Admin • Add Pokémon for Everyone</h3><div class="admin-note">This writes to the global Supabase catalog and will appear for every user.</div><label>Existing global entry</label><select id="globalEditSelect" onchange="loadGlobalEditor(this.value)"><option value="">Create new entry</option></select><label>Name</label><input id="globalName"><div class="field-grid"><div><label>National Dex Number</label><input id="globalDex" inputmode="numeric"></div><div><label>Region</label><select id="globalRegion"></select></div></div><label>Form / Variant</label><input id="globalForm"><div class="field-grid"><div><label>Type 1</label><input id="globalType1"></div><div><label>Type 2</label><input id="globalType2"></div></div><label>Global Reading Prompt</label><textarea id="globalPrompt"></textarea><label>Pokédex Fact</label><textarea id="globalFact"></textarea><label>Image URL</label><input id="globalImage"><label>Or upload an image</label><input type="file" accept="image/*" id="globalImageUpload"><label><input id="globalBonus" type="checkbox" style="width:auto;margin-right:8px">Bonus / special Pokémon</label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGlobalPokemon()">Save for Everyone</button><button id="globalDeleteBtn" class="danger hidden" style="width:100%;margin-top:8px" onclick="deleteGlobalPokemon()">Delete Global Entry</button></div>
 </section>
 <section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
-<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><strong>Site Administrator</strong><div class="muted">You can add and edit global Pokémon entries for everyone from the Add tab.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Genres</h3><textarea id="genreList"></textarea><button class="secondary" style="width:100%;margin-top:8px" onclick="saveGenres()">Save Genres</button></div></section>
+<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><strong>Site Administrator</strong><div class="muted">You can add and edit global Pokémon entries for everyone from the Add tab.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div><div class="form-card"><h3>Genres</h3><textarea id="genreList"></textarea><button class="secondary" style="width:100%;margin-top:8px" onclick="saveGenres()">Save Genres</button></div></section>
 <section id="detailPage" class="page"><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
 </main>
 <nav id="bottomNav" class="bottom-nav hidden"><button class="nav-btn active" data-page="home" onclick="goPage('home')"><span class="nav-icon">🏠</span>Home</button><button class="nav-btn" data-page="dex" onclick="goPage('dex')"><span class="nav-icon">◉</span>Pokédex</button><button class="nav-btn" data-page="add" onclick="goPage('add')"><span class="nav-icon">＋</span>Add</button><button class="nav-btn" data-page="stats" onclick="goPage('stats')"><span class="nav-icon">▥</span>Stats</button><button class="nav-btn" data-page="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span>Settings</button></nav>
@@ -227,7 +236,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSe
 const REGIONS=["Kanto","Johto","Hoenn","Sinnoh","Unova","Kalos","Alola","Galar","Hisui","Paldea","Pokopia","Special"];
 const THEMES={Kanto:["#f5eee7","#fffaf4","#eadfd4","#271f1d","#75655f","#b91c1c","#7f1d1d","#d6c5b9"],Johto:["#f5f0df","#fffaf0","#ebe1bc","#29251b","#776d4e","#b8860b","#705c0b","#d9c98e"],Hoenn:["#e9f4ef","#f7fffb","#d7ebe2","#16372c","#527164","#16856a","#176b87","#bad8cc"],Sinnoh:["#edf1f6","#fbfdff","#dbe3ec","#192738","#607080","#496886","#263e59","#c4d0dc"],Unova:["#eeeeee","#ffffff","#dedede","#141414","#666","#222","#555","#c8c8c8"],Kalos:["#eef0f8","#fafbff","#dfe3f2","#222944","#68708c","#334b9b","#b28c2f","#c7cde0"],Alola:["#fff5df","#fffdf7","#f5e7bb","#3e3018","#806e43","#e88932","#2c8e8b","#e5d29d"],Galar:["#f2edf3","#fffaff","#e5d9e8","#332437","#77627d","#7c3b83","#253f74","#d2bfd6"],Hisui:["#eee8da","#faf6eb","#ddd2bd","#2f3027","#777562","#6d7751","#474f38","#c8bba3"],Paldea:["#f8eadc","#fff9f2","#efd7bf","#3a271d","#876955","#c56038","#6d438b","#dfc2a8"],Special:["#eeeef5","#fafaff","#ddddec","#24243a","#68687d","#5f5fb2","#393971","#c8c8dc"]};
 const DEFAULT_GENRES=["Horror","Thriller","Science Fiction","Fantasy","Mystery","Romance","Contemporary","Historical Fiction","Nonfiction","Graphic Novel / Manga"];
-let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,bookSaving=false,isAdmin=false;
+let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,bookSaving=false,isAdmin=false,factions=[],currentFactionId=null;
 const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 const title=s=>s.replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
 function region(n){n=+n;if(n<=151)return"Kanto";if(n<=251)return"Johto";if(n<=386)return"Hoenn";if(n<=493)return"Sinnoh";if(n<=649)return"Unova";if(n<=721)return"Kalos";if(n<=809)return"Alola";if(n<=905)return"Galar";if(n<=1025)return"Paldea";return"Special"}
@@ -455,11 +464,55 @@ async function addCustomPokemon(){if(!addName.value.trim()){toast("Enter a name.
 function deleteCustom(id){customPokemon=customPokemon.filter(x=>x.id!==id);delete challengeData[id];saveSoon();goPage("dex")}
 function renderStats(){const a=all(),c=a.filter(caught);statCaught.textContent=c.length;statRemaining.textContent=a.length-c.length;statStandard.textContent=c.filter(p=>!p.isForm).length;statForms.textContent=c.filter(p=>p.isForm).length;statRegions.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(g.length)statRegions.insertAdjacentHTML("beforeend",`<div class="region-card"><strong>${r}</strong><span>${g.filter(caught).length} / ${g.length}</span></div>`)})}
 function openRandomizer(){if(!publicMode)randomModal.classList.add("open")}function closeRandomizer(){randomModal.classList.remove("open")}function rollRandom(g){let a=all().filter(p=>!caught(p));if(randomRegion.value!=="all")a=a.filter(p=>p.region===randomRegion.value);if(randomFormMode.value==="standard")a=a.filter(p=>!p.isForm);if(randomFormMode.value==="forms")a=a.filter(p=>p.isForm);if(!a.length)return toast("No matches.");const p=a[Math.floor(Math.random()*a.length)],gen=g?genres[Math.floor(Math.random()*genres.length)]:"";randomResult.innerHTML=`<div class="random-result"><img src="${esc(p.image)}"><h2>${esc(p.name)}</h2>${gen?`<h3>Genre</h3><div>${esc(gen)}</div>`:""}<button class="primary" style="width:100%;margin-top:14px" onclick="closeRandomizer();openPokemon('${p.id}')">Open Entry</button></div>`}
+
+function factionName(f){return f?.name||f?.title||title(f?.slug||"Team")}
+function factionDescription(f){return f?.description||f?.tagline||""}
+function factionAlignment(f){return f?.alignment||f?.kind||f?.category||""}
+function renderFactions(){
+  const list=document.getElementById("factionList"),cur=document.getElementById("factionCurrent");
+  if(!list)return;
+  if(!factions.length){list.innerHTML='<div class="muted">No teams are available yet.</div>';if(cur)cur.classList.add("hidden");return}
+  list.innerHTML=factions.map(f=>{
+    const selected=String(f.id)===String(currentFactionId);
+    const badge=factionAlignment(f);
+    return `<button class="faction-card ${selected?"selected":""}" onclick="chooseFaction('${esc(f.id)}')"><div class="faction-card-top"><span class="faction-card-name">${esc(factionName(f))}</span>${badge?`<span class="faction-card-badge">${esc(badge)}</span>`:""}</div>${factionDescription(f)?`<div class="faction-card-desc">${esc(factionDescription(f))}</div>`:""}</button>`;
+  }).join("");
+  const picked=factions.find(f=>String(f.id)===String(currentFactionId));
+  if(cur){
+    if(picked){cur.innerHTML=`Current team: <strong>${esc(factionName(picked))}</strong>`;cur.classList.remove("hidden")}
+    else cur.classList.add("hidden");
+  }
+}
+async function loadFactions(){
+  if(!user||publicMode)return;
+  const[{data:allFactions,error:fErr},{data:userFaction,error:uErr}]=await Promise.all([
+    sb.from("factions").select("*").order("name",{ascending:true}),
+    sb.from("user_factions").select("faction_id").eq("user_id",user.id).maybeSingle()
+  ]);
+  if(fErr){console.error(fErr);factions=[];renderFactions();return}
+  factions=allFactions||[];
+  if(!uErr&&userFaction)currentFactionId=userFaction.faction_id;
+  renderFactions();
+}
+async function chooseFaction(id){
+  if(!user||publicMode)return;
+  const f=factions.find(x=>String(x.id)===String(id));
+  if(!f)return;
+  const old=currentFactionId;
+  currentFactionId=id;
+  renderFactions();
+  const{error:delError}=await sb.from("user_factions").delete().eq("user_id",user.id);
+  if(delError){console.error(delError);currentFactionId=old;renderFactions();toast("Could not change team.");return}
+  const{error}=await sb.from("user_factions").insert({user_id:user.id,faction_id:id});
+  if(error){console.error(error);currentFactionId=old;renderFactions();toast("Could not save team.");return}
+  toast(`Joined ${factionName(f)}!`);
+}
+
 function saveGenres(){genres=genreList.value.split("\n").map(x=>x.trim()).filter(Boolean);saveSoon();toast("Genres saved")}
 async function migrateLocalData(){try{const old=await new Promise((resolve,reject)=>{const r=indexedDB.open("pokemonReadingChallengeDB",1);r.onerror=()=>reject();r.onsuccess=()=>{const d=r.result;if(!d.objectStoreNames.contains("store"))return resolve(null);const s=d.transaction("store").objectStore("store"),out={},ks=["challengeData","customPokemon","genres"];let n=ks.length;ks.forEach(k=>{const q=s.get(k);q.onsuccess=()=>{out[k]=q.result;if(!--n)resolve(out)};q.onerror=()=>{if(!--n)resolve(out)}})}});if(!old)return toast("No local data found.");challengeData={...challengeData,...(old.challengeData||{})};customPokemon=[...customPokemon,...(old.customPokemon||[]).filter(p=>!customPokemon.some(x=>x.id===p.id))];if(old.genres?.length)genres=old.genres;await saveNow();finishLoad();toast("Local data imported")}catch{toast("Could not import local data.")}}
 function applyRegionTheme(r){if(r==="all")r="Kanto";const v=THEMES[r]||THEMES.Special,keys=["bg","surface","surface2","text","muted","accent","accent2","line"];keys.forEach((k,i)=>document.documentElement.style.setProperty("--"+k,v[i]))}
-function goPage(n){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(n+"Page")?.classList.add("active");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));if(n==="home")renderHome();if(n==="dex")renderDex();if(n==="stats")renderStats();scrollTo(0,0)}
-async function startPrivate(){bottomNav.classList.remove("hidden");cloudPill.classList.remove("hidden");await loadProfile();await loadSave();await loadAdminStatus();await loadGlobalCatalog();await loadPokemon();goPage("home")}
+function goPage(n){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(n+"Page")?.classList.add("active");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));if(n==="home")renderHome();if(n==="dex")renderDex();if(n==="stats")renderStats();if(n==="settings")renderFactions();scrollTo(0,0)}
+async function startPrivate(){bottomNav.classList.remove("hidden");cloudPill.classList.remove("hidden");await loadProfile();await loadSave();await loadAdminStatus();await loadGlobalCatalog();await loadPokemon();await loadFactions();goPage("home")}
 async function startPublic(u){if(!await loadPublic(u))return;bottomNav.classList.remove("hidden");document.querySelector('[data-page="add"]').classList.add("hidden");document.querySelector('[data-page="settings"]').classList.add("hidden");const r=document.getElementById("homeRandomBtn"),q=document.getElementById("homeQuickActions");if(r)r.classList.add("hidden");if(q)q.style.gridTemplateColumns="1fr";await loadGlobalCatalog();await loadPokemon();goPage("home")}
 async function init(){const u=new URLSearchParams(location.search).get("u");if(u)return startPublic(u);const{data:{session}}=await sb.auth.getSession();user=session?.user||null;if(user)await startPrivate();else authPage.classList.add("active");sb.auth.onAuthStateChange(async(e,s)=>{if(e==="SIGNED_IN"&&!user){user=s.user;authPage.classList.remove("active");await startPrivate()}})}
 init();
