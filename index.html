@@ -331,9 +331,19 @@ async function loadAdminStatus(){
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
 }
 async function loadGlobalCatalog(){
-  const{data,error}=await sb.from("pokemon_catalog").select("slug,name,form_name,dex_number,region,category,type_1,type_2,image_url,reading_prompt,dex_fact,is_bonus,sort_order").eq("is_active",true).order("sort_order",{ascending:true});
-  if(error){console.error(error);globalPokemon=[];globalChallengeData=[];return}
-  const rows=data||[];
+  const rows=[];
+  const pageSize=1000;
+  for(let from=0;;from+=pageSize){
+    const{data,error}=await sb.from("pokemon_catalog")
+      .select("slug,name,form_name,dex_number,region,category,type_1,type_2,image_url,reading_prompt,dex_fact,is_bonus,sort_order")
+      .eq("is_active",true)
+      .order("sort_order",{ascending:true})
+      .range(from,from+pageSize-1);
+    if(error){console.error(error);globalPokemon=[];globalChallengeData=[];return}
+    const batch=data||[];
+    rows.push(...batch);
+    if(batch.length<pageSize)break;
+  }
   globalChallengeData=rows.filter(r=>r.category==="data");
   globalPokemon=rows.filter(r=>r.category!=="data").map(r=>({
     id:`global-${r.slug}`,
