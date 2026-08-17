@@ -302,6 +302,13 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .gym-book-form .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .gym-mon-note{font-size:10px;color:var(--muted);margin-top:2px}
 .trainer-portrait img{background:transparent}
+
+.modal.defeat-modal{align-items:center;justify-content:center;padding:18px}
+.defeat-modal .modal-card{width:min(560px,100%);max-height:88vh;border-radius:26px;margin:0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+.defeat-modal .modal-handle{display:none}
+.gym-asset-preview{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.gym-asset-preview-box{min-height:130px;border:1px dashed var(--line);border-radius:16px;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px;text-align:center;color:var(--muted);font-size:12px}
+.gym-asset-preview-box img{max-width:100%;max-height:145px;object-fit:contain}
 </style>
 </head>
 <body>
@@ -347,7 +354,33 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 </div>
 </section>
 <section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">Team Competition</h3><div class="team-leader-note">Every caught Pokémon adds 1 point to your team. Poke Dolls are not included in the competition.</div><div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
-<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon management is available below only for administrators.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div><div id="adminGlobalCard" class="form-card admin-card hidden"><h3>Admin Tools • Global Pokémon</h3><div class="admin-note">Add or edit challenge-wide Pokémon data. Changes here appear for everyone.</div><label>Existing global entry</label><select id="globalEditSelect" onchange="loadGlobalEditor(this.value)"><option value="">Create new entry</option></select><label>Name</label><input id="globalName"><div class="field-grid"><div><label>National Dex Number</label><input id="globalDex" inputmode="numeric"></div><div><label>Region</label><select id="globalRegion"></select></div></div><label>Form / Variant</label><input id="globalForm"><div class="field-grid"><div><label>Type 1</label><input id="globalType1"></div><div><label>Type 2</label><input id="globalType2"></div></div><label>Global Reading Prompt</label><textarea id="globalPrompt"></textarea><label>Pokédex Fact</label><textarea id="globalFact"></textarea><label>Image URL</label><input id="globalImage"><label>Or upload an image</label><input type="file" accept="image/*" id="globalImageUpload"><label><input id="globalBonus" type="checkbox" style="width:auto;margin-right:8px">Bonus / special Pokémon</label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGlobalPokemon()">Save for Everyone</button><button id="globalDeleteBtn" class="danger hidden" style="width:100%;margin-top:8px" onclick="deleteGlobalPokemon()">Delete Global Entry</button></div>
+<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon management is available below only for administrators.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
+<div id="adminGymAssetsCard" class="form-card admin-card hidden">
+  <h3>Admin Tools • Gym Images</h3>
+  <div class="admin-note">Choose any Gym Leader, Elite Four member, Champion, Trial Captain, Warden, or special battle. Images saved here update for everyone.</div>
+  <label>Challenge / Leader</label>
+  <select id="gymAssetSelect" onchange="loadGymAssetEditor(this.value)">
+    <option value="">Select a challenge</option>
+  </select>
+
+  <label>Leader / Trainer Image URL</label>
+  <input id="gymLeaderImage" placeholder="Paste image URL">
+  <label>Or upload leader image</label>
+  <input type="file" accept="image/*" id="gymLeaderImageUpload">
+
+  <label>Badge / Reward Image URL</label>
+  <input id="gymBadgeImage" placeholder="Paste badge/reward image URL">
+  <label>Or upload badge / reward image</label>
+  <input type="file" accept="image/*" id="gymBadgeImageUpload">
+
+  <div class="gym-asset-preview">
+    <div id="gymLeaderPreview" class="gym-asset-preview-box">Leader preview</div>
+    <div id="gymBadgePreview" class="gym-asset-preview-box">Badge / reward preview</div>
+  </div>
+
+  <button class="primary" style="width:100%;margin-top:14px" onclick="saveGymAssets()">Save Images for Everyone</button>
+</div>
+<div id="adminGlobalCard" class="form-card admin-card hidden"><h3>Admin Tools • Global Pokémon</h3><div class="admin-note">Add or edit challenge-wide Pokémon data. Changes here appear for everyone.</div><label>Existing global entry</label><select id="globalEditSelect" onchange="loadGlobalEditor(this.value)"><option value="">Create new entry</option></select><label>Name</label><input id="globalName"><div class="field-grid"><div><label>National Dex Number</label><input id="globalDex" inputmode="numeric"></div><div><label>Region</label><select id="globalRegion"></select></div></div><label>Form / Variant</label><input id="globalForm"><div class="field-grid"><div><label>Type 1</label><input id="globalType1"></div><div><label>Type 2</label><input id="globalType2"></div></div><label>Global Reading Prompt</label><textarea id="globalPrompt"></textarea><label>Pokédex Fact</label><textarea id="globalFact"></textarea><label>Image URL</label><input id="globalImage"><label>Or upload an image</label><input type="file" accept="image/*" id="globalImageUpload"><label><input id="globalBonus" type="checkbox" style="width:auto;margin-right:8px">Bonus / special Pokémon</label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGlobalPokemon()">Save for Everyone</button><button id="globalDeleteBtn" class="danger hidden" style="width:100%;margin-top:8px" onclick="deleteGlobalPokemon()">Delete Global Entry</button></div>
 </section>
 <section id="detailPage" class="page"><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
 </main>
@@ -421,6 +454,7 @@ async function loadAdminStatus(){
   const{data,error}=await sb.rpc("is_app_admin");
   isAdmin=!error&&data===true;
   adminGlobalCard?.classList.toggle("hidden",!isAdmin);
+  adminGymAssetsCard?.classList.toggle("hidden",!isAdmin);
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
 }
 async function loadGlobalCatalog(){
@@ -813,6 +847,66 @@ function rewardSymbol(g){
   return t ? t[0].toUpperCase() : "★";
 }
 
+
+function refreshGymAssetEditor(){
+  const s=document.getElementById("gymAssetSelect");
+  if(!s)return;
+  const current=s.value;
+  s.innerHTML='<option value="">Select a challenge</option>';
+  [...gymsData]
+    .sort((a,b)=>(a.region||"").localeCompare(b.region||"")||(a.sort_order||0)-(b.sort_order||0))
+    .forEach(g=>s.add(new Option(`${g.region} • ${g.leader_name} • ${g.challenge_type||"Challenge"}`,g.id)));
+  if([...s.options].some(o=>o.value===current))s.value=current;
+  if(current)loadGymAssetEditor(current);
+}
+function loadGymAssetEditor(id){
+  const g=gymsData.find(x=>x.id===id);
+  gymLeaderImage.value=g?.leader_image_url||"";
+  gymBadgeImage.value=g?.badge_image_url||"";
+  gymLeaderImageUpload.value="";
+  gymBadgeImageUpload.value="";
+  renderGymAssetPreviews();
+}
+function renderGymAssetPreviews(){
+  const leader=gymLeaderImage?.value?.trim()||"";
+  const badge=gymBadgeImage?.value?.trim()||"";
+  if(gymLeaderPreview)gymLeaderPreview.innerHTML=leader?`<img src="${esc(leader)}" alt="Leader preview" onerror="this.parentElement.textContent='Could not load leader image'">`:"Leader preview";
+  if(gymBadgePreview)gymBadgePreview.innerHTML=badge?`<img src="${esc(badge)}" alt="Badge preview" onerror="this.parentElement.textContent='Could not load badge image'">`:"Badge / reward preview";
+}
+async function saveGymAssets(){
+  if(!isAdmin)return toast("Admin access required.");
+  const id=gymAssetSelect.value;
+  if(!id)return toast("Choose a gym challenge first.");
+  let leaderUrl=gymLeaderImage.value.trim();
+  let badgeUrl=gymBadgeImage.value.trim();
+  const leaderFile=gymLeaderImageUpload.files[0];
+  const badgeFile=gymBadgeImageUpload.files[0];
+  try{
+    if(leaderFile)leaderUrl=await upload(leaderFile,"gym-leader");
+    if(badgeFile)badgeUrl=await upload(badgeFile,"gym-badge");
+  }catch(e){
+    console.error(e);
+    toast("Image upload failed.");
+    return;
+  }
+  const{error}=await sb.from("gyms").update({
+    leader_image_url:leaderUrl||null,
+    badge_image_url:badgeUrl||null,
+    updated_at:new Date().toISOString()
+  }).eq("id",id);
+  if(error){
+    console.error(error);
+    toast(error.message||"Could not save gym images.");
+    return;
+  }
+  await loadGyms();
+  gymAssetSelect.value=id;
+  loadGymAssetEditor(id);
+  renderGyms();
+  renderBadgeCase();
+  toast("Gym images saved for everyone.");
+}
+
 async function loadGyms(){
   const{data:g,error:ge}=await sb.from("gyms")
     .select("id,slug,leader_name,gym_name,region,generation,badge_name,badge_image_url,leader_image_url,description,sort_order,challenge_type,specialty_type")
@@ -831,6 +925,7 @@ async function loadGyms(){
     (m||[]).forEach(x=>gymMemberProgress[x.gym_team_member_id]=x);
   }
   fillGymRegions();
+  refreshGymAssetEditor();
 }
 function fillGymRegions(){
   const s=document.getElementById("gymRegionFilter");if(!s)return;
@@ -1125,6 +1220,10 @@ function goPage(n){document.querySelectorAll(".page").forEach(p=>p.classList.rem
 async function startPrivate(){bottomNav.classList.remove("hidden");cloudPill.classList.remove("hidden");await loadProfile();await loadSave();await loadAdminStatus();await loadGlobalCatalog();await loadPokemon();await loadFactions();await loadGyms();goPage("home")}
 async function startPublic(u){if(!await loadPublic(u))return;bottomNav.classList.remove("hidden");document.querySelector('[data-page="safari"]')?.classList.add("hidden");document.querySelector('[data-page="gyms"]')?.classList.add("hidden");document.querySelector('[data-page="settings"]')?.classList.add("hidden");const r=document.getElementById("homeRandomBtn"),q=document.getElementById("homeQuickActions");if(r)r.classList.add("hidden");if(q)q.style.gridTemplateColumns="1fr";await loadGlobalCatalog();await loadPokemon();goPage("home")}
 async function init(){const u=new URLSearchParams(location.search).get("u");if(u)return startPublic(u);const{data:{session}}=await sb.auth.getSession();user=session?.user||null;if(user)await startPrivate();else authPage.classList.add("active");sb.auth.onAuthStateChange(async(e,s)=>{if(e==="SIGNED_IN"&&!user){user=s.user;authPage.classList.remove("active");await startPrivate()}})}
+
+document.getElementById("gymLeaderImage")?.addEventListener("input",renderGymAssetPreviews);
+document.getElementById("gymBadgeImage")?.addEventListener("input",renderGymAssetPreviews);
+
 init();
 </script>
 </body></html>
