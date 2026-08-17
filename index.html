@@ -235,6 +235,16 @@ const SUPABASE_URL="https://yamjfaacvewvrinxytep.supabase.co",SUPABASE_KEY="sb_p
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const REGIONS=["Kanto","Johto","Hoenn","Sinnoh","Unova","Kalos","Alola","Galar","Hisui","Paldea","Pokopia","Special"];
 const THEMES={Kanto:["#f5eee7","#fffaf4","#eadfd4","#271f1d","#75655f","#b91c1c","#7f1d1d","#d6c5b9"],Johto:["#f5f0df","#fffaf0","#ebe1bc","#29251b","#776d4e","#b8860b","#705c0b","#d9c98e"],Hoenn:["#e9f4ef","#f7fffb","#d7ebe2","#16372c","#527164","#16856a","#176b87","#bad8cc"],Sinnoh:["#edf1f6","#fbfdff","#dbe3ec","#192738","#607080","#496886","#263e59","#c4d0dc"],Unova:["#eeeeee","#ffffff","#dedede","#141414","#666","#222","#555","#c8c8c8"],Kalos:["#eef0f8","#fafbff","#dfe3f2","#222944","#68708c","#334b9b","#b28c2f","#c7cde0"],Alola:["#fff5df","#fffdf7","#f5e7bb","#3e3018","#806e43","#e88932","#2c8e8b","#e5d29d"],Galar:["#f2edf3","#fffaff","#e5d9e8","#332437","#77627d","#7c3b83","#253f74","#d2bfd6"],Hisui:["#eee8da","#faf6eb","#ddd2bd","#2f3027","#777562","#6d7751","#474f38","#c8bba3"],Paldea:["#f8eadc","#fff9f2","#efd7bf","#3a271d","#876955","#c56038","#6d438b","#dfc2a8"],Special:["#eeeef5","#fafaff","#ddddec","#24243a","#68687d","#5f5fb2","#393971","#c8c8dc"]};
+const TEAM_THEMES={
+  "team-rocket":["#f4e7e7","#fff8f8","#ead7d7","#261b1b","#756060","#d9272e","#1f1f1f","#d9bcbc"],
+  "team-plasma":["#edf1f5","#fbfcfe","#dce3ea","#202733","#657080","#4f5d75","#8997a8","#c6d0db"],
+  "team-aqua":["#e7f1ff","#f8fbff","#d5e6fb","#142844","#58708d","#1f6feb","#0b3d91","#b8d0ec"],
+  "team-magma":["#f8e9e6","#fff9f7","#efd8d3","#341d19","#85645f","#c94b40","#7a1f1f","#ddbdb7"],
+  "team-galactic":["#efebf7","#fbf9ff","#e2d9f0","#28223a","#70657f","#6e59a5","#2f2a4a","#cbbfe0"],
+  "pokemon-rangers":["#fbefe7","#fffaf6","#f2ddcf","#35231a","#80675a","#e86a33","#8a2f1b","#e3c4b2"],
+  "aether-foundation":["#faf5df","#fffdf4","#efe5b7","#342f1b","#7d7351","#c7a227","#8e7420","#e1d39b"],
+  "poke-dolls":["#faeaf3","#fff8fc","#efd7e5","#38212e","#856578","#d96aa7","#7e3a63","#dfbdd1"]
+};
 const DEFAULT_GENRES=["Horror","Thriller","Science Fiction","Fantasy","Mystery","Romance","Contemporary","Historical Fiction","Nonfiction","Graphic Novel / Manga"];
 let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,bookSaving=false,isAdmin=false,factions=[],currentFactionId=null;
 const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
@@ -467,7 +477,22 @@ function openRandomizer(){if(!publicMode)randomModal.classList.add("open")}funct
 
 function factionName(f){return f?.name||f?.title||title(f?.slug||"Team")}
 function factionDescription(f){return f?.description||f?.tagline||""}
-function factionAlignment(f){return f?.alignment||f?.kind||f?.category||""}
+function factionAlignment(f){if(f?.is_competitive===false)return"Non-competitive";return f?.faction_type||f?.alignment||f?.kind||f?.category||""}
+
+function currentFaction(){
+  return factions.find(f=>String(f.id)===String(currentFactionId))||null;
+}
+function applyTeamTheme(){
+  const f=currentFaction();
+  if(!f)return false;
+  const v=TEAM_THEMES[f.slug];
+  if(!v)return false;
+  const keys=["bg","surface","surface2","text","muted","accent","accent2","line"];
+  keys.forEach((k,i)=>document.documentElement.style.setProperty("--"+k,v[i]));
+  document.documentElement.style.setProperty("--dex-red",f.primary_color||v[5]);
+  document.documentElement.style.setProperty("--dex-red-dark",f.secondary_color||v[6]);
+  return true;
+}
 function renderFactions(){
   const list=document.getElementById("factionList"),cur=document.getElementById("factionCurrent");
   if(!list)return;
@@ -493,6 +518,7 @@ async function loadFactions(){
   factions=allFactions||[];
   if(!uErr&&userFaction)currentFactionId=userFaction.faction_id;
   renderFactions();
+  applyTeamTheme();
 }
 async function chooseFaction(id){
   if(!user||publicMode)return;
@@ -501,16 +527,17 @@ async function chooseFaction(id){
   const old=currentFactionId;
   currentFactionId=id;
   renderFactions();
+  applyTeamTheme();
   const{error:delError}=await sb.from("user_factions").delete().eq("user_id",user.id);
-  if(delError){console.error(delError);currentFactionId=old;renderFactions();toast("Could not change team.");return}
+  if(delError){console.error(delError);currentFactionId=old;renderFactions();if(old)applyTeamTheme();toast("Could not change team.");return}
   const{error}=await sb.from("user_factions").insert({user_id:user.id,faction_id:id});
-  if(error){console.error(error);currentFactionId=old;renderFactions();toast("Could not save team.");return}
+  if(error){console.error(error);currentFactionId=old;renderFactions();if(old)applyTeamTheme();toast("Could not save team.");return}
   toast(`Joined ${factionName(f)}!`);
 }
 
 function saveGenres(){genres=genreList.value.split("\n").map(x=>x.trim()).filter(Boolean);saveSoon();toast("Genres saved")}
 async function migrateLocalData(){try{const old=await new Promise((resolve,reject)=>{const r=indexedDB.open("pokemonReadingChallengeDB",1);r.onerror=()=>reject();r.onsuccess=()=>{const d=r.result;if(!d.objectStoreNames.contains("store"))return resolve(null);const s=d.transaction("store").objectStore("store"),out={},ks=["challengeData","customPokemon","genres"];let n=ks.length;ks.forEach(k=>{const q=s.get(k);q.onsuccess=()=>{out[k]=q.result;if(!--n)resolve(out)};q.onerror=()=>{if(!--n)resolve(out)}})}});if(!old)return toast("No local data found.");challengeData={...challengeData,...(old.challengeData||{})};customPokemon=[...customPokemon,...(old.customPokemon||[]).filter(p=>!customPokemon.some(x=>x.id===p.id))];if(old.genres?.length)genres=old.genres;await saveNow();finishLoad();toast("Local data imported")}catch{toast("Could not import local data.")}}
-function applyRegionTheme(r){if(r==="all")r="Kanto";const v=THEMES[r]||THEMES.Special,keys=["bg","surface","surface2","text","muted","accent","accent2","line"];keys.forEach((k,i)=>document.documentElement.style.setProperty("--"+k,v[i]))}
+function applyRegionTheme(r){if(!publicMode&&currentFactionId&&applyTeamTheme())return;if(r==="all")r="Kanto";const v=THEMES[r]||THEMES.Special,keys=["bg","surface","surface2","text","muted","accent","accent2","line"];keys.forEach((k,i)=>document.documentElement.style.setProperty("--"+k,v[i]))}
 function goPage(n){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(n+"Page")?.classList.add("active");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));if(n==="home")renderHome();if(n==="dex")renderDex();if(n==="stats")renderStats();if(n==="settings")renderFactions();scrollTo(0,0)}
 async function startPrivate(){bottomNav.classList.remove("hidden");cloudPill.classList.remove("hidden");await loadProfile();await loadSave();await loadAdminStatus();await loadGlobalCatalog();await loadPokemon();await loadFactions();goPage("home")}
 async function startPublic(u){if(!await loadPublic(u))return;bottomNav.classList.remove("hidden");document.querySelector('[data-page="add"]').classList.add("hidden");document.querySelector('[data-page="settings"]').classList.add("hidden");const r=document.getElementById("homeRandomBtn"),q=document.getElementById("homeQuickActions");if(r)r.classList.add("hidden");if(q)q.style.gridTemplateColumns="1fr";await loadGlobalCatalog();await loadPokemon();goPage("home")}
