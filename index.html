@@ -227,7 +227,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSe
 const REGIONS=["Kanto","Johto","Hoenn","Sinnoh","Unova","Kalos","Alola","Galar","Hisui","Paldea","Pokopia","Special"];
 const THEMES={Kanto:["#f5eee7","#fffaf4","#eadfd4","#271f1d","#75655f","#b91c1c","#7f1d1d","#d6c5b9"],Johto:["#f5f0df","#fffaf0","#ebe1bc","#29251b","#776d4e","#b8860b","#705c0b","#d9c98e"],Hoenn:["#e9f4ef","#f7fffb","#d7ebe2","#16372c","#527164","#16856a","#176b87","#bad8cc"],Sinnoh:["#edf1f6","#fbfdff","#dbe3ec","#192738","#607080","#496886","#263e59","#c4d0dc"],Unova:["#eeeeee","#ffffff","#dedede","#141414","#666","#222","#555","#c8c8c8"],Kalos:["#eef0f8","#fafbff","#dfe3f2","#222944","#68708c","#334b9b","#b28c2f","#c7cde0"],Alola:["#fff5df","#fffdf7","#f5e7bb","#3e3018","#806e43","#e88932","#2c8e8b","#e5d29d"],Galar:["#f2edf3","#fffaff","#e5d9e8","#332437","#77627d","#7c3b83","#253f74","#d2bfd6"],Hisui:["#eee8da","#faf6eb","#ddd2bd","#2f3027","#777562","#6d7751","#474f38","#c8bba3"],Paldea:["#f8eadc","#fff9f2","#efd7bf","#3a271d","#876955","#c56038","#6d438b","#dfc2a8"],Special:["#eeeef5","#fafaff","#ddddec","#24243a","#68687d","#5f5fb2","#393971","#c8c8dc"]};
 const DEFAULT_GENRES=["Horror","Thriller","Science Fiction","Fantasy","Mystery","Romance","Contemporary","Historical Fiction","Nonfiction","Graphic Novel / Manga"];
-let user=null,profile=null,pokemonData=[],globalPokemon=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,bookSaving=false,isAdmin=false;
+let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,bookSaving=false,isAdmin=false;
 const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 const title=s=>s.replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
 function region(n){n=+n;if(n<=151)return"Kanto";if(n<=251)return"Johto";if(n<=386)return"Hoenn";if(n<=493)return"Sinnoh";if(n<=649)return"Unova";if(n<=721)return"Kalos";if(n<=809)return"Alola";if(n<=905)return"Galar";if(n<=1025)return"Paldea";return"Special"}
@@ -263,8 +263,10 @@ async function loadAdminStatus(){
 }
 async function loadGlobalCatalog(){
   const{data,error}=await sb.from("pokemon_catalog").select("slug,name,form_name,dex_number,region,category,type_1,type_2,image_url,reading_prompt,dex_fact,is_bonus,sort_order").eq("is_active",true).order("sort_order",{ascending:true});
-  if(error){console.error(error);globalPokemon=[];return}
-  globalPokemon=(data||[]).map(r=>({
+  if(error){console.error(error);globalPokemon=[];globalChallengeData=[];return}
+  const rows=data||[];
+  globalChallengeData=rows.filter(r=>r.category==="data");
+  globalPokemon=rows.filter(r=>r.category!=="data").map(r=>({
     id:`global-${r.slug}`,
     slug:r.slug,
     dex:r.dex_number||"",
@@ -283,6 +285,24 @@ async function loadGlobalCatalog(){
     sortOrder:r.sort_order??99999
   }));
   refreshGlobalEditor();
+}
+function metadataForPokemon(p){
+  if(!p?.dex)return null;
+  const dex=+p.dex;
+  if(p.isForm&&p.form){
+    return globalChallengeData.find(r=>+r.dex_number===dex&&String(r.form_name||"").toLowerCase()===String(p.form).toLowerCase())||null;
+  }
+  return globalChallengeData.find(r=>+r.dex_number===dex&&!r.form_name)||null;
+}
+function applyGlobalMetadata(){
+  pokemonData=pokemonData.map(p=>{
+    const m=metadataForPokemon(p);
+    if(!m)return p;
+    return {...p,
+      types:[m.type_1,m.type_2].filter(Boolean),
+      prompt:m.reading_prompt||p.prompt||""
+    };
+  });
 }
 function refreshGlobalEditor(){
   if(!globalEditSelect)return;
@@ -362,7 +382,7 @@ async function deleteGlobalPokemon(){
 }
 async function loadPokemon(force=false){dexLoading.style.display="block";if(!force){try{const c=JSON.parse(localStorage.getItem("rfPokemonV4")||"null");if(c?.length){pokemonData=c;finishLoad();return}}catch{}}try{const j=await(await fetch("https://pokeapi.co/api/v2/pokemon?limit=100000")).json(),bases=[],forms=[];for(const p of j.results){if((p.name||"").toLowerCase().includes("-totem"))continue;const id=+p.url.split("/").filter(Boolean).pop();if(id<10000)bases.push({id:`api-${id}`,dex:id,name:title(p.name),apiName:p.name,region:region(id),form:"",isForm:false,image:image(id),custom:false});else{const f=form(p.name);if(!f)continue;const bn=p.name.replace(/-alola$/,"").replace(/-galar$/,"").replace(/-hisui$/,"").replace(/-paldea$/,""),b=bases.find(x=>x.apiName===bn);forms.push({id:`api-${id}`,dex:b?.dex||"",name:title(bn),apiName:p.name,region:f[1],form:f[0],isForm:true,image:image(id),custom:false})}}pokemonData=[...bases,...forms];localStorage.setItem("rfPokemonV4",JSON.stringify(pokemonData))}catch(e){toast("Could not load Pokédex.")}finishLoad()}
 function fillRegions(){[regionFilter,randomRegion].forEach(s=>{const v=s.value;s.innerHTML='<option value="all">All Regions</option>';REGIONS.forEach(r=>s.add(new Option(r,r)));s.value=v||"all"});[addRegion,globalRegion].forEach(s=>{if(!s)return;const v=s.value;s.innerHTML="";REGIONS.forEach(r=>s.add(new Option(r,r)));s.value=v||"Pokopia"})}
-function finishLoad(){fillRegions();renderHome();renderDex();renderStats();dexLoading.style.display="none";if(genreList)genreList.value=genres.join("\n")}
+function finishLoad(){applyGlobalMetadata();fillRegions();renderHome();renderDex();renderStats();dexLoading.style.display="none";if(genreList)genreList.value=genres.join("\n")}
 function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homePercent.textContent=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";homeProgress.style.width=p+"%";homeCount.textContent=`${c} / ${a.length} caught`;regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
 function renderDex(){let l=all(),q=(searchInput.value||"").toLowerCase();l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));if(sortFilter.value==="az")l.sort((a,b)=>a.name.localeCompare(b.name));else if(sortFilter.value==="caught")l.sort((a,b)=>+caught(b)-+caught(a));else if(sortFilter.value==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));else l.sort((a,b)=>(+a.dex||99999)-(+b.dex||99999));dexGrid.innerHTML="";if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}l.forEach(p=>{const b=document.createElement("button");b.className="pokemon-card"+(caught(p)?" caught":"");const media=p.image?`<img loading="lazy" src="${esc(p.image)}">`:`<div class="placeholder-mon">?</div>`;const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global"}</span>`:""}`;b.onclick=()=>openPokemon(p.id);dexGrid.appendChild(b)})}
 function openPokemon(id){
