@@ -196,6 +196,10 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
   .rotom-avatar img{width:45px;height:45px}
 }
 
+
+.prompt-display{margin-top:18px;padding:16px 18px;border-radius:20px;border:2px solid rgba(90,70,55,.18);background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.52)),var(--dex-screen);box-shadow:inset 0 0 12px rgba(50,85,75,.05)}
+.prompt-label{font-size:13px;font-weight:900;margin-bottom:7px}
+.prompt-text{font-size:17px;line-height:1.45;font-weight:650}
 </style>
 </head>
 <body>
@@ -368,7 +372,12 @@ function openPokemon(id){
   const promptValue=e.prompt||p.prompt||"";
   const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
   const media=p.image?`<img src="${esc(p.image)}">`:`<div class="placeholder-mon" style="padding:50px 0">?</div>`;
-  detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div>${rotomFactHtml(p.fact)}<label>Reading Prompt</label><textarea id="detailPrompt" ${publicMode?"disabled":""}>${esc(promptValue)}</textarea>${p.prompt&&!e.prompt?`<div class="muted" style="font-size:12px;margin-top:5px">Global challenge prompt</div>`:""}${publicMode?"":`<label>Notes</label><textarea id="detailNotes">${esc(e.notes||"")}</textarea><button class="secondary" style="width:100%;margin-top:12px" onclick="saveText()">Save Prompt & Notes</button>`}</div><div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>${publicMode?"":`<div class="form-card"><h3>Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" style="width:100%;margin-top:12px" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button>${p.custom?`<button class="danger" style="width:100%;margin-top:10px" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" style="width:100%;margin-top:10px" onclick="goPage('add');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}')">Edit Global Entry</button>`:""}</div>`}`;
+
+  const promptBlock=`<div class="prompt-display"><div class="prompt-label">Reading Prompt</div><div class="prompt-text">${promptValue?esc(promptValue):"Prompt coming soon."}</div></div>`;
+  const booksBlock=`<div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>`;
+  const caughtBlock=publicMode?"":`<div class="form-card"><h3>Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" style="width:100%;margin-top:12px" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button>${p.custom?`<button class="danger" style="width:100%;margin-top:10px" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" style="width:100%;margin-top:10px" onclick="goPage('add');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}')">Edit Global Entry</button>`:""}</div>`;
+
+  detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div>${rotomFactHtml(p.fact)}${promptBlock}</div>${booksBlock}${caughtBlock}`;
   renderBooks();
   goPage("detail");
   applyRegionTheme(p.region);
