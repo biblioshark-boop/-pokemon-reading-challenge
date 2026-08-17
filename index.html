@@ -219,9 +219,18 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .safari-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 18%,rgba(255,255,255,.45),transparent 22%),radial-gradient(circle at 82% 30%,rgba(255,255,255,.28),transparent 18%);pointer-events:none}
 .safari-head{position:relative;text-align:center;margin-bottom:15px}.safari-head h2{margin:0;font-size:28px}.safari-head p{margin:6px 0 0;color:#496447;font-weight:650}
 .safari-controls{position:relative;background:rgba(255,255,255,.72);border:1px solid rgba(54,96,45,.2);border-radius:18px;padding:14px;margin-bottom:15px}.safari-controls label{margin-top:0;color:#365332}
-.grass-field{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:18px 10px 12px;border-radius:22px;background:linear-gradient(#84b85d,#5e9d47);border:3px solid rgba(46,93,41,.28);box-shadow:inset 0 7px 16px rgba(255,255,255,.18),inset 0 -10px 20px rgba(28,76,30,.18)}
-.grass-patch{min-height:92px;border:0;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(26,91,35,.16));color:#f3ffe9;font-size:34px;text-shadow:0 2px 3px rgba(0,0,0,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);transition:transform .12s ease,background .12s ease}
-.grass-patch:active{transform:scale(.95);background:rgba(255,255,255,.2)}
+.grass-field{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:18px 10px 12px;border-radius:22px;background:linear-gradient(#8ac765,#5d9f45);border:3px solid rgba(46,93,41,.28);box-shadow:inset 0 7px 16px rgba(255,255,255,.18),inset 0 -10px 20px rgba(28,76,30,.18)}
+.grass-patch{position:relative;min-height:98px;border:0;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(24,89,33,.12));box-shadow:inset 0 0 0 1px rgba(255,255,255,.13);transition:transform .12s ease,filter .12s ease}
+.grass-patch:active{transform:scale(.95);filter:brightness(1.08)}
+.grass-tuft{position:absolute;left:50%;bottom:12px;width:72px;height:58px;transform:translateX(-50%)}
+.grass-tuft i{position:absolute;bottom:0;width:15px;height:58px;border-radius:80% 10% 80% 10%;transform-origin:bottom center;background:linear-gradient(135deg,#35d547 0%,#11a83e 52%,#087930 100%);box-shadow:inset 3px 0 4px rgba(255,255,255,.16),0 3px 4px rgba(12,74,26,.18)}
+.grass-tuft i:nth-child(1){left:2px;height:45px;transform:rotate(-42deg)}
+.grass-tuft i:nth-child(2){left:13px;height:54px;transform:rotate(-24deg)}
+.grass-tuft i:nth-child(3){left:27px;height:60px;transform:rotate(-8deg)}
+.grass-tuft i:nth-child(4){left:40px;height:58px;transform:rotate(12deg)}
+.grass-tuft i:nth-child(5){left:52px;height:49px;transform:rotate(30deg)}
+.grass-tuft i:nth-child(6){left:58px;height:40px;transform:rotate(46deg)}
+.grass-tuft:after{content:"";position:absolute;left:5px;right:5px;bottom:-3px;height:14px;border-radius:50%;background:rgba(8,102,39,.24);filter:blur(1px)}
 .grass-help{position:relative;text-align:center;margin:12px 4px 0;font-size:13px;color:#385534;font-weight:700}
 .safari-encounter{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:18px;text-align:center;box-shadow:var(--shadow)}
 .safari-encounter h3{font-size:22px;margin:0 0 4px}.safari-encounter .wild-label{font-size:13px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.07em}
@@ -244,12 +253,12 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
   <div class="safari-head"><h2>Safari Zone</h2><p>Search the tall grass for an uncaught Pokémon.</p></div>
   <div class="safari-controls"><label>Region</label><select id="safariRegion" onchange="clearSafariEncounter()"><option value="all">Any Region</option></select></div>
   <div class="grass-field" aria-label="Tall grass">
-    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch">🌿</button>
-    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch">🌱</button>
-    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch">🌿</button>
-    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch">🌾</button>
-    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch">🌿</button>
-    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch">🌱</button>
+    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch"><span class="grass-tuft"><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch"><span class="grass-tuft"><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch"><span class="grass-tuft"><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch"><span class="grass-tuft"><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch"><span class="grass-tuft"><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="grass-patch" onclick="searchSafari()" aria-label="Search grass patch"><span class="grass-tuft"><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
   </div>
   <div class="grass-help">Tap any patch of grass to search.</div>
 </div>
