@@ -281,7 +281,7 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .badge-region-title{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 9px;font-size:18px;font-weight:950}
 .badge-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .badge-card{min-height:135px;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:12px;text-align:center;box-shadow:var(--shadow)}
-.badge-card.locked{opacity:.47;filter:grayscale(.88)}
+.badge-card.locked{opacity:.72}.badge-card.locked .badge-img-wrap img{filter:grayscale(.72) drop-shadow(0 3px 3px rgba(0,0,0,.18))}
 .badge-disc{width:58px;height:58px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 34% 28%,var(--surface),var(--accent));border:3px solid var(--line);box-shadow:inset 0 0 0 4px rgba(255,255,255,.18);font-size:20px;font-weight:950;color:white}
 .badge-name{font-size:13px;font-weight:950;line-height:1.15}.badge-leader{font-size:11px;color:var(--muted);margin-top:4px}
 .badge-lock{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:900;margin-top:6px}
@@ -393,7 +393,7 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 </div>
 <div id="adminGymAssetsCard" class="form-card admin-card hidden">
   <h3>Admin Tools • Gym Images</h3>
-  <div class="admin-note">Choose any Gym Leader, Elite Four member, Champion, Trial Captain, Warden, or special battle. Images saved here update for everyone. Shared reward images can be copied to every matching mark in one save.</div>
+  <div class="admin-note">Choose any Gym Leader, Elite Four member, Champion, Trial Captain, Warden, or special battle. Images saved here update for everyone.</div>
   <label>Challenge / Leader</label>
   <select id="gymAssetSelect" onchange="loadGymAssetEditor(this.value)">
     <option value="">Select a challenge</option>
@@ -408,10 +408,6 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
   <input id="gymBadgeImage" placeholder="Paste badge/reward image URL">
   <label>Or upload badge / reward image</label>
   <input type="file" accept="image/*" id="gymBadgeImageUpload">
-  <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px">
-    <input id="gymBadgeApplySame" type="checkbox" style="width:auto;margin-top:3px">
-    <span>Use this reward image for every challenge with the same reward name.<br><span class="muted" style="font-size:11px">Best for shared rewards like Elite Four Mark, Champion Mark, Warden Mark, and Z-A Battle Clear. Leave unchecked for normal badges that may share a name but have different artwork.</span></span>
-  </label>
 
   <div class="gym-asset-preview">
     <div id="gymLeaderPreview" class="gym-asset-preview-box">Leader preview</div>
@@ -854,6 +850,18 @@ function badgeImgFail(img){
   const fb=img.nextElementSibling;
   if(fb)fb.style.display="flex";
 }
+function rewardImgFail(img,reward){
+  const stage=+(img.dataset.stage||0);
+  if(stage===0 && /badge$/i.test(String(reward||""))){
+    const auto=badgeImageUrl(reward);
+    if(auto){
+      img.dataset.stage="1";
+      img.src=auto;
+      return;
+    }
+  }
+  badgeImgFail(img);
+}
 
 function pokemonImgError(img,dex){
   const stage=+(img.dataset.stage||0);
@@ -906,7 +914,6 @@ function loadGymAssetEditor(id){
   gymBadgeImage.value=g?.badge_image_url||"";
   gymLeaderImageUpload.value="";
   gymBadgeImageUpload.value="";
-  if(gymBadgeApplySame)gymBadgeApplySame.checked=false;
   renderGymAssetPreviews();
 }
 function renderGymAssetPreviews(){
@@ -919,14 +926,10 @@ async function saveGymAssets(){
   if(!isAdmin)return toast("Admin access required.");
   const id=gymAssetSelect.value;
   if(!id)return toast("Choose a gym challenge first.");
-  const selected=gymsData.find(g=>String(g.id)===String(id));
-  if(!selected)return toast("Gym challenge not found.");
-
   let leaderUrl=gymLeaderImage.value.trim();
   let badgeUrl=gymBadgeImage.value.trim();
   const leaderFile=gymLeaderImageUpload.files[0];
   const badgeFile=gymBadgeImageUpload.files[0];
-
   try{
     if(leaderFile)leaderUrl=await upload(leaderFile,"gym-leader");
     if(badgeFile)badgeUrl=await upload(badgeFile,"gym-badge");
@@ -935,32 +938,16 @@ async function saveGymAssets(){
     toast("Image upload failed.");
     return;
   }
-
-  const now=new Date().toISOString();
   const{error}=await sb.from("gyms").update({
     leader_image_url:leaderUrl||null,
     badge_image_url:badgeUrl||null,
-    updated_at:now
+    updated_at:new Date().toISOString()
   }).eq("id",id);
-
   if(error){
     console.error(error);
     toast(error.message||"Could not save gym images.");
     return;
   }
-
-  if(gymBadgeApplySame?.checked && badgeUrl){
-    const reward=gymRewardName(selected);
-    const{error:bulkError}=await sb.from("gyms")
-      .update({badge_image_url:badgeUrl,updated_at:now})
-      .eq("badge_name",reward)
-      .eq("is_active",true);
-    if(bulkError){
-      console.error(bulkError);
-      toast("Selected gym saved, but the shared reward image could not be copied.");
-    }
-  }
-
   await loadGyms();
   gymAssetSelect.value=id;
   loadGymAssetEditor(id);
@@ -1139,10 +1126,11 @@ function renderBadgeCase(){
     const rs=list.filter(g=>g.region===r),e=rs.filter(g=>gymIsCleared(g.id)).length;
     const cards=rs.map(g=>{
       const done=gymIsCleared(g.id),reward=gymRewardName(g);
-      const isNamedBadge=/badge$/i.test(reward);
-      const rewardImage=g.badge_image_url||(isNamedBadge?badgeImageUrl(reward):"");
+      const uploadedRewardImage=String(g.badge_image_url||"").trim();
+      const automaticBadgeImage=/badge$/i.test(reward)?badgeImageUrl(reward):"";
+      const rewardImage=uploadedRewardImage||automaticBadgeImage;
       const badgeVisual=rewardImage
-        ?`<div class="badge-img-wrap"><img loading="lazy" src="${esc(rewardImage)}" onerror="badgeImgFail(this)" alt="${esc(reward)}"><div class="badge-disc" style="display:none">${esc(rewardSymbol(g))}</div></div>`
+        ?`<div class="badge-img-wrap"><img loading="lazy" data-stage="0" src="${esc(rewardImage)}" onerror="rewardImgFail(this,'${esc(reward)}')" alt="${esc(reward)}"><div class="badge-disc" style="display:none">${esc(rewardSymbol(g))}</div></div>`
         :`<div class="badge-img-wrap"><div class="badge-disc">${esc(rewardSymbol(g))}</div></div>`;
       return `<div class="badge-card ${done?"":"locked"}">${badgeVisual}<div class="badge-name">${esc(reward)}</div><div class="badge-leader">${esc(g.leader_name)} • ${esc(g.challenge_type||"Challenge")}</div><div class="badge-lock">${done?"Earned":"Locked"}</div></div>`;
     }).join("");
