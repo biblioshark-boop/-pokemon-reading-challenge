@@ -239,6 +239,13 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .safari-prompt{text-align:left;margin-top:12px;padding:14px;border-radius:18px;background:var(--surface2);border:1px solid var(--line)}
 .safari-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .admin-tools-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+.team-leaderboard{display:grid;gap:10px;margin-bottom:20px}
+.team-rank-row{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:12px;padding:13px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
+.team-rank-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;background:var(--surface2)}
+.team-rank-name{font-weight:900;font-size:16px}.team-rank-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.team-rank-score{text-align:right;font-weight:900;font-size:20px}.team-rank-score span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.team-leader-note{font-size:12px;color:var(--muted);margin:-6px 0 12px}
 </style>
 </head>
 <body>
@@ -264,7 +271,7 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 </div>
 <div id="safariEncounter"></div>
 </section>
-<section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
+<section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">Team Competition</h3><div class="team-leader-note">Every caught Pokémon adds 1 point to your team. Poke Dolls are not included in the competition.</div><div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
 <section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon management is available below only for administrators.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div><div id="adminGlobalCard" class="form-card admin-card hidden"><h3>Admin Tools • Global Pokémon</h3><div class="admin-note">Add or edit challenge-wide Pokémon data. Changes here appear for everyone.</div><label>Existing global entry</label><select id="globalEditSelect" onchange="loadGlobalEditor(this.value)"><option value="">Create new entry</option></select><label>Name</label><input id="globalName"><div class="field-grid"><div><label>National Dex Number</label><input id="globalDex" inputmode="numeric"></div><div><label>Region</label><select id="globalRegion"></select></div></div><label>Form / Variant</label><input id="globalForm"><div class="field-grid"><div><label>Type 1</label><input id="globalType1"></div><div><label>Type 2</label><input id="globalType2"></div></div><label>Global Reading Prompt</label><textarea id="globalPrompt"></textarea><label>Pokédex Fact</label><textarea id="globalFact"></textarea><label>Image URL</label><input id="globalImage"><label>Or upload an image</label><input type="file" accept="image/*" id="globalImageUpload"><label><input id="globalBonus" type="checkbox" style="width:auto;margin-right:8px">Bonus / special Pokémon</label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGlobalPokemon()">Save for Everyone</button><button id="globalDeleteBtn" class="danger hidden" style="width:100%;margin-top:8px" onclick="deleteGlobalPokemon()">Delete Global Entry</button></div>
 <div class="form-card"><h3>Genres</h3><textarea id="genreList"></textarea><button class="secondary" style="width:100%;margin-top:8px" onclick="saveGenres()">Save Genres</button></div></section>
 <section id="detailPage" class="page"><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
@@ -572,7 +579,36 @@ function renderSafari(){
   if(safariCurrentId&&caught(all().find(p=>p.id===safariCurrentId)))clearSafariEncounter();
 }
 
-function renderStats(){const a=all(),c=a.filter(caught);statCaught.textContent=c.length;statRemaining.textContent=a.length-c.length;statStandard.textContent=c.filter(p=>!p.isForm).length;statForms.textContent=c.filter(p=>p.isForm).length;statRegions.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(g.length)statRegions.insertAdjacentHTML("beforeend",`<div class="region-card"><strong>${r}</strong><span>${g.filter(caught).length} / ${g.length}</span></div>`)})}
+function renderStats(){
+  const a=all(),c=a.filter(caught);
+  statCaught.textContent=c.length;
+  statRemaining.textContent=a.length-c.length;
+  statStandard.textContent=c.filter(p=>!p.isForm).length;
+  statForms.textContent=c.filter(p=>p.isForm).length;
+  statRegions.innerHTML="";
+  REGIONS.forEach(r=>{
+    const g=a.filter(x=>x.region===r);
+    if(g.length)statRegions.insertAdjacentHTML("beforeend",`<div class="region-card"><strong>${r}</strong><span>${g.filter(caught).length} / ${g.length}</span></div>`)
+  });
+  loadTeamLeaderboard();
+}
+async function loadTeamLeaderboard(){
+  const box=document.getElementById("teamLeaderboard");
+  if(!box)return;
+  box.innerHTML='<div class="muted">Loading team totals…</div>';
+  const{data,error}=await sb.rpc("get_faction_leaderboard");
+  if(error){
+    console.error(error);
+    box.innerHTML='<div class="muted">Team totals are unavailable right now.</div>';
+    return;
+  }
+  const rows=data||[];
+  if(!rows.length){
+    box.innerHTML='<div class="muted">No competition teams are available yet.</div>';
+    return;
+  }
+  box.innerHTML=rows.map((r,i)=>`<div class="team-rank-row" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div><div class="team-rank-name">${esc(r.name)}</div><div class="team-rank-sub">${i===0?"Currently leading":"Team total"}</div></div><div class="team-rank-score">${Number(r.total_caught||0).toLocaleString()}<span>caught</span></div></div>`).join("");
+}
 function openRandomizer(){if(!publicMode)randomModal.classList.add("open")}function closeRandomizer(){randomModal.classList.remove("open")}function rollRandom(g){let a=all().filter(p=>!caught(p));if(randomRegion.value!=="all")a=a.filter(p=>p.region===randomRegion.value);if(randomFormMode.value==="standard")a=a.filter(p=>!p.isForm);if(randomFormMode.value==="forms")a=a.filter(p=>p.isForm);if(!a.length)return toast("No matches.");const p=a[Math.floor(Math.random()*a.length)],gen=g?genres[Math.floor(Math.random()*genres.length)]:"";randomResult.innerHTML=`<div class="random-result"><img src="${esc(p.image)}"><h2>${esc(p.name)}</h2>${gen?`<h3>Genre</h3><div>${esc(gen)}</div>`:""}<button class="primary" style="width:100%;margin-top:14px" onclick="closeRandomizer();openPokemon('${p.id}')">Open Entry</button></div>`}
 
 function factionName(f){return f?.name||f?.title||title(f?.slug||"Team")}
