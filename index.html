@@ -268,26 +268,35 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .gym-empty{padding:24px;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:20px;color:var(--muted)}
 
 .gym-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
-.gym-tab{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:11px 8px;font-weight:900}
+.gym-tab{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:11px 10px;border-radius:14px;font-weight:900}
 .gym-tab.active{background:var(--accent);color:white;border-color:var(--accent)}
 .gym-leader-wrap{display:flex;align-items:center;gap:12px;min-width:0}
-.gym-leader-portrait{position:relative;width:76px;height:76px;flex:0 0 76px;border-radius:20px;background:linear-gradient(145deg,var(--surface2),var(--bg));border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.gym-leader-portrait img{position:relative;z-index:2;max-width:68px;max-height:72px;image-rendering:pixelated;object-fit:contain}
-.gym-leader-initial{position:absolute;z-index:1;font-size:28px;font-weight:1000;color:var(--muted);opacity:.55}
-.gym-card-top{align-items:center}
-.gym-mon-fallback{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--surface2);font-weight:900;color:var(--muted)}
-.badge-case{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.badge-card{position:relative;min-height:150px;border-radius:20px;padding:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.badge-card.locked{filter:grayscale(.9);opacity:.55}
-.badge-medallion{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,var(--accent),var(--accent2));color:white;font-size:27px;font-weight:1000;border:5px solid rgba(255,255,255,.55);box-shadow:0 5px 12px rgba(0,0,0,.16);margin-bottom:9px}
-.badge-card.locked .badge-medallion{background:var(--surface2);color:var(--muted);border-color:var(--line)}
-.badge-name{font-weight:1000;font-size:14px}.badge-owner{font-size:11px;color:var(--muted);margin-top:3px}.badge-earned{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-top:6px;color:var(--accent)}
-.badge-card.locked .badge-earned{color:var(--muted)}
+.trainer-portrait{position:relative;flex:0 0 72px;width:72px;height:72px;border-radius:18px;background:linear-gradient(145deg,var(--surface2),var(--bg));border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.trainer-portrait img{width:100%;height:100%;object-fit:contain;image-rendering:auto;padding:5px}
+.trainer-fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:23px;font-weight:950;color:var(--accent)}
+.gym-mon-fallback{width:48px;height:48px;border-radius:12px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--muted)}
+.badge-summary{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
+.badge-summary strong{font-size:24px}
+.badge-regions{display:grid;gap:18px}
+.badge-region-title{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 9px;font-size:18px;font-weight:950}
+.badge-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.badge-card{min-height:135px;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:12px;text-align:center;box-shadow:var(--shadow)}
+.badge-card.locked{opacity:.47;filter:grayscale(.88)}
+.badge-disc{width:58px;height:58px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 34% 28%,var(--surface),var(--accent));border:3px solid var(--line);box-shadow:inset 0 0 0 4px rgba(255,255,255,.18);font-size:20px;font-weight:950;color:white}
+.badge-name{font-size:13px;font-weight:950;line-height:1.15}.badge-leader{font-size:11px;color:var(--muted);margin-top:4px}
+.badge-lock{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:900;margin-top:6px}
+.gym-credit{font-size:10px;color:var(--muted);text-align:center;margin:15px 4px 2px}
+.gym-credit a{color:inherit;text-decoration:underline}
+@media(max-width:390px){.badge-grid{grid-template-columns:1fr 1fr}.trainer-portrait{width:62px;height:62px;flex-basis:62px}.gym-leader-name{font-size:19px}}
+
+.badge-img-wrap{width:70px;height:70px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+.badge-img-wrap img{max-width:70px;max-height:70px;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.18))}
+.badge-img-wrap .badge-disc{margin:0}
 </style>
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
-<header><div class="header-row"><div><h1>Pokémon Reading Challenge</h1><div class="sub" id="headerSubtitle">Reading Frenzy • Cloud Reading Dex</div></div><div class="header-actions"><span id="cloudPill" class="cloud-pill hidden"><span id="cloudDot" class="cloud-dot"></span><span id="cloudText">Saving</span></span><button id="randomHeaderBtn" class="icon-btn" onclick="openRandomizer()">🎲</button></div></div></header>
+<header><div class="header-row"><div><h1>Pokémon Reading Challenge</h1><div class="sub" id="headerSubtitle">Reading Frenzy • Cloud Reading Dex</div></div><div class="header-actions"><span id="cloudPill" class="cloud-pill hidden"><span id="cloudDot" class="cloud-dot"></span><span id="cloudText">Saving</span></span></div></div></header>
 <main>
 <section id="authPage" class="page"><div class="auth-shell"><div class="auth-card"><h2>Welcome to Reading Frenzy</h2><div class="muted">Sign in to save your challenge in the cloud and use it on any device.</div><div class="auth-tabs"><button id="loginTab" class="primary" onclick="setAuthMode('login')">Log In</button><button id="signupTab" class="secondary" onclick="setAuthMode('signup')">Sign Up</button></div><label>Email</label><input id="authEmail" type="email"><label>Password</label><input id="authPassword" type="password"><button id="authSubmit" class="primary" style="width:100%;margin-top:16px" onclick="submitAuth()">Log In</button><div id="authMessage" class="auth-error"></div></div></div></section>
 <section id="homePage" class="page"><div class="hero"><div class="muted">Overall Progress</div><h2 id="homePercent">0%</h2><div class="progress-track"><div class="progress-fill" id="homeProgress"></div></div><div class="big-count" id="homeCount">0 / 0 caught</div><div class="quick-actions" id="homeQuickActions"><button id="homeRandomBtn" class="primary" onclick="goPage('safari')">Safari Zone</button><button class="secondary" onclick="goPage('dex')">Open Pokédex</button></div></div><h3 class="section-title">Regions</h3><div id="regionGrid" class="region-grid"></div></section>
@@ -310,24 +319,29 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 </section>
 <section id="gymsPage" class="page">
 <div class="gym-hero">
-  <h2>Gym Battles</h2>
-  <p>Choose how you want to take on each leader. Your battle mode is saved separately for every challenge.</p>
+  <h2>Gym Challenges</h2>
+  <p>Battle Gym Leaders, Elite Four, Champions, Trials, Wardens, and special challenges from across the Pokémon world.</p>
   <div class="gym-tabs">
     <button id="gymBattlesTab" class="gym-tab active" onclick="setGymView('battles')">Battles</button>
     <button id="gymBadgesTab" class="gym-tab" onclick="setGymView('badges')">Badge Case</button>
   </div>
-  <div class="gym-filter"><label>Region</label><select id="gymRegionFilter" onchange="renderGyms()"><option value="all">All Regions</option></select></div>
+  <div class="gym-filter"><label>Region</label><select id="gymRegionFilter" onchange="renderGyms();renderBadgeCase()"><option value="all">All Regions</option></select></div>
 </div>
-<div id="gymList" class="gym-list"><div class="gym-empty">Loading gym challenges…</div></div>
-<div id="badgeCase" class="badge-case hidden"></div>
+<div id="gymBattleView">
+  <div id="gymList" class="gym-list"><div class="gym-empty">Loading gym challenges…</div></div>
+  <div class="gym-credit">Trainer sprites are displayed from <a href="https://play.pokemonshowdown.com/sprites/trainers/credits/" target="_blank" rel="noopener">Pokémon Showdown's credited trainer sprite collection</a> when available.</div>
+</div>
+<div id="gymBadgeView" class="hidden">
+  <div id="badgeSummary" class="badge-summary"></div>
+  <div id="badgeCase" class="badge-regions"></div>
+</div>
 </section>
 <section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">Team Competition</h3><div class="team-leader-note">Every caught Pokémon adds 1 point to your team. Poke Dolls are not included in the competition.</div><div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
 <section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon management is available below only for administrators.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div><div id="adminGlobalCard" class="form-card admin-card hidden"><h3>Admin Tools • Global Pokémon</h3><div class="admin-note">Add or edit challenge-wide Pokémon data. Changes here appear for everyone.</div><label>Existing global entry</label><select id="globalEditSelect" onchange="loadGlobalEditor(this.value)"><option value="">Create new entry</option></select><label>Name</label><input id="globalName"><div class="field-grid"><div><label>National Dex Number</label><input id="globalDex" inputmode="numeric"></div><div><label>Region</label><select id="globalRegion"></select></div></div><label>Form / Variant</label><input id="globalForm"><div class="field-grid"><div><label>Type 1</label><input id="globalType1"></div><div><label>Type 2</label><input id="globalType2"></div></div><label>Global Reading Prompt</label><textarea id="globalPrompt"></textarea><label>Pokédex Fact</label><textarea id="globalFact"></textarea><label>Image URL</label><input id="globalImage"><label>Or upload an image</label><input type="file" accept="image/*" id="globalImageUpload"><label><input id="globalBonus" type="checkbox" style="width:auto;margin-right:8px">Bonus / special Pokémon</label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGlobalPokemon()">Save for Everyone</button><button id="globalDeleteBtn" class="danger hidden" style="width:100%;margin-top:8px" onclick="deleteGlobalPokemon()">Delete Global Entry</button></div>
-<div class="form-card"><h3>Genres</h3><textarea id="genreList"></textarea><button class="secondary" style="width:100%;margin-top:8px" onclick="saveGenres()">Save Genres</button></div></section>
+</section>
 <section id="detailPage" class="page"><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
 </main>
 <nav id="bottomNav" class="bottom-nav hidden"><button class="nav-btn active" data-page="home" onclick="goPage('home')"><span class="nav-icon">🏠</span>Home</button><button class="nav-btn" data-page="dex" onclick="goPage('dex')"><span class="nav-icon">◉</span>Pokédex</button><button class="nav-btn" data-page="safari" onclick="goPage('safari')"><span class="nav-icon">🌿</span>Safari</button><button class="nav-btn" data-page="gyms" onclick="goPage('gyms')"><span class="nav-icon">◇</span>Gyms</button><button class="nav-btn" data-page="stats" onclick="goPage('stats')"><span class="nav-icon">▥</span>Stats</button><button class="nav-btn" data-page="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span>Settings</button></nav>
-<div class="modal" id="randomModal" onclick="if(event.target.id==='randomModal')closeRandomizer()"><div class="modal-card"><div class="modal-handle"></div><h2>Random Catch</h2><label>Region</label><select id="randomRegion"><option value="all">All Regions</option></select><label>Include</label><select id="randomFormMode"><option value="all">Standard + Forms</option><option value="standard">Standard Only</option><option value="forms">Forms Only</option></select><div class="quick-actions"><button class="primary" onclick="rollRandom(false)">Pokémon Only</button><button class="primary" onclick="rollRandom(true)">Pokémon + Genre</button></div><div id="randomResult"></div><button class="secondary" style="width:100%;margin-top:14px" onclick="closeRandomizer()">Close</button></div></div>
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -371,7 +385,7 @@ const shareURL=()=>`${location.origin}${location.pathname}?u=${encodeURIComponen
 function updateShare(){if(!sharingBtn)return;sharingBtn.textContent=isPublic?"Disable Public Sharing":"Enable Public Sharing";sharingBtn.className=isPublic?"danger":"secondary";shareLinkWrap.classList.toggle("hidden",!isPublic||!profile?.username);if(profile?.username)shareLink.textContent=shareURL()}
 async function togglePublicSharing(){if(!profile?.username){toast("Save a username first.");return}isPublic=!isPublic;await saveNow();updateShare()}
 async function copyShareLink(){await navigator.clipboard.writeText(shareURL());toast("Public link copied")}
-async function loadPublic(u){publicMode=true;publicBanner.classList.remove("hidden");randomHeaderBtn.classList.add("hidden");const{data,error}=await sb.rpc("get_public_challenge",{p_username:u,p_challenge_key:CHALLENGE_KEY});if(error||!data){document.querySelector("main").innerHTML='<div class="form-card"><h2>Challenge not found</h2></div>';return false}profile=data.profile||{};challengeData=data.data?.challengeData||{};customPokemon=data.data?.customPokemon||[];genres=data.data?.genres||DEFAULT_GENRES;headerSubtitle.textContent=`${profile.display_name||profile.username||"Reader"}'s public Reading Dex`;return true}
+async function loadPublic(u){publicMode=true;publicBanner.classList.remove("hidden");const{data,error}=await sb.rpc("get_public_challenge",{p_username:u,p_challenge_key:CHALLENGE_KEY});if(error||!data){document.querySelector("main").innerHTML='<div class="form-card"><h2>Challenge not found</h2></div>';return false}profile=data.profile||{};challengeData=data.data?.challengeData||{};customPokemon=data.data?.customPokemon||[];genres=data.data?.genres||DEFAULT_GENRES;headerSubtitle.textContent=`${profile.display_name||profile.username||"Reader"}'s public Reading Dex`;return true}
 async function upload(file,prefix){const ext=(file.name.split(".").pop()||"jpg").replace(/[^a-z0-9]/gi,"").toLowerCase(),path=`${user.id}/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;const{error}=await sb.storage.from("challenge-covers").upload(path,file);if(error)throw error;return sb.storage.from("challenge-covers").getPublicUrl(path).data.publicUrl}
 async function loadAdminStatus(){
   if(!user||publicMode){isAdmin=false;return}
@@ -556,7 +570,7 @@ async function deleteGlobalPokemon(){
 }
 async function loadPokemon(force=false){dexLoading.style.display="block";if(!force){try{const c=JSON.parse(localStorage.getItem("rfPokemonV4")||"null");if(c?.length){pokemonData=c;finishLoad();return}}catch{}}try{const j=await(await fetch("https://pokeapi.co/api/v2/pokemon?limit=100000")).json(),bases=[],forms=[];for(const p of j.results){if((p.name||"").toLowerCase().includes("-totem"))continue;const id=+p.url.split("/").filter(Boolean).pop();if(id<10000)bases.push({id:`api-${id}`,dex:id,name:title(p.name),apiName:p.name,region:region(id),form:"",isForm:false,image:image(id),custom:false});else{const f=form(p.name);if(!f)continue;const bn=p.name.replace(/-alola$/,"").replace(/-galar$/,"").replace(/-hisui$/,"").replace(/-paldea$/,""),b=bases.find(x=>x.apiName===bn);forms.push({id:`api-${id}`,dex:b?.dex||"",name:title(bn),apiName:p.name,region:f[1],form:f[0],isForm:true,image:image(id),custom:false})}}pokemonData=[...bases,...forms];localStorage.setItem("rfPokemonV4",JSON.stringify(pokemonData))}catch(e){toast("Could not load Pokédex.")}finishLoad()}
 function fillRegions(){
-  [regionFilter,randomRegion].filter(Boolean).forEach(s=>{
+  [regionFilter].filter(Boolean).forEach(s=>{
     const v=s.value;
     s.innerHTML='<option value="all">All Regions</option>';
     REGIONS.forEach(r=>s.add(new Option(r,r)));
@@ -577,7 +591,7 @@ function fillRegions(){
     global.value=v||"Pokopia";
   }
 }
-function finishLoad(){applyGlobalMetadata();fillRegions();renderHome();renderDex();renderStats();dexLoading.style.display="none";if(genreList)genreList.value=genres.join("\n")}
+function finishLoad(){applyGlobalMetadata();fillRegions();renderHome();renderDex();renderStats();dexLoading.style.display="none"}
 function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homePercent.textContent=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";homeProgress.style.width=p+"%";homeCount.textContent=`${c} / ${a.length} caught`;regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
 function renderDex(){let l=all(),q=(searchInput.value||"").toLowerCase();l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));if(sortFilter.value==="az")l.sort((a,b)=>a.name.localeCompare(b.name));else if(sortFilter.value==="caught")l.sort((a,b)=>+caught(b)-+caught(a));else if(sortFilter.value==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));else l.sort((a,b)=>(+a.dex||99999)-(+b.dex||99999));dexGrid.innerHTML="";if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}l.forEach(p=>{const b=document.createElement("button");b.className="pokemon-card"+(caught(p)?" caught":"");const media=p.image?`<img loading="lazy" src="${esc(p.image)}">`:`<div class="placeholder-mon">?</div>`;const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global"}</span>`:""}`;b.onclick=()=>openPokemon(p.id);dexGrid.appendChild(b)})}
 function openPokemon(id){
@@ -686,6 +700,88 @@ function renderSafari(){
 }
 
 
+
+function setGymView(view){
+  gymView=view;
+  document.getElementById("gymBattleView")?.classList.toggle("hidden",view!=="battles");
+  document.getElementById("gymBadgeView")?.classList.toggle("hidden",view!=="badges");
+  document.getElementById("gymBattlesTab")?.classList.toggle("active",view==="battles");
+  document.getElementById("gymBadgesTab")?.classList.toggle("active",view==="badges");
+  if(view==="badges")renderBadgeCase();else renderGyms();
+}
+function trainerSpriteKey(name){
+  const n=String(name||"").toLowerCase().trim();
+  const overrides={
+    "lt. surge":"ltsurge",
+    "tate & liza":"tateandliza-gen6",
+    "crasher wake":"crasherwake",
+    "philippe":"phillipe"
+  };
+  if(overrides[n])return overrides[n];
+  return n.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+}
+function trainerBulbaUrl(name){
+  const file=encodeURIComponent(String(name||"").replace(/\s+/g,"_")+".png");
+  return `https://archives.bulbagarden.net/wiki/Special:Redirect/file/${file}`;
+}
+function trainerShowdownUrl(name){
+  return `https://play.pokemonshowdown.com/sprites/trainers/${trainerSpriteKey(name)}.png`;
+}
+function trainerInitials(name){
+  return String(name||"?").replace(/[&.]/g," ").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"?";
+}
+function trainerImgFail(img,name){
+  const stage=+(img.dataset.stage||0);
+  if(stage===0){
+    img.dataset.stage="1";
+    img.src=trainerShowdownUrl(name);
+    return;
+  }
+  img.style.display="none";
+  const fb=img.nextElementSibling;
+  if(fb)fb.style.display="flex";
+}
+function badgeImageUrl(name){
+  const file=encodeURIComponent(String(name||"").replace(/\s+/g,"_")+".png");
+  return `https://archives.bulbagarden.net/wiki/Special:Redirect/file/${file}`;
+}
+function badgeImgFail(img){
+  img.style.display="none";
+  const fb=img.nextElementSibling;
+  if(fb)fb.style.display="flex";
+}
+function gymMonImgError(img,dex){
+  const stage=+(img.dataset.stage||0);
+  if(stage===0){
+    img.dataset.stage="1";
+    img.src=`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dex}.png`;
+    return;
+  }
+  if(stage===1){
+    img.dataset.stage="2";
+    img.src=`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${dex}.png`;
+    return;
+  }
+  img.style.display="none";
+  const fb=img.nextElementSibling;
+  if(fb)fb.style.display="flex";
+}
+function gymRewardName(g){
+  if(g.badge_name)return g.badge_name;
+  const kind=String(g.challenge_type||"Challenge");
+  if(kind==="Elite Four")return "Elite Four Mark";
+  if(kind==="Champion")return "Champion Mark";
+  if(kind==="Warden")return "Warden Mark";
+  if(kind==="Trial Captain")return "Trial Clear";
+  if(kind==="Island Kahuna")return "Grand Trial Clear";
+  if(kind==="Z-A Special Battle")return "Z-A Battle Clear";
+  return `${kind} Clear`;
+}
+function rewardSymbol(g){
+  const t=String(g.specialty_type||g.challenge_type||"?").trim();
+  return t ? t[0].toUpperCase() : "★";
+}
+
 async function loadGyms(){
   const{data:g,error:ge}=await sb.from("gyms")
     .select("id,slug,leader_name,gym_name,region,generation,badge_name,badge_image_url,leader_image_url,description,sort_order,challenge_type,specialty_type")
@@ -738,7 +834,7 @@ async function setGymMode(gymId,mode){
   if(error){console.error(error);toast("Could not save battle mode.");return}
   gymProgress[gymId]={...(gymProgress[gymId]||{}),gym_id:gymId,battle_mode:mode,completed:false,completed_at:null};
   await syncGymCompletion(gymId);
-  renderGyms();
+  renderGyms();renderBadgeCase();
 }
 async function toggleGymMember(gymId,memberId){
   if(publicMode||!user||gymMode(gymId)!=="gym")return;
@@ -750,7 +846,7 @@ async function toggleGymMember(gymId,memberId){
   if(error){console.error(error);toast("Could not save gym battle.");return}
   gymMemberProgress[memberId]={...(gymMemberProgress[memberId]||{}),gym_team_member_id:memberId,completed:next,completed_at:next?now:null};
   await syncGymCompletion(gymId);
-  renderGyms();
+  renderGyms();renderBadgeCase();
 }
 async function syncGymCompletion(gymId){
   if(publicMode||!user)return;
@@ -761,82 +857,60 @@ async function syncGymCompletion(gymId){
   },{onConflict:"user_id,gym_id"});
   if(!error)gymProgress[gymId]={...existing,gym_id:gymId,battle_mode:existing.battle_mode||"pokedex",completed,completed_at:completed?(existing.completed_at||now):null};
 }
-
-function setGymView(view){
-  gymView=view==="badges"?"badges":"battles";
-  document.getElementById("gymBattlesTab")?.classList.toggle("active",gymView==="battles");
-  document.getElementById("gymBadgesTab")?.classList.toggle("active",gymView==="badges");
-  document.getElementById("gymList")?.classList.toggle("hidden",gymView!=="battles");
-  document.getElementById("badgeCase")?.classList.toggle("hidden",gymView!=="badges");
-  renderGyms();
-}
-function gymPokemonImage(m){
-  const p=gymMemberPokemon(m);
-  if(p?.image)return p.image;
-  if(+m.dex_number)return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${+m.dex_number}.png`;
-  return "";
-}
-function badgeLabel(g){
-  return g.badge_name||(
-    g.challenge_type==="Elite Four"?"League Clear":
-    g.challenge_type==="Champion"?"Champion Clear":
-    g.challenge_type==="Warden"?"Warden Mark":
-    g.challenge_type==="Trial Captain"?"Trial Clear":
-    g.challenge_type==="Island Kahuna"?"Grand Trial Clear":
-    g.challenge_type==="Z-A Royale"?"Z-A Royale Clear":"Challenge Clear"
-  );
-}
-function badgeInitial(g){
-  const s=(g.specialty_type||g.leader_name||"?").trim();
-  return (s[0]||"?").toUpperCase();
-}
-function renderBadgeCase(list){
-  const box=document.getElementById("badgeCase");if(!box)return;
-  const rewards=list.filter(g=>g.badge_name||["Gym Leader","Trial Captain","Island Kahuna","Warden","Champion","Z-A Royale"].includes(g.challenge_type));
-  if(!rewards.length){box.innerHTML='<div class="gym-empty" style="grid-column:1/-1">No rewards in this region yet.</div>';return}
-  box.innerHTML=rewards.map(g=>{
-    const earned=gymIsCleared(g.id);
-    return `<div class="badge-card ${earned?"":"locked"}">
-      <div class="badge-medallion">${badgeInitial(g)}</div>
-      <div class="badge-name">${esc(badgeLabel(g))}</div>
-      <div class="badge-owner">${esc(g.leader_name)} • ${esc(g.region)}</div>
-      <div class="badge-earned">${earned?"Earned ✓":"Locked"}</div>
-    </div>`;
-  }).join("");
-}
-
 function renderGyms(){
-  const box=document.getElementById("gymList"),badgeBox=document.getElementById("badgeCase");if(!box)return;
-  document.getElementById("gymBattlesTab")?.classList.toggle("active",gymView==="battles");
-  document.getElementById("gymBadgesTab")?.classList.toggle("active",gymView==="badges");
-  box.classList.toggle("hidden",gymView!=="battles");
-  badgeBox?.classList.toggle("hidden",gymView!=="badges");
-  if(!gymsData.length){box.innerHTML='<div class="gym-empty">Gym challenges are being added.</div>';if(badgeBox)badgeBox.innerHTML="";return}
+  const box=document.getElementById("gymList");if(!box)return;
+  if(!gymsData.length){box.innerHTML='<div class="gym-empty">Gym challenges are being added.</div>';return}
   const region=document.getElementById("gymRegionFilter")?.value||"all";
   const list=gymsData.filter(g=>region==="all"||g.region===region);
-  if(gymView==="badges"){renderBadgeCase(list);return}
   box.innerHTML=list.map(g=>{
     const mode=gymMode(g.id),team=gymTeamData.filter(m=>m.gym_id===g.id),cleared=gymIsCleared(g.id);
-    const initial=(g.leader_name||"?").trim().charAt(0).toUpperCase();
-    const portrait=`<div class="gym-leader-portrait"><span class="gym-leader-initial">${esc(initial)}</span>${g.leader_image_url?`<img src="${esc(g.leader_image_url)}" alt="${esc(g.leader_name)}" onerror="this.remove()">`:""}</div>`;
     const mons=team.map(m=>{
-      const done=gymMemberDone(g.id,m),img=gymPokemonImage(m);
+      const p=gymMemberPokemon(m),done=gymMemberDone(g.id,m);
+      const img=p?.image||(+m.dex_number?image(m.dex_number):"");
       const form=m.form_name?`<div class="gym-mon-form">${esc(m.form_name)}</div>`:"";
       const control=mode==="gym"
         ?`<button class="gym-defeat-btn ${done?"done":""}" onclick="toggleGymMember('${m.gym_id}','${m.id}')">${done?"Defeated":"Mark Defeated"}</button>`
         :`<div class="gym-status ${done?"done":""}">${done?"Caught ✓":"Not caught"}</div>`;
-      const media=img?`<img src="${esc(img)}" alt="${esc(m.pokemon_name)}" onerror="this.outerHTML='<div class=&quot;gym-mon-fallback&quot;>?</div>'">`:`<div class="gym-mon-fallback">?</div>`;
+      const media=img
+        ?`<div><img src="${esc(img)}" data-stage="0" onerror="gymMonImgError(this,${+m.dex_number||0})" alt="${esc(m.pokemon_name)}"><div class="gym-mon-fallback" style="display:none">#${String(m.dex_number||"").padStart(4,"0")}</div></div>`
+        :`<div class="gym-mon-fallback">#${String(m.dex_number||"").padStart(4,"0")}</div>`;
       return `<div class="gym-mon">${media}<div><div class="gym-mon-name">${esc(m.pokemon_name)}</div>${form}</div>${control}</div>`;
     }).join("");
+    const trainerUrl=g.leader_image_url||trainerBulbaUrl(g.leader_name);
+    const initials=trainerInitials(g.leader_name);
     return `<div class="gym-card ${cleared?"cleared":""}">
       <div class="gym-card-top">
-        <div class="gym-leader-wrap">${portrait}<div><div class="gym-leader-name">${esc(g.leader_name)}</div><div class="gym-kind">${esc(g.region)} • ${esc(g.challenge_type||"Gym Leader")}</div></div></div>
+        <div class="gym-leader-wrap">
+          <div class="trainer-portrait"><img loading="lazy" data-stage="0" src="${esc(trainerUrl)}" onerror="trainerImgFail(this,'${esc(g.leader_name)}')" alt="${esc(g.leader_name)}"><div class="trainer-fallback">${esc(initials)}</div></div>
+          <div><div class="gym-leader-name">${esc(g.leader_name)}</div><div class="gym-kind">${esc(g.region)} • ${esc(g.challenge_type||"Gym Leader")}</div></div>
+        </div>
         ${g.specialty_type?`<div class="gym-specialty">${esc(g.specialty_type)}</div>`:""}
       </div>
       <div class="gym-mode-wrap"><label>Battle Mode</label><select onchange="setGymMode('${g.id}',this.value)"><option value="pokedex" ${mode==="pokedex"?"selected":""}>Use My Pokédex Progress</option><option value="gym" ${mode==="gym"?"selected":""}>Complete as Gym Battle</option></select></div>
       <div class="gym-team">${mons}</div>
-      ${cleared?`<div class="gym-clear-banner">${esc(badgeLabel(g))} earned!</div>`:""}
+      ${cleared?`<div class="gym-clear-banner">${esc(gymRewardName(g))} earned!</div>`:""}
     </div>`;
+  }).join("");
+}
+function renderBadgeCase(){
+  const box=document.getElementById("badgeCase"),summary=document.getElementById("badgeSummary");
+  if(!box||!summary)return;
+  const region=document.getElementById("gymRegionFilter")?.value||"all";
+  const list=gymsData.filter(g=>region==="all"||g.region===region);
+  const earned=list.filter(g=>gymIsCleared(g.id)).length;
+  summary.innerHTML=`<strong>${earned} / ${list.length}</strong><div class="muted">challenge rewards earned${region==="all"?" across every region":" in "+esc(region)}</div>`;
+  const groups=[...new Set(list.map(g=>g.region))];
+  box.innerHTML=groups.map(r=>{
+    const rs=list.filter(g=>g.region===r),e=rs.filter(g=>gymIsCleared(g.id)).length;
+    const cards=rs.map(g=>{
+      const done=gymIsCleared(g.id),reward=gymRewardName(g);
+      const isNamedBadge=/badge$/i.test(reward);
+      const badgeVisual=isNamedBadge
+        ?`<div class="badge-img-wrap"><img loading="lazy" src="${esc(g.badge_image_url||badgeImageUrl(reward))}" onerror="badgeImgFail(this)" alt="${esc(reward)}"><div class="badge-disc" style="display:none">${esc(rewardSymbol(g))}</div></div>`
+        :`<div class="badge-img-wrap"><div class="badge-disc">${esc(rewardSymbol(g))}</div></div>`;
+      return `<div class="badge-card ${done?"":"locked"}">${badgeVisual}<div class="badge-name">${esc(reward)}</div><div class="badge-leader">${esc(g.leader_name)} • ${esc(g.challenge_type||"Challenge")}</div><div class="badge-lock">${done?"Earned":"Locked"}</div></div>`;
+    }).join("");
+    return `<div><div class="badge-region-title"><span>${esc(r)}</span><span>${e}/${rs.length}</span></div><div class="badge-grid">${cards}</div></div>`;
   }).join("");
 }
 function renderStats(){
@@ -869,7 +943,6 @@ async function loadTeamLeaderboard(){
   }
   box.innerHTML=rows.map((r,i)=>`<div class="team-rank-row" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div><div class="team-rank-name">${esc(r.name)}</div><div class="team-rank-sub">${i===0?"Currently leading":"Team total"}</div></div><div class="team-rank-score">${Number(r.total_caught||0).toLocaleString()}<span>caught</span></div></div>`).join("");
 }
-function openRandomizer(){if(!publicMode)randomModal.classList.add("open")}function closeRandomizer(){randomModal.classList.remove("open")}function rollRandom(g){let a=all().filter(p=>!caught(p));if(randomRegion.value!=="all")a=a.filter(p=>p.region===randomRegion.value);if(randomFormMode.value==="standard")a=a.filter(p=>!p.isForm);if(randomFormMode.value==="forms")a=a.filter(p=>p.isForm);if(!a.length)return toast("No matches.");const p=a[Math.floor(Math.random()*a.length)],gen=g?genres[Math.floor(Math.random()*genres.length)]:"";randomResult.innerHTML=`<div class="random-result"><img src="${esc(p.image)}"><h2>${esc(p.name)}</h2>${gen?`<h3>Genre</h3><div>${esc(gen)}</div>`:""}<button class="primary" style="width:100%;margin-top:14px" onclick="closeRandomizer();openPokemon('${p.id}')">Open Entry</button></div>`}
 
 function factionName(f){return f?.name||f?.title||title(f?.slug||"Team")}
 function factionDescription(f){return f?.description||f?.tagline||""}
@@ -968,10 +1041,9 @@ async function chooseFaction(id){
   toast(`Joined ${factionName(f)}!`);
 }
 
-function saveGenres(){genres=genreList.value.split("\n").map(x=>x.trim()).filter(Boolean);saveSoon();toast("Genres saved")}
 async function migrateLocalData(){try{const old=await new Promise((resolve,reject)=>{const r=indexedDB.open("pokemonReadingChallengeDB",1);r.onerror=()=>reject();r.onsuccess=()=>{const d=r.result;if(!d.objectStoreNames.contains("store"))return resolve(null);const s=d.transaction("store").objectStore("store"),out={},ks=["challengeData","customPokemon","genres"];let n=ks.length;ks.forEach(k=>{const q=s.get(k);q.onsuccess=()=>{out[k]=q.result;if(!--n)resolve(out)};q.onerror=()=>{if(!--n)resolve(out)}})}});if(!old)return toast("No local data found.");challengeData={...challengeData,...(old.challengeData||{})};customPokemon=[...customPokemon,...(old.customPokemon||[]).filter(p=>!customPokemon.some(x=>x.id===p.id))];if(old.genres?.length)genres=old.genres;await saveNow();finishLoad();toast("Local data imported")}catch{toast("Could not import local data.")}}
 function applyRegionTheme(r){if(!publicMode&&currentFactionId&&applyTeamTheme())return;if(r==="all")r="Kanto";const v=THEMES[r]||THEMES.Special,keys=["bg","surface","surface2","text","muted","accent","accent2","line"];keys.forEach((k,i)=>document.documentElement.style.setProperty("--"+k,v[i]))}
-function goPage(n){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(n+"Page")?.classList.add("active");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));if(n==="home")renderHome();if(n==="dex")renderDex();if(n==="safari")renderSafari();if(n==="gyms")renderGyms();if(n==="stats")renderStats();if(n==="settings")renderFactions();scrollTo(0,0)}
+function goPage(n){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(n+"Page")?.classList.add("active");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));if(n==="home")renderHome();if(n==="dex")renderDex();if(n==="safari")renderSafari();if(n==="gyms"){if(gymView==="badges")renderBadgeCase();else renderGyms();}if(n==="stats")renderStats();if(n==="settings")renderFactions();scrollTo(0,0)}
 async function startPrivate(){bottomNav.classList.remove("hidden");cloudPill.classList.remove("hidden");await loadProfile();await loadSave();await loadAdminStatus();await loadGlobalCatalog();await loadPokemon();await loadFactions();await loadGyms();goPage("home")}
 async function startPublic(u){if(!await loadPublic(u))return;bottomNav.classList.remove("hidden");document.querySelector('[data-page="safari"]')?.classList.add("hidden");document.querySelector('[data-page="gyms"]')?.classList.add("hidden");document.querySelector('[data-page="settings"]')?.classList.add("hidden");const r=document.getElementById("homeRandomBtn"),q=document.getElementById("homeQuickActions");if(r)r.classList.add("hidden");if(q)q.style.gridTemplateColumns="1fr";await loadGlobalCatalog();await loadPokemon();goPage("home")}
 async function init(){const u=new URLSearchParams(location.search).get("u");if(u)return startPublic(u);const{data:{session}}=await sb.auth.getSession();user=session?.user||null;if(user)await startPrivate();else authPage.classList.add("active");sb.auth.onAuthStateChange(async(e,s)=>{if(e==="SIGNED_IN"&&!user){user=s.user;authPage.classList.remove("active");await startPrivate()}})}
