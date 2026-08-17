@@ -309,6 +309,16 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .gym-asset-preview{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .gym-asset-preview-box{min-height:130px;border:1px dashed var(--line);border-radius:16px;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px;text-align:center;color:var(--muted);font-size:12px}
 .gym-asset-preview-box img{max-width:100%;max-height:145px;object-fit:contain}
+
+.team-leader-mini{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);text-align:left}
+.team-leader-mini img{width:56px;height:56px;object-fit:contain;border-radius:14px;background:var(--surface2);padding:4px}
+.team-leader-mini .team-leader-placeholder{width:56px;height:56px;border-radius:14px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:var(--muted)}
+.team-leader-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:900}
+.team-leader-character{font-weight:950;font-size:14px;margin-top:1px}
+.team-leader-user{font-size:12px;color:var(--muted);margin-top:2px}
+.team-leader-open{font-size:12px;color:var(--muted);margin-top:8px;text-align:left}
+.team-admin-preview{margin-top:12px;min-height:130px;border:1px dashed var(--line);border-radius:16px;background:var(--surface2);display:flex;align-items:center;justify-content:center;padding:10px;text-align:center;color:var(--muted);overflow:hidden}
+.team-admin-preview img{max-width:100%;max-height:150px;object-fit:contain}
 </style>
 </head>
 <body>
@@ -354,7 +364,33 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 </div>
 </section>
 <section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">Team Competition</h3><div class="team-leader-note">Every caught Pokémon adds 1 point to your team. Poke Dolls are not included in the competition.</div><div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
-<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon management is available below only for administrators.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
+<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
+
+<div id="adminTeamLeadersCard" class="form-card admin-card hidden">
+  <h3>Admin Tools • Team Leaders</h3>
+  <div class="admin-note">Set the displayed character, reader username, and character image for each competitive team. These changes update for everyone. Poke Dolls intentionally has no leader.</div>
+
+  <label>Team</label>
+  <select id="teamLeaderSelect" onchange="loadTeamLeaderEditor(this.value)">
+    <option value="">Select a team</option>
+  </select>
+
+  <label>Pokémon Character</label>
+  <input id="teamLeaderCharacter" placeholder="Example: Giovanni">
+
+  <label>Reader Username</label>
+  <input id="teamLeaderUsername" placeholder="Leave blank while the leader spot is open">
+
+  <label>Character Image URL</label>
+  <input id="teamLeaderImage" placeholder="Paste image URL">
+
+  <label>Or upload character image</label>
+  <input type="file" accept="image/*" id="teamLeaderImageUpload">
+
+  <div id="teamLeaderPreview" class="team-admin-preview">Team leader preview</div>
+
+  <button class="primary" style="width:100%;margin-top:14px" onclick="saveTeamLeader()">Save Team Leader for Everyone</button>
+</div>
 <div id="adminGymAssetsCard" class="form-card admin-card hidden">
   <h3>Admin Tools • Gym Images</h3>
   <div class="admin-note">Choose any Gym Leader, Elite Four member, Champion, Trial Captain, Warden, or special battle. Images saved here update for everyone.</div>
@@ -455,6 +491,7 @@ async function loadAdminStatus(){
   isAdmin=!error&&data===true;
   adminGlobalCard?.classList.toggle("hidden",!isAdmin);
   adminGymAssetsCard?.classList.toggle("hidden",!isAdmin);
+  adminTeamLeadersCard?.classList.toggle("hidden",!isAdmin);
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
 }
 async function loadGlobalCatalog(){
@@ -1135,6 +1172,82 @@ function applyTeamTheme(){
   document.documentElement.style.setProperty("--dex-red-dark",f.secondary_color||v[6]);
   return true;
 }
+
+function factionHasLeader(f){
+  return f?.is_competitive!==false && String(f?.name||"").toLowerCase()!=="poke dolls";
+}
+function factionLeaderHtml(f){
+  if(!factionHasLeader(f))return "";
+  const character=(f.leader_character||"").trim();
+  const username=(f.leader_username||"").trim();
+  const imageUrl=(f.leader_image_url||"").trim();
+  const visual=imageUrl
+    ?`<img src="${esc(imageUrl)}" alt="${esc(character||"Team leader")}" onerror="this.outerHTML='<div class=&quot;team-leader-placeholder&quot;>?</div>'">`
+    :`<div class="team-leader-placeholder">${character?esc(character[0].toUpperCase()):"?"}</div>`;
+  if(!character&&!username&&!imageUrl){
+    return `<div class="team-leader-open"><strong>Team Leader:</strong> Open</div>`;
+  }
+  return `<div class="team-leader-mini">${visual}<div><div class="team-leader-kicker">Team Leader</div><div class="team-leader-character">${esc(character||"Character TBD")}</div><div class="team-leader-user">${username?`@${esc(username)}`:"Leader spot open"}</div></div></div>`;
+}
+function refreshTeamLeaderEditor(){
+  const s=document.getElementById("teamLeaderSelect");
+  if(!s)return;
+  const current=s.value;
+  s.innerHTML='<option value="">Select a team</option>';
+  factions.filter(f=>factionHasLeader(f)).forEach(f=>s.add(new Option(factionName(f),f.id)));
+  if([...s.options].some(o=>o.value===current))s.value=current;
+  if(current)loadTeamLeaderEditor(current);
+}
+function loadTeamLeaderEditor(id){
+  const f=factions.find(x=>String(x.id)===String(id));
+  teamLeaderCharacter.value=f?.leader_character||"";
+  teamLeaderUsername.value=f?.leader_username||"";
+  teamLeaderImage.value=f?.leader_image_url||"";
+  teamLeaderImageUpload.value="";
+  renderTeamLeaderPreview();
+}
+function renderTeamLeaderPreview(){
+  const character=teamLeaderCharacter?.value?.trim()||"";
+  const username=teamLeaderUsername?.value?.trim()||"";
+  const imageUrl=teamLeaderImage?.value?.trim()||"";
+  if(!teamLeaderPreview)return;
+  const image=imageUrl
+    ?`<img src="${esc(imageUrl)}" alt="${esc(character||"Team leader")}" onerror="this.parentElement.textContent='Could not load image'">`
+    :`<div><strong>${esc(character||"Character TBD")}</strong><br>${username?`@${esc(username)}`:"Leader spot open"}</div>`;
+  teamLeaderPreview.innerHTML=image;
+}
+async function saveTeamLeader(){
+  if(!isAdmin)return toast("Admin access required.");
+  const id=teamLeaderSelect.value;
+  if(!id)return toast("Choose a team first.");
+  let imageUrl=teamLeaderImage.value.trim();
+  const file=teamLeaderImageUpload.files[0];
+  try{
+    if(file)imageUrl=await upload(file,"team-leader");
+  }catch(e){
+    console.error(e);
+    toast("Image upload failed.");
+    return;
+  }
+  const row={
+    leader_character:teamLeaderCharacter.value.trim()||null,
+    leader_username:teamLeaderUsername.value.trim()||null,
+    leader_image_url:imageUrl||null,
+    updated_at:new Date().toISOString()
+  };
+  const{error}=await sb.from("factions").update(row).eq("id",id);
+  if(error){
+    console.error(error);
+    toast(error.message||"Could not save team leader.");
+    return;
+  }
+  const f=factions.find(x=>String(x.id)===String(id));
+  if(f)Object.assign(f,row);
+  renderFactions();
+  loadTeamLeaderEditor(id);
+  toast("Team leader saved for everyone.");
+}
+
 function renderFactions(){
   const list=document.getElementById("factionList"),cur=document.getElementById("factionCurrent");
   if(!list)return;
@@ -1151,7 +1264,7 @@ function renderFactions(){
     const selected=String(f.id)===String(currentFactionId);
     const badge=factionAlignment(f);
     const isLocked=locked&&!selected;
-    return `<button class="faction-card ${selected?"selected":""} ${isLocked?"locked":""}" ${isLocked?"disabled":""} onclick="chooseFaction('${esc(f.id)}')"><div class="faction-card-top"><span class="faction-card-name">${esc(factionName(f))}</span>${badge?`<span class="faction-card-badge">${esc(badge)}</span>`:""}</div>${factionDescription(f)?`<div class="faction-card-desc">${esc(factionDescription(f))}</div>`:""}</button>`;
+    return `<button class="faction-card ${selected?"selected":""} ${isLocked?"locked":""}" ${isLocked?"disabled":""} onclick="chooseFaction('${esc(f.id)}')"><div class="faction-card-top"><span class="faction-card-name">${esc(factionName(f))}</span>${badge?`<span class="faction-card-badge">${esc(badge)}</span>`:""}</div>${factionDescription(f)?`<div class="faction-card-desc">${esc(factionDescription(f))}</div>`:""}${factionLeaderHtml(f)}</button>`;
   }).join("");
 
   const picked=factions.find(f=>String(f.id)===String(currentFactionId));
@@ -1182,6 +1295,7 @@ async function loadFactions(){
   if(!uErr&&userFaction)currentFactionId=userFaction.faction_id;
   teamChangeUnlocked=false;
   renderFactions();
+  refreshTeamLeaderEditor();
   applyTeamTheme();
 }
 async function chooseFaction(id){
@@ -1223,6 +1337,11 @@ async function init(){const u=new URLSearchParams(location.search).get("u");if(u
 
 document.getElementById("gymLeaderImage")?.addEventListener("input",renderGymAssetPreviews);
 document.getElementById("gymBadgeImage")?.addEventListener("input",renderGymAssetPreviews);
+
+
+document.getElementById("teamLeaderCharacter")?.addEventListener("input",renderTeamLeaderPreview);
+document.getElementById("teamLeaderUsername")?.addEventListener("input",renderTeamLeaderPreview);
+document.getElementById("teamLeaderImage")?.addEventListener("input",renderTeamLeaderPreview);
 
 init();
 </script>
