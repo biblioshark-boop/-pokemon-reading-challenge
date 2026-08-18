@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787080586 -->
+<!-- RF_BUILD:1787081082 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787080586";
+const RF_BUILD="1787081082";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1692,6 +1692,84 @@ function rotomFactHtml(fact){
     <div class="rotom-copy"><strong>Rotom Dex</strong><span>${esc(fact)}</span></div>
   </div>`;
 }
+const ROTOM_FACT_CACHE_KEY="rfRotomFactsV1";
+let rotomFactCache={};
+try{rotomFactCache=JSON.parse(localStorage.getItem(ROTOM_FACT_CACHE_KEY)||"{}")||{}}catch{rotomFactCache={}}
+function prettyWords(v){
+  return String(v||"").replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
+}
+function localRotomFact(p){
+  if(!p)return "Rotom fact coming soon.";
+  const types=(p.types||[]).filter(Boolean);
+  const typeText=types.length===2?`${types[0]}/${types[1]}`:(types[0]||"unknown");
+  if(p.form){
+    return `Bzzzt! ${p.form} is a distinct form of ${p.name}, and this version is logged as ${typeText}-type.`;
+  }
+  if(p.isBonus){
+    return `Bzzzt! ${p.name} is a bonus Pokémon in the Reading Dex, logged with ${typeText} typing.`;
+  }
+  return `Bzzzt! ${p.name} is a ${typeText}-type Pokémon from ${p.region||"the Pokédex"}.`;
+}
+function buildRotomFactFromSpecies(p,species){
+  if(!species)return localRotomFact(p);
+  if(p?.form)return localRotomFact(p);
+
+  const genus=(species.genera||[]).find(g=>g?.language?.name==="en")?.genus||"";
+  const habitat=prettyWords(species.habitat?.name||"").toLowerCase();
+  const growth=prettyWords(species.growth_rate?.name||"").toLowerCase();
+
+  if(species.is_mythical){
+    return genus
+      ? `Bzzzt! ${p.name} is classified as the ${genus}, and Rotom flags it as a Mythical Pokémon.`
+      : `Bzzzt! Rotom flags ${p.name} as a Mythical Pokémon.`;
+  }
+  if(species.is_legendary){
+    return genus
+      ? `Bzzzt! ${p.name} is classified as the ${genus}, and Rotom flags it as a Legendary Pokémon.`
+      : `Bzzzt! Rotom flags ${p.name} as a Legendary Pokémon.`;
+  }
+  if(species.is_baby){
+    return genus
+      ? `Bzzzt! ${p.name} is classified as the ${genus}, and it is registered as a baby Pokémon species.`
+      : `Bzzzt! ${p.name} is registered as a baby Pokémon species.`;
+  }
+  if(genus&&habitat){
+    return `Bzzzt! ${p.name} is classified as the ${genus}, and Pokédex records associate it with ${habitat} habitats.`;
+  }
+  if(genus&&growth){
+    return `Bzzzt! ${p.name} is classified as the ${genus}, with a ${growth} growth rate in Pokédex data.`;
+  }
+  if(genus){
+    return `Bzzzt! The Pokédex classifies ${p.name} as the ${genus}.`;
+  }
+  return localRotomFact(p);
+}
+async function loadRotomFactForPokemon(p){
+  if(!p||p.fact||!p.dex)return;
+  const key=String(+p.dex||"");
+  const slot=document.getElementById("rotomFactSlot");
+  if(!slot)return;
+
+  if(rotomFactCache[key]){
+    slot.innerHTML=rotomFactHtml(rotomFactCache[key]);
+    return;
+  }
+
+  try{
+    const res=await fetch(`https://pokeapi.co/api/v2/pokemon-species/${encodeURIComponent(key)}`);
+    if(!res.ok)throw new Error("Species fact unavailable");
+    const species=await res.json();
+    const fact=buildRotomFactFromSpecies(p,species);
+    rotomFactCache[key]=fact;
+    try{localStorage.setItem(ROTOM_FACT_CACHE_KEY,JSON.stringify(rotomFactCache))}catch{}
+    if(currentPokemonId===p.id){
+      const currentSlot=document.getElementById("rotomFactSlot");
+      if(currentSlot)currentSlot.innerHTML=rotomFactHtml(fact);
+    }
+  }catch(e){
+    console.warn("Rotom fact lookup skipped",e);
+  }
+}
 function loadGlobalEditor(slug){
   const p=globalPokemon.find(x=>x.slug===slug);
   globalName.value=p?.name||"";
@@ -1945,8 +2023,9 @@ function openPokemon(id,fromHistory=false){
   const booksBlock=`<div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>`;
   const caughtBlock=publicMode?"":`<div class="form-card"><h3>Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" style="width:100%;margin-top:12px" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button>${p.custom?`<button class="danger" style="width:100%;margin-top:10px" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" style="width:100%;margin-top:10px" onclick="goPage('settings');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}');setTimeout(()=>adminGlobalCard?.scrollIntoView({behavior:'smooth'}),50)">Edit Global Entry</button>`:""}</div>`;
 
-  detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div>${rotomFactHtml(p.fact)}${promptBlock}</div>${booksBlock}${caughtBlock}`;
+  detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div><div id="rotomFactSlot">${rotomFactHtml(p.fact||localRotomFact(p))}</div>${promptBlock}</div>${booksBlock}${caughtBlock}`;
   renderBooks();
+  if(!p.fact)loadRotomFactForPokemon(p);
   if(!fromHistory){
     const detailHash="#pokemon="+encodeURIComponent(id);
     try{
