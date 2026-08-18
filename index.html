@@ -934,7 +934,12 @@ function renderDex(){
     const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
     const editTools=editable?`<div class="admin-image-overlay"><span>${p.manualImage?"Custom image ✓":"Drop image here"}</span><button type="button" class="small-btn" onclick="event.stopPropagation();choosePokemonCardImage('${esc(p.id)}')">Replace Image</button></div>`:"";
     b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${isLegendaryOrMythical(p)?`<span class="legendary-label">★ Legendary</span>`:""}${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${editTools}`;
-    if(!editable)b.onclick=()=>openPokemon(p.id);
+    if(editable){
+      b.onclick=e=>{
+        if(e.target.closest(".admin-image-overlay"))return;
+        openPokemon(p.id);
+      };
+    }else b.onclick=()=>openPokemon(p.id);
     dexGrid.appendChild(b)
   })
 }
