@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787070469 -->
+<!-- RF_BUILD:1787071059 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787070469";
+const RF_BUILD="1787071059";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -725,6 +725,34 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 }
 </style>
 
+
+<style id="usernameLockAndAdminEditor20260818">
+#settingsPage #username:disabled{
+  opacity:1 !important;
+  color:var(--text) !important;
+  -webkit-text-fill-color:var(--text) !important;
+  background:var(--surface2) !important;
+  cursor:not-allowed;
+}
+.username-lock-note{
+  margin-top:7px;
+  font-size:12px;
+  line-height:1.4;
+  color:var(--muted);
+  font-style:italic;
+}
+.admin-username-editor{
+  margin-top:16px;
+  padding:14px;
+  border-radius:16px;
+  background:var(--surface2);
+  border:1px solid var(--line);
+}
+.admin-username-editor h4{
+  margin:0 0 8px;
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
@@ -769,7 +797,7 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 </div>
 </section>
 <section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">Team Competition</h3><div class="team-leader-note">Every caught Pokémon adds 1 point to your team. Poke Dolls are not included in the competition.</div><div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
-<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" placeholder="3–30 letters, numbers, underscores"><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
+<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Account & Sharing</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" disabled aria-disabled="true"><div class="username-lock-note">* Usernames are set and cannot be changed from your account settings. If you need to change your username for any reason, please reach out to Travis or your Team Leader.</div><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This is cosmetic for now and will power team themes and friendly team totals later.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
 
 
 <div id="adminMembersCard" class="form-card admin-card hidden">
@@ -780,6 +808,18 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
     <button class="secondary" onclick="loadAdminMembers()">Refresh</button>
   </div>
   <div id="adminMembersList" class="admin-members-list"><div class="muted">Loading members…</div></div>
+
+  <div class="admin-username-editor">
+    <h4>Update Member Username</h4>
+    <div class="admin-note">Only administrators can change usernames. If this member is a Team Leader, their displayed leader username updates automatically too.</div>
+    <label>Member</label>
+    <select id="adminUsernameMemberSelect" onchange="loadAdminUsernameEditor(this.value)">
+      <option value="">Select a member</option>
+    </select>
+    <label>New Username</label>
+    <input id="adminUsernameEdit" placeholder="3–30 letters, numbers, underscores">
+    <button class="primary" style="width:100%;margin-top:10px" onclick="saveAdminMemberUsername()">Update Username</button>
+  </div>
 </div>
 
 <div id="adminTeamLeadersCard" class="form-card admin-card hidden">
@@ -976,7 +1016,16 @@ function setAuthMode(m){authMode=m;loginTab.className=m==="login"?"primary":"sec
 async function submitAuth(){const email=authEmail.value.trim(),password=authPassword.value;if(!email||password.length<6){authMessage.textContent="Enter a valid email and a password with at least 6 characters.";return}if(authMode==="login"){const{error}=await sb.auth.signInWithPassword({email,password});if(error)authMessage.textContent=error.message}else{const{data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error)authMessage.textContent=error.message;else if(!data.session)authMessage.textContent="Account created. Check your email to confirm it, then return here and log in."}}
 async function signOut(){await sb.auth.signOut();location.reload()}
 async function loadProfile(){const{data}=await sb.from("profiles").select("display_name,username").eq("id",user.id).maybeSingle();profile=data||{};accountEmail.textContent=user.email||"Signed in";displayName.value=profile.display_name||"";username.value=profile.username||"";updateShare()}
-async function saveProfile(){const d=displayName.value.trim(),u=username.value.trim()||null;if(u&&!/^[A-Za-z0-9_]{3,30}$/.test(u)){toast("Username must be 3–30 letters, numbers or underscores.");return}const{data,error}=await sb.from("profiles").upsert({id:user.id,display_name:d,username:u},{onConflict:"id"}).select().single();if(error){toast(error.message);return}profile=data;updateShare();toast("Profile saved")}
+async function saveProfile(){
+  const d=displayName.value.trim();
+  const{data,error}=await sb.from("profiles").update({display_name:d,updated_at:new Date().toISOString()}).eq("id",user.id).select("display_name,username").single();
+  if(error){toast(error.message);return}
+  profile={...profile,...data};
+  displayName.value=profile.display_name||"";
+  username.value=profile.username||"";
+  updateShare();
+  toast("Profile saved");
+}
 function publicData(){const c={};for(const[id,e]of Object.entries(challengeData))if(e.caught)c[id]={caught:true,prompt:e.prompt||"",books:(e.books||[]).map(b=>({title:b.title||"",author:b.author||"",cover:b.cover||""}))};return{challengeData:c,customPokemon,genres}}
 async function loadSave(){const{data}=await sb.from("challenge_saves").select("data,is_public").eq("user_id",user.id).eq("challenge_key",CHALLENGE_KEY).maybeSingle();if(data){challengeData=data.data?.challengeData||{};customPokemon=data.data?.customPokemon||[];genres=data.data?.genres?.length?data.data.genres:[...DEFAULT_GENRES];isPublic=!!data.is_public}else await saveNow();updateShare()}
 function saveSoon(){if(publicMode||!user)return;cloud("Saving");clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,400)}
@@ -1315,10 +1364,19 @@ function openPokemon(id,fromHistory=false){
   detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div>${rotomFactHtml(p.fact)}${promptBlock}</div>${booksBlock}${caughtBlock}`;
   renderBooks();
   if(!fromHistory){
+    const active=document.querySelector(".page.active")?.id||"";
+    let sourcePage=active.endsWith("Page")?active.slice(0,-4):"dex";
+    const allowedSource=publicMode?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
+    if(!allowedSource.includes(sourcePage))sourcePage="dex";
+    const sourceHash=PAGE_HASH_PREFIX+sourcePage;
     const detailHash="#pokemon="+encodeURIComponent(id);
-    if(location.hash!==detailHash){
-      try{history.pushState({rfPage:"detail",pokemonId:id},"",location.pathname+location.search+detailHash)}
-      catch{location.hash=detailHash}
+    try{
+      // Guarantee that the history entry immediately behind a Pokémon detail
+      // is the section the user opened it from.
+      history.replaceState({rfPage:sourcePage},"",location.pathname+location.search+sourceHash);
+      history.pushState({rfPage:"detail",pokemonId:id,sourcePage},"",location.pathname+location.search+detailHash);
+    }catch{
+      location.hash=detailHash;
     }
   }
   goPage("detail");
@@ -1916,6 +1974,7 @@ async function loadAdminMembers(){
   adminMembers=Array.isArray(data)?data:[];
   renderAdminMembers();
   refreshTeamLeaderMemberSelect();
+  refreshAdminUsernameMemberSelect();
 }
 function memberBestName(m){
   return (m?.username||m?.display_name||m?.email||"Member").trim();
@@ -1939,8 +1998,53 @@ function renderAdminMembers(){
     const username=m.username?`@${m.username}`:"No username yet";
     const display=m.display_name&&m.display_name!==m.username?m.display_name:"";
     const email=m.email||"";
-    return `<div class="admin-member-row"><div class="admin-member-main"><div class="admin-member-name">${esc(name)}</div><div class="admin-member-meta">${esc([display,username,email].filter(Boolean).join(" • "))}</div></div><div class="admin-member-team">${esc(m.faction_name||"No team")}</div></div>`;
+    return `<div class="admin-member-row" role="button" tabindex="0" onclick="adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')" onkeydown="if(event.key==='Enter'){adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')}"><div class="admin-member-main"><div class="admin-member-name">${esc(name)}</div><div class="admin-member-meta">${esc([display,username,email].filter(Boolean).join(" • "))}</div></div><div class="admin-member-team">${esc(m.faction_name||"No team")}</div></div>`;
   }).join("");
+}
+
+function refreshAdminUsernameMemberSelect(){
+  const s=document.getElementById("adminUsernameMemberSelect");
+  if(!s)return;
+  const current=s.value;
+  s.innerHTML='<option value="">Select a member</option>';
+  adminMembers.forEach(m=>{
+    const label=[memberBestName(m),m.faction_name?`(${m.faction_name})`:""].filter(Boolean).join(" ");
+    s.add(new Option(label,String(m.user_id)));
+  });
+  if([...s.options].some(o=>o.value===current))s.value=current;
+  if(s.value)loadAdminUsernameEditor(s.value);
+}
+function loadAdminUsernameEditor(id){
+  const m=adminMembers.find(x=>String(x.user_id)===String(id));
+  const input=document.getElementById("adminUsernameEdit");
+  if(input)input.value=m?.username||"";
+}
+async function saveAdminMemberUsername(){
+  if(!isAdmin)return toast("Admin access required.");
+  const id=document.getElementById("adminUsernameMemberSelect")?.value||"";
+  const newUsername=document.getElementById("adminUsernameEdit")?.value?.trim()||"";
+  if(!id)return toast("Choose a member first.");
+  if(!/^[A-Za-z0-9_]{3,30}$/.test(newUsername)){
+    toast("Username must be 3–30 letters, numbers or underscores.");
+    return;
+  }
+  const{data,error}=await sb.rpc("admin_set_member_username",{target_user_id:id,new_username:newUsername});
+  if(error){
+    console.error(error);
+    toast(error.message||"Could not update username.");
+    return;
+  }
+  const updated=Array.isArray(data)?data[0]:data;
+  const m=adminMembers.find(x=>String(x.user_id)===String(id));
+  if(m&&updated)Object.assign(m,updated);
+  if(String(id)===String(user?.id)){
+    profile={...profile,username:newUsername};
+    if(document.getElementById("username"))username.value=newUsername;
+    updateShare();
+  }
+  await loadAdminMembers();
+  refreshTeamLeaderEditor();
+  toast("Username updated.");
 }
 function refreshTeamLeaderMemberSelect(){
   const s=document.getElementById("teamLeaderMemberSelect");
@@ -2182,13 +2286,21 @@ function pageFromLocation(){
   const p=pageFromHash();
   return p?{kind:"page",page:p}:{kind:"page",page:savedStartPage(publicMode)};
 }
-window.addEventListener("popstate",()=>{
+window.addEventListener("popstate",(event)=>{
+  const allowed=publicMode?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
+  if(event.state?.rfPage==="detail"&&event.state?.pokemonId){
+    openPokemon(event.state.pokemonId,true);
+    return;
+  }
+  if(event.state?.rfPage&&allowed.includes(event.state.rfPage)){
+    goPage(event.state.rfPage);
+    return;
+  }
   const target=pageFromLocation();
   if(target.kind==="pokemon"&&target.id){
     openPokemon(target.id,true);
     return;
   }
-  const allowed=publicMode?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
   goPage(allowed.includes(target.page)?target.page:"home");
 });
 
