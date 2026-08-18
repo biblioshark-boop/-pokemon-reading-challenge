@@ -1545,9 +1545,28 @@ async function chooseFaction(id){
 
 async function migrateLocalData(){try{const old=await new Promise((resolve,reject)=>{const r=indexedDB.open("pokemonReadingChallengeDB",1);r.onerror=()=>reject();r.onsuccess=()=>{const d=r.result;if(!d.objectStoreNames.contains("store"))return resolve(null);const s=d.transaction("store").objectStore("store"),out={},ks=["challengeData","customPokemon","genres"];let n=ks.length;ks.forEach(k=>{const q=s.get(k);q.onsuccess=()=>{out[k]=q.result;if(!--n)resolve(out)};q.onerror=()=>{if(!--n)resolve(out)}})}});if(!old)return toast("No local data found.");challengeData={...challengeData,...(old.challengeData||{})};customPokemon=[...customPokemon,...(old.customPokemon||[]).filter(p=>!customPokemon.some(x=>x.id===p.id))];if(old.genres?.length)genres=old.genres;await saveNow();finishLoad();toast("Local data imported")}catch{toast("Could not import local data.")}}
 function applyRegionTheme(r){if(!publicMode&&currentFactionId&&applyTeamTheme())return;if(r==="all")r="Kanto";const v=THEMES[r]||THEMES.Special,keys=["bg","surface","surface2","text","muted","accent","accent2","line"];keys.forEach((k,i)=>document.documentElement.style.setProperty("--"+k,v[i]))}
-function goPage(n){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(n+"Page")?.classList.add("active");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));if(n==="home")renderHome();if(n==="dex")renderDex();if(n==="safari")renderSafari();if(n==="gyms"){if(gymView==="badges")renderBadgeCase();else renderGyms();}if(n==="stats")renderStats();if(n==="settings")renderFactions();scrollTo(0,0)}
-async function startPrivate(){bottomNav.classList.remove("hidden");cloudPill.classList.remove("hidden");await loadProfile();await loadSave();await loadAdminStatus();await loadGlobalCatalog();await loadPokemon();await loadFactions();await loadGyms();goPage("home")}
-async function startPublic(u){if(!await loadPublic(u))return;bottomNav.classList.remove("hidden");document.querySelector('[data-page="safari"]')?.classList.add("hidden");document.querySelector('[data-page="gyms"]')?.classList.add("hidden");document.querySelector('[data-page="settings"]')?.classList.add("hidden");const r=document.getElementById("homeRandomBtn"),q=document.getElementById("homeQuickActions");if(r)r.classList.add("hidden");if(q)q.style.gridTemplateColumns="1fr";await loadGlobalCatalog();await loadPokemon();goPage("home")}
+const LAST_PAGE_KEY="rfLastPageV1";
+function savedStartPage(isPublicView=false){
+  const allowed=isPublicView?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
+  const saved=localStorage.getItem(LAST_PAGE_KEY)||"home";
+  return allowed.includes(saved)?saved:"home";
+}
+function goPage(n){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(n+"Page")?.classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));
+  if(!publicMode){localStorage.setItem(LAST_PAGE_KEY,n==="detail"?"dex":n)}
+  else if(["home","dex","stats"].includes(n)){localStorage.setItem(LAST_PAGE_KEY,n)}
+  if(n==="home")renderHome();
+  if(n==="dex")renderDex();
+  if(n==="safari")renderSafari();
+  if(n==="gyms"){if(gymView==="badges")renderBadgeCase();else renderGyms();}
+  if(n==="stats")renderStats();
+  if(n==="settings")renderFactions();
+  scrollTo(0,0)
+}
+async function startPrivate(){bottomNav.classList.remove("hidden");cloudPill.classList.remove("hidden");await loadProfile();await loadSave();await loadAdminStatus();await loadGlobalCatalog();await loadPokemon();await loadFactions();await loadGyms();goPage(savedStartPage(false))}
+async function startPublic(u){if(!await loadPublic(u))return;bottomNav.classList.remove("hidden");document.querySelector('[data-page="safari"]')?.classList.add("hidden");document.querySelector('[data-page="gyms"]')?.classList.add("hidden");document.querySelector('[data-page="settings"]')?.classList.add("hidden");const r=document.getElementById("homeRandomBtn"),q=document.getElementById("homeQuickActions");if(r)r.classList.add("hidden");if(q)q.style.gridTemplateColumns="1fr";await loadGlobalCatalog();await loadPokemon();goPage(savedStartPage(true))}
 async function init(){const u=new URLSearchParams(location.search).get("u");if(u)return startPublic(u);const{data:{session}}=await sb.auth.getSession();user=session?.user||null;if(user)await startPrivate();else authPage.classList.add("active");sb.auth.onAuthStateChange(async(e,s)=>{if(e==="SIGNED_IN"&&!user){user=s.user;authPage.classList.remove("active");await startPrivate()}})}
 
 document.getElementById("gymLeaderImage")?.addEventListener("input",renderGymAssetPreviews);
