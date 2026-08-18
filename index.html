@@ -1166,29 +1166,51 @@ function fillGymRegions(){
   [...new Set(gymsData.map(g=>g.region).filter(Boolean))].forEach(r=>s.add(new Option(r,r)));
   s.value=[...s.options].some(o=>o.value===v)?v:"all";
 }
+function gymCatalogRow(m){
+  const dex=+m?.dex_number||0;
+  const rows=globalChallengeData.filter(r=>+r.dex_number===dex);
+  if(!rows.length)return null;
+  const wanted=String(m?.form_name||"").trim();
+  if(wanted){
+    const exact=rows.find(r=>String(r.form_name||"").trim().toLowerCase()===wanted.toLowerCase());
+    if(exact)return exact;
+    const wantedKey=normalizeFormKey(wanted,m?.pokemon_name||"");
+    const normalized=rows.find(r=>r.form_name&&normalizeFormKey(r.form_name,r.name)===wantedKey);
+    if(normalized)return normalized;
+    const loose=rows.find(r=>{
+      const f=String(r.form_name||"").toLowerCase();
+      const w=wanted.toLowerCase();
+      return f&&((f.includes(w))||(w.includes(f)));
+    });
+    if(loose)return loose;
+  }
+  return rows.find(r=>!r.form_name)||rows[0]||null;
+}
 function gymMemberPokemon(m){
   const candidates=all().filter(p=>+p.dex===+m.dex_number);
+  const row=gymCatalogRow(m);
+  if(row){
+    const direct=candidates.find(p=>p.catalogSlug===row.slug||p.slug===row.slug);
+    if(direct)return direct;
+    if(row.form_name){
+      const wantedKey=normalizeFormKey(row.form_name,row.name);
+      const byForm=candidates.find(p=>normalizeFormKey(p.rawForm||p.form,p.name)===wantedKey);
+      if(byForm)return byForm;
+    }
+  }
   if(m.form_name){
-    const wanted=String(m.form_name).toLowerCase();
-    return candidates.find(p=>String(p.form||p.rawForm||"").toLowerCase().includes(wanted)||wanted.includes(String(p.form||"").toLowerCase()))||null;
+    const wantedKey=normalizeFormKey(m.form_name,m.pokemon_name||"");
+    return candidates.find(p=>normalizeFormKey(p.rawForm||p.form,p.name)===wantedKey)||null;
   }
   return candidates.find(p=>!p.isForm)||candidates[0]||all().find(p=>String(p.name).toLowerCase()===String(m.pokemon_name).toLowerCase())||null;
 }
+function gymMemberImage(m,p){
+  const row=gymCatalogRow(m);
+  return row?.image_url||p?.image||(+m.dex_number?image(m.dex_number):"");
+}
 function gymMemberPrompt(m,p){
-  if(p?.prompt)return p.prompt;
-  const dex=+m.dex_number||0;
-  const wanted=String(m.form_name||"").toLowerCase().trim();
-  let row=null;
-  if(dex&&wanted){
-    row=globalChallengeData.find(r=>+r.dex_number===dex&&String(r.form_name||"").toLowerCase().includes(wanted));
-  }
-  if(!row&&dex)row=globalChallengeData.find(r=>+r.dex_number===dex&&!r.form_name);
-  if(!row&&dex)row=globalChallengeData.find(r=>+r.dex_number===dex);
-  if(!row&&m.pokemon_name){
-    const name=String(m.pokemon_name).toLowerCase();
-    row=globalChallengeData.find(r=>String(r.name||"").toLowerCase()===name);
-  }
-  return row?.reading_prompt||"Prompt coming soon.";
+  const row=gymCatalogRow(m);
+  return row?.reading_prompt||p?.prompt||"Prompt coming soon.";
 }
 function gymMemberDone(gymId,m){
   return !!gymMemberProgress[m.id]?.completed;
@@ -1285,7 +1307,7 @@ function renderGyms(){
     const mons=team.map(m=>{
       const p=gymMemberPokemon(m),done=gymMemberDone(g.id,m);
       const progress=gymMemberProgress[m.id]||{};
-      const img=p?.image||(+m.dex_number?image(m.dex_number):"");
+      const img=gymMemberImage(m,p);
       const form=m.form_name?`<div class="gym-mon-form">${esc(m.form_name)}</div>`:"";
       const prompt=gymMemberPrompt(m,p);
       const promptHtml=`<div class="gym-mon-prompt"><strong>Reading Prompt</strong>${esc(prompt)}</div>`;
