@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787066051 -->
+<!-- RF_BUILD:1787066172 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787066051";
+const RF_BUILD="1787066172";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -404,6 +404,185 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
   background:#303030 !important;
   color:#fff !important;
   border-color:#c4512d !important;
+}
+</style>
+
+
+<style id="gymLayoutAndHeaderTheme20260818">
+/* Gym Challenges top panel — match the orange/red gym theme */
+#gymsPage .section-card,
+#gymsPage .panel,
+#gymsPage .gym-controls,
+#gymsPage .gym-header-card{
+  border-color:#c4512d !important;
+}
+
+/* Target the visible Gym Challenges wrapper without changing other pages */
+#gymsPage > .card:first-child,
+#gymsPage .page-card:first-child{
+  background:linear-gradient(180deg,#4a4a4a 0%,#3b3b3b 100%) !important;
+  border:2px solid #c4512d !important;
+  color:#fff !important;
+  box-shadow:0 8px 20px rgba(0,0,0,.22) !important;
+}
+#gymsPage > .card:first-child h1,
+#gymsPage > .card:first-child h2,
+#gymsPage > .card:first-child h3,
+#gymsPage .page-card:first-child h1,
+#gymsPage .page-card:first-child h2,
+#gymsPage .page-card:first-child h3{
+  color:#fff !important;
+}
+#gymsPage > .card:first-child .muted,
+#gymsPage .page-card:first-child .muted{
+  color:#e0e0e0 !important;
+}
+#gymsPage .tabs,
+#gymsPage .segmented{
+  background:#2f2f2f !important;
+  border-color:#666 !important;
+}
+#gymsPage .tabs button,
+#gymsPage .segmented button{
+  background:#eee !important;
+  color:#222 !important;
+}
+#gymsPage .tabs button.active,
+#gymsPage .segmented button.active{
+  background:linear-gradient(90deg,#8d2f25,#d06130) !important;
+  color:#fff !important;
+  border-color:#ff8e65 !important;
+}
+#gymsPage select{
+  background:#f4f4f4 !important;
+  color:#222 !important;
+  border:1px solid #c4512d !important;
+}
+
+/* Gym battle cards layout polish */
+#gymsPage .gym-card{
+  padding:14px !important;
+}
+#gymsPage .gym-card-top{
+  display:grid !important;
+  grid-template-columns:72px minmax(0,1fr) auto !important;
+  gap:14px !important;
+  align-items:center !important;
+}
+#gymsPage .trainer-portrait{
+  width:72px !important;
+  height:72px !important;
+  margin:0 !important;
+  flex:0 0 72px !important;
+}
+#gymsPage .gym-card-top > div:nth-child(2){
+  min-width:0 !important;
+}
+#gymsPage .gym-leader-name{
+  margin:0 0 4px !important;
+  line-height:1.05 !important;
+}
+#gymsPage .gym-kind{
+  line-height:1.25 !important;
+}
+#gymsPage .gym-specialty{
+  align-self:start !important;
+  margin-top:4px !important;
+  white-space:nowrap !important;
+}
+
+#gymsPage .gym-mon{
+  display:grid !important;
+  grid-template-columns:72px minmax(0,1fr) auto !important;
+  gap:14px !important;
+  align-items:center !important;
+  padding:12px !important;
+  margin-top:12px !important;
+  min-height:96px !important;
+}
+#gymsPage .gym-mon > div:first-child{
+  width:72px !important;
+  height:72px !important;
+  min-width:72px !important;
+  min-height:72px !important;
+  margin:0 !important;
+}
+#gymsPage .gym-mon img,
+#gymsPage .gym-mon-fallback{
+  width:64px !important;
+  height:64px !important;
+  object-fit:contain !important;
+  padding:4px !important;
+  box-sizing:border-box !important;
+}
+#gymsPage .gym-mon > div:nth-child(2){
+  min-width:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:7px !important;
+}
+#gymsPage .gym-mon-name{
+  display:block !important;
+  margin:0 !important;
+  font-size:1.05rem !important;
+  line-height:1.15 !important;
+}
+#gymsPage .gym-mon-form,
+#gymsPage .gym-mon-note{
+  margin-top:-3px !important;
+}
+#gymsPage .gym-mon-prompt{
+  width:100% !important;
+  box-sizing:border-box !important;
+  padding:10px 12px !important;
+  border-radius:10px !important;
+  line-height:1.35 !important;
+  overflow-wrap:anywhere !important;
+}
+#gymsPage .gym-mon-prompt strong{
+  display:block !important;
+  margin-bottom:3px !important;
+  font-size:.72rem !important;
+  letter-spacing:.06em !important;
+}
+#gymsPage .gym-defeat-btn{
+  align-self:center !important;
+  margin:0 !important;
+  min-width:74px !important;
+  padding:10px 12px !important;
+  white-space:nowrap !important;
+}
+
+/* mobile: keep the layout clean instead of squeezing the prompt */
+@media (max-width:700px){
+  #gymsPage .gym-card-top{
+    grid-template-columns:58px minmax(0,1fr) auto !important;
+    gap:10px !important;
+  }
+  #gymsPage .trainer-portrait{
+    width:58px !important;
+    height:58px !important;
+  }
+  #gymsPage .gym-mon{
+    grid-template-columns:58px minmax(0,1fr) !important;
+    gap:10px !important;
+  }
+  #gymsPage .gym-mon > div:first-child{
+    width:58px !important;
+    height:58px !important;
+    min-width:58px !important;
+    min-height:58px !important;
+  }
+  #gymsPage .gym-mon img,
+  #gymsPage .gym-mon-fallback{
+    width:52px !important;
+    height:52px !important;
+  }
+  #gymsPage .gym-defeat-btn{
+    grid-column:2 !important;
+    justify-self:start !important;
+    min-width:70px !important;
+  }
 }
 </style>
 
