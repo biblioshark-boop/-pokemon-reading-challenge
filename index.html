@@ -379,7 +379,7 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 <main>
 <section id="authPage" class="page"><div class="auth-shell"><div class="auth-card"><h2>Welcome to Reading Frenzy</h2><div class="muted">Sign in to save your challenge in the cloud and use it on any device.</div><div class="auth-tabs"><button id="loginTab" class="primary" onclick="setAuthMode('login')">Log In</button><button id="signupTab" class="secondary" onclick="setAuthMode('signup')">Sign Up</button></div><label>Email</label><input id="authEmail" type="email"><label>Password</label><input id="authPassword" type="password"><button id="authSubmit" class="primary" style="width:100%;margin-top:16px" onclick="submitAuth()">Log In</button><div id="authMessage" class="auth-error"></div></div></div></section>
 <section id="homePage" class="page"><div class="hero"><div class="muted">Overall Progress</div><h2 id="homePercent">0%</h2><div class="progress-track"><div class="progress-fill" id="homeProgress"></div></div><div class="big-count" id="homeCount">0 / 0 caught</div><div class="quick-actions" id="homeQuickActions"><button id="homeRandomBtn" class="primary" onclick="goPage('safari')">Safari Zone</button><button class="secondary" onclick="goPage('dex')">Open Pokédex</button></div></div><h3 class="section-title">Regions</h3><div id="regionGrid" class="region-grid"></div></section>
-<section id="dexPage" class="page"><div id="adminImageEditBar" class="admin-image-edit-bar hidden"><button id="adminImageEditBtn" class="secondary" onclick="toggleAdminImageEditMode()">Edit Pokédex Images</button><span id="adminImageEditStatus" class="muted">Admin only • changes save for everyone</span></div><div class="toolbar"><input class="search" id="searchInput" placeholder="Search Pokémon or form..." oninput="renderDex()"><div class="filters"><select id="regionFilter" onchange="renderDex();applyRegionTheme(this.value)"><option value="all">All Regions</option></select><select id="statusFilter" onchange="renderDex()"><option value="all">All Statuses</option><option value="caught">Caught</option><option value="uncaught">Uncaught</option></select><select id="sortFilter" onchange="renderDex()"><option value="dex">Dex Order</option><option value="az">A–Z</option><option value="uncaught">Uncaught First</option><option value="caught">Caught First</option></select><select id="formFilter" onchange="renderDex()"><option value="all">Standard + Forms</option><option value="standard">Standard Only</option><option value="forms">Forms Only</option></select></div></div><div id="dexLoading" class="loading">Loading Pokédex...</div><div id="dexGrid" class="dex-grid"></div></section>
+<section id="dexPage" class="page"><div class="toolbar"><input class="search" id="searchInput" placeholder="Search Pokémon or form..." oninput="renderDex()"><div class="filters"><select id="regionFilter" onchange="renderDex();applyRegionTheme(this.value)"><option value="all">All Regions</option></select><select id="statusFilter" onchange="renderDex()"><option value="all">All Statuses</option><option value="caught">Caught</option><option value="uncaught">Uncaught</option></select><select id="sortFilter" onchange="renderDex()"><option value="dex">Dex Order</option><option value="az">A–Z</option><option value="uncaught">Uncaught First</option><option value="caught">Caught First</option></select><select id="formFilter" onchange="renderDex()"><option value="all">Standard + Forms</option><option value="standard">Standard Only</option><option value="forms">Forms Only</option></select></div></div><div id="dexLoading" class="loading">Loading Pokédex...</div><div id="dexGrid" class="dex-grid"></div></section>
 <section id="safariPage" class="page">
 <div class="safari-hero">
   <div class="safari-head"><h2>Safari Zone</h2><p>Search the tall grass for an uncaught Pokémon.</p></div>
@@ -634,7 +634,7 @@ async function loadAdminStatus(){
   adminGymAssetsCard?.classList.toggle("hidden",!isAdmin);
   adminTeamLeadersCard?.classList.toggle("hidden",!isAdmin);
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
-  adminImageEditBar?.classList.toggle("hidden",!isAdmin);
+  
 }
 async function loadGlobalCatalog(){
   const rows=[];
@@ -861,52 +861,6 @@ function fillRegions(){
 }
 function finishLoad(){applyGlobalMetadata();fillRegions();renderHome();renderDex();renderStats();dexLoading.style.display="none"}
 function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homePercent.textContent=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";homeProgress.style.width=p+"%";homeCount.textContent=`${c} / ${a.length} caught`;regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
-function toggleAdminImageEditMode(){
-  if(!isAdmin)return toast("Admin access required.");
-  adminImageEditMode=!adminImageEditMode;
-  if(adminImageEditBtn){
-    adminImageEditBtn.textContent=adminImageEditMode?"Done Editing Images":"Edit Pokédex Images";
-    adminImageEditBtn.className=adminImageEditMode?"primary":"secondary";
-  }
-  if(adminImageEditStatus)adminImageEditStatus.textContent=adminImageEditMode?"Drop an image onto any highlighted card, or tap Replace Image":"Admin only • changes save for everyone";
-  renderDex();
-}
-function choosePokemonCardImage(id){
-  if(!isAdmin||!adminImageEditMode)return;
-  const input=document.createElement("input");
-  input.type="file";input.accept="image/*";
-  input.onchange=()=>{const file=input.files?.[0];if(file)savePokemonCardImage(id,file)};
-  input.click();
-}
-function handlePokemonImageDrop(event,id){
-  event.preventDefault();event.stopPropagation();
-  event.currentTarget?.classList.remove("image-drag-over");
-  if(!isAdmin||!adminImageEditMode)return;
-  const file=[...(event.dataTransfer?.files||[])].find(f=>f.type.startsWith("image/"));
-  if(!file)return toast("Drop an image file.");
-  savePokemonCardImage(id,file);
-}
-async function savePokemonCardImage(id,file){
-  if(!isAdmin||!adminImageEditMode)return toast("Admin access required.");
-  const p=all().find(x=>x.id===id);
-  if(!p)return toast("Pokémon entry not found.");
-  const slug=catalogSlugForPokemon(p);
-  if(!slug)return toast("This card is not linked to a global catalog row.");
-  const card=document.querySelector(`[data-pokemon-id="${CSS.escape(id)}"]`);
-  card?.classList.add("image-uploading");
-  try{
-    const url=await upload(file,`pokemon-${slug}`);
-    const{error}=await sb.from("pokemon_catalog").update({image_url:url}).eq("slug",slug);
-    if(error)throw error;
-    await loadGlobalCatalog();
-    applyGlobalMetadata();
-    renderDex();renderHome();renderStats();
-    toast(`${p.name}${p.form?" • "+p.form:""} image updated for everyone.`);
-  }catch(e){
-    console.error(e);toast("Image upload failed.");
-  }finally{card?.classList.remove("image-uploading")}
-}
-
 const LEGENDARY_MYTHICAL_DEX=new Set([
 144,145,146,150,151,
 243,244,245,249,250,251,
@@ -938,38 +892,15 @@ function renderDex(){
   dexGrid.innerHTML="";
   if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}
   l.forEach(p=>{
-    const editable=adminImageEditMode&&isAdmin&&!p.custom&&!!catalogSlugForPokemon(p);
-    const b=document.createElement("div");
-    b.className="pokemon-card"+(caught(p)?" caught":"")+(isLegendaryOrMythical(p)?" legendary-card":"")+(editable?" admin-image-card":"");
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="pokemon-card"+(caught(p)?" caught":"")+(isLegendaryOrMythical(p)?" legendary-card":"");
     b.dataset.pokemonId=p.id;
-    if(editable){
-      b.ondragover=e=>{e.preventDefault();b.classList.add("image-drag-over")};
-      b.ondragleave=()=>b.classList.remove("image-drag-over");
-      b.ondrop=e=>handlePokemonImageDrop(e,p.id);
-    }
     const media=p.image?`<img loading="lazy" src="${esc(p.image)}" data-stage="0" data-form-api="${esc(p.formApiName||"")}" data-form-label="${esc(p.form||"")}" data-base-name="${esc(p.name||"")}" onerror="pokemonImgError(this,${+p.dex||0})"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;
     const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
-    const editTools=editable?`<div class="admin-image-overlay"><span>${p.manualImage?"Custom image ✓":"Drop image here"}</span><button type="button" class="small-btn" onclick="event.stopPropagation();choosePokemonCardImage('${esc(p.id)}')">Replace Image</button></div>`:"";
-    b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${isLegendaryOrMythical(p)?`<span class="legendary-label">★ Legendary</span>`:""}${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${editTools}`;
-    b.setAttribute("role","button");
-    b.tabIndex=0;
-    b.onkeydown=e=>{
-      if((e.key==="Enter"||e.key===" ")&&!e.target.closest("button,input,label")){
-        e.preventDefault();
-        openPokemon(p.id);
-      }
-    };
-    dexGrid.appendChild(b)
-  })
-}
-
-if(!dexGrid.dataset.clickDelegate){
-  dexGrid.dataset.clickDelegate="1";
-  dexGrid.addEventListener("click",e=>{
-    if(e.target.closest("button,input,label"))return;
-    const card=e.target.closest(".pokemon-card[data-pokemon-id]");
-    if(!card||!dexGrid.contains(card))return;
-    openPokemon(card.dataset.pokemonId);
+    b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${isLegendaryOrMythical(p)?`<span class="legendary-label">★ Legendary</span>`:""}${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}`;
+    b.onclick=()=>openPokemon(p.id);
+    dexGrid.appendChild(b);
   });
 }
 
@@ -1761,15 +1692,6 @@ init();
 </script>
 </body></html>
 <style>
-.admin-image-edit-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border:1px dashed var(--accent);border-radius:16px;background:var(--surface)}
-.admin-image-edit-bar button{width:auto}
-.admin-image-card{cursor:default;border:2px dashed color-mix(in srgb,var(--accent) 65%,transparent);position:relative}
-.admin-image-card .admin-image-overlay{margin-top:auto;width:100%;padding-top:10px;display:flex;flex-direction:column;gap:7px;align-items:center}
-.admin-image-card .admin-image-overlay>span{font-size:11px;font-weight:800;color:var(--accent)}
-.admin-image-card .small-btn{font-size:12px}
-.admin-image-card.image-drag-over{outline:4px solid var(--accent);outline-offset:2px;transform:scale(1.01)}
-.admin-image-card.image-uploading{opacity:.55;pointer-events:none}
-@media (max-width:650px){.admin-image-edit-bar{align-items:stretch}.admin-image-edit-bar button{width:100%}.admin-image-edit-bar .muted{text-align:center}}
 </style>
 
 <style>
@@ -1778,21 +1700,5 @@ init();
 .pokemon-card .pokemon-img-wrap{width:100%}
 .pokemon-card .type-row{justify-content:center;width:100%}
 .pokemon-card .form-tag{align-self:center}
-
-/* Pokédex admin edit mode: keep the whole card tappable */
-.admin-image-card .admin-image-overlay{pointer-events:none}
-.admin-image-card .admin-image-overlay button,
-.admin-image-card .admin-image-overlay input,
-.admin-image-card .admin-image-overlay label{pointer-events:auto}
-.admin-image-card{cursor:pointer}
-
-
-/* Reliable Pokédex tapping: card owns the tap; only real controls intercept it */
-.pokemon-card{cursor:pointer;touch-action:manipulation}
-.pokemon-card::before,.pokemon-card::after{pointer-events:none}
-.admin-image-card .admin-image-overlay{pointer-events:none}
-.admin-image-card .admin-image-overlay button,
-.admin-image-card .admin-image-overlay input,
-.admin-image-card .admin-image-overlay label{pointer-events:auto}
 
 </style>
