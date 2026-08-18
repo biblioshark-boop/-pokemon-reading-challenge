@@ -1219,6 +1219,20 @@ function gymMemberImage(m,p){
   }
   return p?.image||(+m.dex_number?image(m.dex_number):"");
 }
+async function hydrateGymFormImages(root=document){
+  const imgs=[...root.querySelectorAll("img[data-gym-form='1']")];
+  for(const img of imgs){
+    if(img.dataset.formResolved==="1")continue;
+    img.dataset.formResolved="1";
+    const exact=await resolveFormImage(
+      img.dataset.formApi||"",
+      +(img.dataset.dex||0),
+      img.dataset.formLabel||"",
+      img.dataset.baseName||""
+    );
+    if(exact&&img.src!==exact)img.src=exact;
+  }
+}
 function gymMemberPrompt(m,p){
   const row=gymCatalogRow(m);
   return row?.reading_prompt||p?.prompt||"Prompt coming soon.";
@@ -1328,8 +1342,11 @@ function renderGyms(){
       const control=done
         ?`<button class="gym-defeat-btn done" onclick="undoGymMember('${m.gym_id}','${m.id}')">Defeated ✓</button>`
         :`<button class="gym-defeat-btn" onclick="openGymDefeatModal('${m.gym_id}','${m.id}')">Defeat</button>`;
+      const row=gymCatalogRow(m);
+      const needsExactForm=!!m.form_name&&!row?.image_url;
+      const formApi=needsExactForm?(p?.formApiName||formApiNameFromRow(row||{name:m.pokemon_name,form_name:m.form_name,dex_number:m.dex_number})):"";
       const media=img
-        ?`<div><img src="${esc(img)}" data-stage="0" onerror="gymMonImgError(this,${+m.dex_number||0})" alt="${esc(m.pokemon_name)}"><div class="gym-mon-fallback" style="display:none">#${String(m.dex_number||"").padStart(4,"0")}</div></div>`
+        ?`<div><img src="${esc(img)}" data-stage="0" data-gym-form="${needsExactForm?1:0}" data-form-api="${esc(formApi)}" data-form-label="${esc(m.form_name||"")}" data-base-name="${esc(m.pokemon_name||"")}" data-dex="${+m.dex_number||0}" onerror="gymMonImgError(this,${+m.dex_number||0})" alt="${esc(m.pokemon_name)}"><div class="gym-mon-fallback" style="display:none">#${String(m.dex_number||"").padStart(4,"0")}</div></div>`
         :`<div class="gym-mon-fallback">#${String(m.dex_number||"").padStart(4,"0")}</div>`;
       return `<div class="gym-mon">${media}<div><div class="gym-mon-name">${esc(m.pokemon_name)}</div>${form}${promptHtml}${sourceNote}</div>${control}</div>`;
     }).join("");
@@ -1347,6 +1364,7 @@ function renderGyms(){
       ${cleared?`<div class="gym-clear-banner">${esc(gymRewardName(g))} earned!</div>`:""}
     </div>`;
   }).join("");
+  hydrateGymFormImages(box);
 }
 function renderBadgeCase(){
   const box=document.getElementById("badgeCase"),summary=document.getElementById("badgeSummary");
