@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787071423 -->
+<!-- RF_BUILD:1787071907 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787071423";
+const RF_BUILD="1787071907";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1395,22 +1395,14 @@ function openPokemon(id,fromHistory=false){
   detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div>${rotomFactHtml(p.fact)}${promptBlock}</div>${booksBlock}${caughtBlock}`;
   renderBooks();
   if(!fromHistory){
-    const active=document.querySelector(".page.active")?.id||"";
-    let sourcePage=active.endsWith("Page")?active.slice(0,-4):"dex";
-    const allowedSource=publicMode?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
-    if(!allowedSource.includes(sourcePage))sourcePage="dex";
-    const sourceHash=PAGE_HASH_PREFIX+sourcePage;
     const detailHash="#pokemon="+encodeURIComponent(id);
     try{
-      // Guarantee that the history entry immediately behind a Pokémon detail
-      // is the section the user opened it from.
-      history.replaceState({rfPage:sourcePage},"",location.pathname+location.search+sourceHash);
-      history.pushState({rfPage:"detail",pokemonId:id,sourcePage},"",location.pathname+location.search+detailHash);
+      history.pushState({rfPage:"detail",pokemonId:id},"",location.pathname+location.search+detailHash);
     }catch{
       location.hash=detailHash;
     }
   }
-  goPage("detail");
+  goPage("detail","none");
   applyRegionTheme(p.region);
 }
 function saveText(){const e=entry(currentPokemonId),p=all().find(x=>x.id===currentPokemonId);const v=detailPrompt.value;e.prompt=(p?.prompt&&v===p.prompt)?"":v;e.notes=detailNotes.value;saveSoon();toast("Saved")}
@@ -2314,17 +2306,26 @@ function rememberPage(n){
   const allowed=publicMode?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
   if(!allowed.includes(parent))return;
   try{localStorage.setItem(LAST_PAGE_KEY,parent)}catch{}
-  const nextHash=PAGE_HASH_PREFIX+parent;
-  if(location.hash!==nextHash){
-    try{history.replaceState(history.state,"",location.pathname+location.search+nextHash)}
-    catch{location.hash=nextHash}
-  }
 }
-function goPage(n){
+function goPage(n,historyMode="push"){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(n+"Page")?.classList.add("active");
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));
-  if(n!=="detail")rememberPage(n);
+  if(n!=="detail"){
+    rememberPage(n);
+    const allowed=publicMode?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
+    if(allowed.includes(n)&&historyMode!=="none"){
+      const nextHash=PAGE_HASH_PREFIX+n;
+      const url=location.pathname+location.search+nextHash;
+      try{
+        if(historyMode==="replace")history.replaceState({rfPage:n},"",url);
+        else if(location.hash!==nextHash)history.pushState({rfPage:n},"",url);
+        else history.replaceState({rfPage:n},"",url);
+      }catch{
+        if(location.hash!==nextHash)location.hash=nextHash;
+      }
+    }
+  }
   if(n==="home")renderHome();
   if(n==="dex")renderDex();
   if(n==="safari")renderSafari();
@@ -2338,8 +2339,8 @@ async function startPrivate(){
   cloudPill.classList.remove("hidden");
   await loadProfile();await loadSave();await loadAdminStatus();await loadGlobalCatalog();await loadPokemon();await loadFactions();await loadGyms();
   const target=pageFromLocation();
-  if(target.kind==="pokemon"&&target.id)openPokemon(target.id,true);
-  else goPage(savedStartPage(false));
+  if(target.kind==="pokemon"&&target.id){try{history.replaceState({rfPage:"detail",pokemonId:target.id},"",location.href)}catch{} openPokemon(target.id,true);}
+  else goPage(savedStartPage(false),"replace");
 }
 async function startPublic(u){
   if(!await loadPublic(u))return;
@@ -2352,8 +2353,8 @@ async function startPublic(u){
   if(q)q.style.gridTemplateColumns="1fr";
   await loadGlobalCatalog();await loadPokemon();
   const target=pageFromLocation();
-  if(target.kind==="pokemon"&&target.id)openPokemon(target.id,true);
-  else goPage(savedStartPage(true));
+  if(target.kind==="pokemon"&&target.id){try{history.replaceState({rfPage:"detail",pokemonId:target.id},"",location.href)}catch{} openPokemon(target.id,true);}
+  else goPage(savedStartPage(true),"replace");
 }
 
 function pageFromLocation(){
@@ -2371,7 +2372,7 @@ window.addEventListener("popstate",(event)=>{
     return;
   }
   if(event.state?.rfPage&&allowed.includes(event.state.rfPage)){
-    goPage(event.state.rfPage);
+    goPage(event.state.rfPage,"none");
     return;
   }
   const target=pageFromLocation();
@@ -2379,7 +2380,7 @@ window.addEventListener("popstate",(event)=>{
     openPokemon(target.id,true);
     return;
   }
-  goPage(allowed.includes(target.page)?target.page:"home");
+  goPage(allowed.includes(target.page)?target.page:"home","none");
 });
 
 async function init(){const u=new URLSearchParams(location.search).get("u");if(u)return startPublic(u);const{data:{session}}=await sb.auth.getSession();user=session?.user||null;if(user)await startPrivate();else authPage.classList.add("active");sb.auth.onAuthStateChange(async(e,s)=>{if(e==="SIGNED_IN"&&!user){user=s.user;authPage.classList.remove("active");await startPrivate()}})}
