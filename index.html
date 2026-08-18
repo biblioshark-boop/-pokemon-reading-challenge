@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787066637 -->
+<!-- RF_BUILD:1787066798 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787066637";
+const RF_BUILD="1787066798";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -446,6 +446,58 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
   background:#5a5a5a !important;
   color:#fff !important;
   border:1px solid #c4512d !important;
+}
+</style>
+
+
+<style id="gymTypePillLayoutFix20260818">
+/* Keep leader info wide and keep the Gym type as a true pill on the right */
+#gymsPage .gym-card-top{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) max-content !important;
+  align-items:center !important;
+  gap:14px !important;
+}
+#gymsPage .gym-leader-wrap{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  min-width:0 !important;
+  width:auto !important;
+}
+#gymsPage .gym-leader-wrap > div:last-child{
+  min-width:0 !important;
+}
+#gymsPage .gym-leader-name{
+  white-space:normal !important;
+  overflow:visible !important;
+}
+#gymsPage .gym-kind{
+  white-space:normal !important;
+  overflow:visible !important;
+  line-height:1.2 !important;
+}
+#gymsPage .gym-specialty{
+  display:inline-flex !important;
+  width:max-content !important;
+  max-width:140px !important;
+  flex:0 0 auto !important;
+  justify-self:end !important;
+  align-self:center !important;
+  white-space:nowrap !important;
+  padding:6px 10px !important;
+  margin:0 !important;
+}
+@media(max-width:520px){
+  #gymsPage .gym-card-top{
+    grid-template-columns:minmax(0,1fr) auto !important;
+    gap:8px !important;
+  }
+  #gymsPage .gym-specialty{
+    max-width:100px !important;
+    font-size:11px !important;
+    padding:5px 8px !important;
+  }
 }
 </style>
 
