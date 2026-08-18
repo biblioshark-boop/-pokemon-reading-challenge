@@ -935,9 +935,18 @@ function renderDex(){
     const editTools=editable?`<div class="admin-image-overlay"><span>${p.manualImage?"Custom image ✓":"Drop image here"}</span><button type="button" class="small-btn" onclick="event.stopPropagation();choosePokemonCardImage('${esc(p.id)}')">Replace Image</button></div>`:"";
     b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${isLegendaryOrMythical(p)?`<span class="legendary-label">★ Legendary</span>`:""}${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${editTools}`;
     if(editable){
+      b.setAttribute("role","button");
+      b.tabIndex=0;
       b.onclick=e=>{
-        if(e.target.closest(".admin-image-overlay"))return;
+        if(e.target.closest("button,input,label"))return;
         openPokemon(p.id);
+      };
+      b.onkeydown=e=>{
+        if(e.key==="Enter"||e.key===" "){
+          if(e.target.closest("button,input,label"))return;
+          e.preventDefault();
+          openPokemon(p.id);
+        }
       };
     }else b.onclick=()=>openPokemon(p.id);
     dexGrid.appendChild(b)
@@ -1739,4 +1748,12 @@ init();
 .pokemon-card .pokemon-img-wrap{width:100%}
 .pokemon-card .type-row{justify-content:center;width:100%}
 .pokemon-card .form-tag{align-self:center}
+
+/* Pokédex admin edit mode: keep the whole card tappable */
+.admin-image-card .admin-image-overlay{pointer-events:none}
+.admin-image-card .admin-image-overlay button,
+.admin-image-card .admin-image-overlay input,
+.admin-image-card .admin-image-overlay label{pointer-events:auto}
+.admin-image-card{cursor:pointer}
+
 </style>
