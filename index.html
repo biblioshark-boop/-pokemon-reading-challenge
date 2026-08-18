@@ -591,15 +591,23 @@ async function resolveFormImage(apiName,dex=0,formLabel="",baseName=""){
 const all=()=>[...pokemonData,...globalPokemon,...customPokemon].filter(p=>{
   const combined=`${p?.name||""} ${p?.apiName||""} ${p?.form||""}`.toLowerCase();
   return !combined.includes("totem");
-});function entry(id){
-  let e=challengeData[id];
-  if(!e||typeof e!=="object"||Array.isArray(e))e={};
+});function normalizeEntryShape(raw){
+  const e=(raw&&typeof raw==="object"&&!Array.isArray(raw))?raw:{};
   if(typeof e.prompt!=="string")e.prompt="";
   if(typeof e.notes!=="string")e.notes="";
   if(!Array.isArray(e.books))e.books=[];
   if(typeof e.caught!=="boolean")e.caught=!!e.caught;
-  challengeData[id]=e;
   return e;
+}
+function normalizeChallengeDataShape(raw){
+  const src=(raw&&typeof raw==="object"&&!Array.isArray(raw))?raw:{};
+  const out={};
+  Object.entries(src).forEach(([id,value])=>out[id]=normalizeEntryShape(value));
+  return out;
+}
+function entry(id){
+  challengeData[id]=normalizeEntryShape(challengeData[id]);
+  return challengeData[id];
 }const caught=p=>!!challengeData[p.id]?.caught;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2200)}
 function cloud(m,ok=false){if(publicMode)return;document.getElementById("cloudPill").classList.remove("hidden");document.getElementById("cloudText").textContent=m;document.getElementById("cloudDot").classList.toggle("ok",ok)}
@@ -609,14 +617,14 @@ async function signOut(){await sb.auth.signOut();location.reload()}
 async function loadProfile(){const{data}=await sb.from("profiles").select("display_name,username").eq("id",user.id).maybeSingle();profile=data||{};accountEmail.textContent=user.email||"Signed in";displayName.value=profile.display_name||"";username.value=profile.username||"";updateShare()}
 async function saveProfile(){const d=displayName.value.trim(),u=username.value.trim()||null;if(u&&!/^[A-Za-z0-9_]{3,30}$/.test(u)){toast("Username must be 3–30 letters, numbers or underscores.");return}const{data,error}=await sb.from("profiles").upsert({id:user.id,display_name:d,username:u},{onConflict:"id"}).select().single();if(error){toast(error.message);return}profile=data;updateShare();toast("Profile saved")}
 function publicData(){const c={};for(const[id,e]of Object.entries(challengeData))if(e.caught)c[id]={caught:true,prompt:e.prompt||"",books:(e.books||[]).map(b=>({title:b.title||"",author:b.author||"",cover:b.cover||""}))};return{challengeData:c,customPokemon,genres}}
-async function loadSave(){const{data}=await sb.from("challenge_saves").select("data,is_public").eq("user_id",user.id).eq("challenge_key",CHALLENGE_KEY).maybeSingle();if(data){challengeData=data.data?.challengeData||{};customPokemon=data.data?.customPokemon||[];genres=data.data?.genres?.length?data.data.genres:[...DEFAULT_GENRES];isPublic=!!data.is_public}else await saveNow();updateShare()}
+async function loadSave(){const{data}=await sb.from("challenge_saves").select("data,is_public").eq("user_id",user.id).eq("challenge_key",CHALLENGE_KEY).maybeSingle();if(data){challengeData=normalizeChallengeDataShape(data.data?.challengeData);customPokemon=data.data?.customPokemon||[];genres=data.data?.genres?.length?data.data.genres:[...DEFAULT_GENRES];isPublic=!!data.is_public}else await saveNow();updateShare()}
 function saveSoon(){if(publicMode||!user)return;cloud("Saving");clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,400)}
 async function saveNow(){if(publicMode||!user)return;const{error}=await sb.from("challenge_saves").upsert({user_id:user.id,challenge_key:CHALLENGE_KEY,data:{challengeData,customPokemon,genres},public_data:publicData(),is_public:isPublic},{onConflict:"user_id,challenge_key"});if(error){console.error(error);cloud("Save error");toast("Cloud save failed")}else cloud("Saved",true)}
 const shareURL=()=>`${location.origin}${location.pathname}?u=${encodeURIComponent(profile?.username||"")}`;
 function updateShare(){if(!sharingBtn)return;sharingBtn.textContent=isPublic?"Disable Public Sharing":"Enable Public Sharing";sharingBtn.className=isPublic?"danger":"secondary";shareLinkWrap.classList.toggle("hidden",!isPublic||!profile?.username);if(profile?.username)shareLink.textContent=shareURL()}
 async function togglePublicSharing(){if(!profile?.username){toast("Save a username first.");return}isPublic=!isPublic;await saveNow();updateShare()}
 async function copyShareLink(){await navigator.clipboard.writeText(shareURL());toast("Public link copied")}
-async function loadPublic(u){publicMode=true;publicBanner.classList.remove("hidden");const{data,error}=await sb.rpc("get_public_challenge",{p_username:u,p_challenge_key:CHALLENGE_KEY});if(error||!data){document.querySelector("main").innerHTML='<div class="form-card"><h2>Challenge not found</h2></div>';return false}profile=data.profile||{};challengeData=data.data?.challengeData||{};customPokemon=data.data?.customPokemon||[];genres=data.data?.genres||DEFAULT_GENRES;headerSubtitle.textContent=`${profile.display_name||profile.username||"Reader"}'s public Reading Dex`;return true}
+async function loadPublic(u){publicMode=true;publicBanner.classList.remove("hidden");const{data,error}=await sb.rpc("get_public_challenge",{p_username:u,p_challenge_key:CHALLENGE_KEY});if(error||!data){document.querySelector("main").innerHTML='<div class="form-card"><h2>Challenge not found</h2></div>';return false}profile=data.profile||{};challengeData=normalizeChallengeDataShape(data.data?.challengeData);customPokemon=data.data?.customPokemon||[];genres=data.data?.genres||DEFAULT_GENRES;headerSubtitle.textContent=`${profile.display_name||profile.username||"Reader"}'s public Reading Dex`;return true}
 async function upload(file,prefix){const ext=(file.name.split(".").pop()||"jpg").replace(/[^a-z0-9]/gi,"").toLowerCase(),path=`${user.id}/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;const{error}=await sb.storage.from("challenge-covers").upload(path,file);if(error)throw error;return sb.storage.from("challenge-covers").getPublicUrl(path).data.publicUrl}
 async function loadAdminStatus(){
   if(!user||publicMode){isAdmin=false;return}
@@ -983,7 +991,16 @@ function openPokemon(id){
   applyRegionTheme(p.region);
 }
 function saveText(){const e=entry(currentPokemonId),p=all().find(x=>x.id===currentPokemonId);const v=detailPrompt.value;e.prompt=(p?.prompt&&v===p.prompt)?"":v;e.notes=detailNotes.value;saveSoon();toast("Saved")}
-function renderBooks(){const e=entry(currentPokemonId);const books=Array.isArray(e.books)?e.books:[];bookList.innerHTML=books.length?"":'<div class="muted">No books added yet.</div>';books.forEach((raw,i)=>{const b=(raw&&typeof raw==="object")?raw:{};bookList.insertAdjacentHTML("beforeend",`<div class="book-row">${b.cover?`<img class="book-cover" src="${esc(b.cover)}">`:""}<strong>${esc(b.title||"Untitled")}</strong>${b.author?`<div class="muted">${esc(b.author)}</div>`:""}${publicMode?"":`<div class="book-actions"><button class="small-btn" onclick="bookModal(${i})">Edit</button><button class="small-btn" onclick="deleteBook(${i})">Delete</button></div>`}</div>`)})}
+function renderBooks(){
+  const e=entry(currentPokemonId),books=e.books;
+  const list=document.getElementById("bookList");
+  if(!list)return;
+  list.innerHTML=books.length?"":'<div class="muted">No books added yet.</div>';
+  books.forEach((raw,i)=>{
+    const b=(raw&&typeof raw==="object")?raw:{};
+    list.insertAdjacentHTML("beforeend",`<div class="book-row">${b.cover?`<img class="book-cover" src="${esc(b.cover)}">`:""}<strong>${esc(b.title||"Untitled")}</strong>${b.author?`<div class="muted">${esc(b.author)}</div>`:""}${publicMode?"":`<div class="book-actions"><button class="small-btn" onclick="bookModal(${i})">Edit</button><button class="small-btn" onclick="deleteBook(${i})">Delete</button></div>`}</div>`)
+  });
+}
 function bookModal(i=null){bookSaving=false;const e=entry(currentPokemonId),b=i===null?{}:e.books[i],m=document.createElement("div");m.className="modal open";m.id="bookModal";m.innerHTML=`<div class="modal-card"><div class="modal-handle"></div><h2>${i===null?"Add":"Edit"} Book</h2><label>Title</label><input id="bookTitle" value="${esc(b.title||"")}"><label>Author</label><input id="bookAuthor" value="${esc(b.author||"")}"><label>Cover URL</label><input id="bookCoverUrl" value="${esc(b.cover||"")}"><label>Or upload cover</label><input id="bookCoverUpload" type="file" accept="image/*"><button id="bookSaveBtn" class="primary" style="width:100%;margin-top:14px" onclick="saveBook(${i===null?"null":i})">Save Book</button><button id="bookCancelBtn" class="secondary" style="width:100%;margin-top:8px" onclick="closeBookModal()">Cancel</button></div>`;document.body.appendChild(m)}
 function closeBookModal(){if(bookSaving)return;const m=document.getElementById("bookModal");if(m)m.remove()}
 async function saveBook(i){
