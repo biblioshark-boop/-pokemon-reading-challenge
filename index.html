@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787071059 -->
+<!-- RF_BUILD:1787071423 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787071059";
+const RF_BUILD="1787071423";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -753,6 +753,36 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 }
 </style>
 
+
+<style id="gymUncaughtRule20260818">
+.defeat-choice-grid.one-choice{grid-template-columns:1fr !important}
+.gym-use-for-dex{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  cursor:pointer;
+}
+.gym-use-for-dex.hidden{display:none !important}
+.gym-use-for-dex input{
+  width:auto !important;
+  margin:3px 0 0 !important;
+  flex:0 0 auto;
+}
+.gym-use-for-dex span{display:block}
+.gym-use-for-dex strong{display:block}
+.gym-use-for-dex small{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  line-height:1.35;
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
@@ -888,14 +918,15 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
     <div class="modal-handle"></div>
     <h2 id="gymDefeatTitle">Defeat Pokémon</h2>
     <div id="gymDefeatSubtitle" class="muted"></div>
-    <div class="defeat-choice-grid">
-      <button class="defeat-choice" onclick="useExistingGymCatch()">Use Existing Caught Pokémon<span>Use this Pokémon from your main Pokédex if you have already caught it.</span></button>
+    <div id="gymDefeatChoices" class="defeat-choice-grid">
+      <button id="gymUseExistingBtn" class="defeat-choice" onclick="useExistingGymCatch()">Use Existing Caught Pokémon<span>Use this Pokémon from your main Pokédex if you have already caught it.</span></button>
       <button class="defeat-choice" onclick="showGymNewEntry()">New Entry<span>Complete this Pokémon specifically for the gym battle with a new book.</span></button>
     </div>
     <div id="gymBookForm" class="gym-book-form hidden">
       <label>Book Title</label><input id="gymBookTitle" placeholder="Book title">
       <label>Author</label><input id="gymBookAuthor" placeholder="Author (optional)">
       <label>Cover URL</label><input id="gymBookCover" placeholder="Cover URL (optional)">
+      <label id="gymUseForDexWrap" class="gym-use-for-dex hidden"><input id="gymUseForDex" type="checkbox"> <span><strong>Use for Pokémon entry?</strong><small>This book will also be added to this exact Pokémon/form in your Pokédex and mark it caught.</small></span></label>
       <button class="primary" style="width:100%;margin-top:14px" onclick="saveGymNewEntry()">Save New Gym Entry</button>
     </div>
     <button class="secondary" style="width:100%;margin-top:12px" onclick="closeGymDefeatModal()">Cancel</button>
@@ -1749,31 +1780,54 @@ function gymIsCleared(gymId){
   const team=gymTeamData.filter(m=>m.gym_id===gymId);
   return !!team.length&&team.every(m=>gymMemberDone(gymId,m));
 }
+function currentGymPokemon(){
+  if(!currentGymDefeat)return null;
+  const m=gymTeamData.find(x=>x.id===currentGymDefeat.memberId);
+  return m?gymMemberPokemon(m):null;
+}
 function openGymDefeatModal(gymId,memberId){
   if(publicMode||!user)return;
   const m=gymTeamData.find(x=>x.id===memberId);
   const g=gymsData.find(x=>x.id===gymId);
   if(!m||!g)return;
-  currentGymDefeat={gymId,memberId};
+  const p=gymMemberPokemon(m);
+  const isCaught=!!p&&caught(p);
+  currentGymDefeat={gymId,memberId,pokemonId:p?.id||null,wasCaught:isCaught};
   gymDefeatTitle.textContent=`Defeat ${m.pokemon_name}`;
   gymDefeatSubtitle.textContent=`${g.leader_name}'s ${m.pokemon_name}`;
   gymBookTitle.value="";gymBookAuthor.value="";gymBookCover.value="";
   gymBookForm.classList.add("hidden");
+  const existingBtn=document.getElementById("gymUseExistingBtn");
+  const choices=document.getElementById("gymDefeatChoices");
+  if(existingBtn)existingBtn.classList.toggle("hidden",!isCaught);
+  if(choices)choices.classList.toggle("one-choice",!isCaught);
+  const useForDexWrap=document.getElementById("gymUseForDexWrap");
+  const useForDex=document.getElementById("gymUseForDex");
+  if(useForDex)useForDex.checked=false;
+  if(useForDexWrap)useForDexWrap.classList.toggle("hidden",isCaught||!p);
   gymDefeatModal.classList.add("open");
 }
 function closeGymDefeatModal(){
   gymDefeatModal.classList.remove("open");
   currentGymDefeat=null;
   gymBookForm.classList.add("hidden");
+  document.getElementById("gymUseExistingBtn")?.classList.remove("hidden");
+  document.getElementById("gymDefeatChoices")?.classList.remove("one-choice");
+  document.getElementById("gymUseForDexWrap")?.classList.add("hidden");
+  const useForDex=document.getElementById("gymUseForDex");
+  if(useForDex)useForDex.checked=false;
 }
 function showGymNewEntry(){
   gymBookForm.classList.remove("hidden");
+  const p=currentGymPokemon();
+  const isCaught=!!p&&caught(p);
+  const wrap=document.getElementById("gymUseForDexWrap");
+  if(wrap)wrap.classList.toggle("hidden",isCaught||!p);
   setTimeout(()=>gymBookTitle.focus(),50);
 }
 async function useExistingGymCatch(){
   if(!currentGymDefeat)return;
-  const m=gymTeamData.find(x=>x.id===currentGymDefeat.memberId);
-  const p=m?gymMemberPokemon(m):null;
+  const p=currentGymPokemon();
   if(!p||!caught(p)){
     toast("That Pokémon is not caught in your Pokédex yet.");
     return;
@@ -1786,26 +1840,50 @@ async function saveGymNewEntry(){
   if(!currentGymDefeat)return;
   const title=gymBookTitle.value.trim();
   if(!title)return toast("Enter a book title.");
-  await saveGymMemberCompletion(currentGymDefeat.gymId,currentGymDefeat.memberId,{
-    completion_source:"new_entry",
+  const author=gymBookAuthor.value.trim();
+  const cover=gymBookCover.value.trim();
+  const p=currentGymPokemon();
+  const useForDex=!!document.getElementById("gymUseForDex")?.checked&&!!p&&!caught(p);
+  const gymId=currentGymDefeat.gymId;
+  const memberId=currentGymDefeat.memberId;
+
+  const saved=await saveGymMemberCompletion(gymId,memberId,{
+    completion_source:useForDex?"new_entry_pokedex":"new_entry",
     book_title:title,
-    book_author:gymBookAuthor.value.trim()||null,
-    book_cover_url:gymBookCover.value.trim()||null
-  });
+    book_author:author||null,
+    book_cover_url:cover||null
+  },{keepModalOpen:useForDex});
+
+  if(!saved)return;
+
+  if(useForDex){
+    const e=entry(p.id);
+    if(!Array.isArray(e.books))e.books=[];
+    e.books.push({title,author,cover});
+    e.caught=true;
+    await saveNow();
+    closeGymDefeatModal();
+    renderHome();
+    renderDex();
+    renderGyms();
+    renderBadgeCase();
+    toast(`${p.name}${p.form?` (${p.form})`:""} added to your Pokédex!`);
+  }
 }
-async function saveGymMemberCompletion(gymId,memberId,extra){
+async function saveGymMemberCompletion(gymId,memberId,extra,options={}){
   const now=new Date().toISOString();
   const{error}=await sb.from("user_gym_member_progress").upsert({
     user_id:user.id,gym_team_member_id:memberId,completed:true,completed_at:now,updated_at:now,...extra
   },{onConflict:"user_id,gym_team_member_id"});
-  if(error){console.error(error);toast("Could not save gym battle.");return}
+  if(error){console.error(error);toast("Could not save gym battle.");return false}
   gymMemberProgress[memberId]={
     ...(gymMemberProgress[memberId]||{}),
     gym_team_member_id:memberId,completed:true,completed_at:now,...extra
   };
   await syncGymCompletion(gymId);
-  closeGymDefeatModal();
+  if(!options.keepModalOpen)closeGymDefeatModal();
   renderGyms();renderBadgeCase();
+  return true;
 }
 async function undoGymMember(gymId,memberId){
   const now=new Date().toISOString();
@@ -1842,7 +1920,7 @@ function renderGyms(){
       const prompt=gymMemberPrompt(m,p);
       const promptHtml=`<div class="gym-mon-prompt"><strong>Reading Prompt</strong>${esc(prompt)}</div>`;
       const sourceNote=done
-        ?`<div class="gym-mon-note">${progress.completion_source==="existing"?"Used existing Pokédex catch":progress.book_title?`Gym entry: ${esc(progress.book_title)}`:"Defeated"}</div>`
+        ?`<div class="gym-mon-note">${progress.completion_source==="existing"?"Used existing Pokédex catch":progress.completion_source==="new_entry_pokedex"?"New entry + added to Pokédex":progress.book_title?`Gym entry: ${esc(progress.book_title)}`:"Defeated"}</div>`
         :"";
       const control=done
         ?`<button class="gym-defeat-btn done" onclick="undoGymMember('${m.gym_id}','${m.id}')">Defeated ✓</button>`
