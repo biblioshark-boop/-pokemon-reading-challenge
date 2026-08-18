@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787078513 -->
+<!-- RF_BUILD:1787079301 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787078513";
+const RF_BUILD="1787079301";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1022,12 +1022,47 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 }
 </style>
 
+
+<style id="recoveryAdminTeamLeaderGold20260818">
+.auth-recovery-panel{
+  margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:16px;
+  background:var(--surface2)
+}
+.auth-recovery-panel.hidden{display:none!important}
+.auth-recovery-panel label{display:block;margin-top:10px}
+.auth-recovery-btn{font-weight:800}
+.admin-team-switcher{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.admin-team-switcher h4{margin:0 0 6px}
+.trainer-leader-ribbon{gap:7px;align-items:center}
+.trainer-leader-ribbon strong{font-size:10px;letter-spacing:.04em}
+.trainer-card.team-leader-card{
+  border:4px solid #f3c84b!important;
+  box-shadow:
+    0 0 0 3px rgba(255,225,110,.28),
+    0 0 28px rgba(243,200,75,.34),
+    0 18px 38px rgba(22,18,15,.24)!important;
+}
+.trainer-card.team-leader-card::before{
+  box-shadow:inset 0 0 45px rgba(255,221,96,.13)
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
 <header><div class="header-row"><div><h1>Pokémon Reading Challenge</h1><div class="sub" id="headerSubtitle">Reading Frenzy • Cloud Reading Dex</div></div><div class="header-actions"><span id="cloudPill" class="cloud-pill hidden"><span id="cloudDot" class="cloud-dot"></span><span id="cloudText">Saving</span></span></div></div></header>
 <main>
-<section id="authPage" class="page"><div class="auth-shell"><div class="auth-card"><h2>Welcome to Reading Frenzy</h2><div class="muted">Sign in to save your challenge in the cloud and use it on any device.</div><div class="auth-tabs"><button id="loginTab" class="primary" onclick="setAuthMode('login')">Log In</button><button id="signupTab" class="secondary" onclick="setAuthMode('signup')">Sign Up</button></div><label>Email</label><input id="authEmail" type="email"><label>Password</label><input id="authPassword" type="password"><button id="authSubmit" class="primary" style="width:100%;margin-top:16px" onclick="submitAuth()">Log In</button><div id="authMessage" class="auth-error"></div></div></div></section>
+<section id="authPage" class="page"><div class="auth-shell"><div class="auth-card"><h2>Welcome to Reading Frenzy</h2><div class="muted">Sign in to save your challenge in the cloud and use it on any device.</div><div class="auth-tabs"><button id="loginTab" class="primary" onclick="setAuthMode('login')">Log In</button><button id="signupTab" class="secondary" onclick="setAuthMode('signup')">Sign Up</button></div><label>Email</label><input id="authEmail" type="email"><label>Password</label><input id="authPassword" type="password"><button id="authSubmit" class="primary" style="width:100%;margin-top:16px" onclick="submitAuth()">Log In</button>
+<button id="authRecoveryBtn" class="secondary auth-recovery-btn" style="width:100%;margin-top:8px" onclick="toggleAuthRecovery()">Forgot password or username?</button>
+<div id="authRecoveryPanel" class="auth-recovery-panel hidden">
+  <strong>Account Help</strong>
+  <div class="muted">You log in with your email address, not your Reading Frenzy username. If you forgot your username, sign in with your email and it will appear in your profile.</div>
+  <label>Account email</label>
+  <input id="recoveryEmail" type="email" placeholder="you@example.com">
+  <button class="secondary" style="width:100%;margin-top:8px" onclick="sendPasswordReset()">Send Password Reset Email</button>
+  <div id="recoveryMessage" class="muted" style="margin-top:8px"></div>
+</div>
+<div id="authMessage" class="auth-error"></div></div></div></section>
 <section id="homePage" class="page">
   <div class="trainer-card-shell">
     <div id="trainerCardLocked" class="trainer-card-locked hidden">
@@ -1036,7 +1071,7 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
       <button class="primary" onclick="openTeamPicker()">Choose a Team</button></div>
     </div>
     <div id="trainerCardUnlocked">
-      <div id="trainerCard" class="trainer-card" aria-label="Trainer Card"><div class="trainer-card-glow"></div><div class="trainer-card-grid"><div class="trainer-avatar-wrap"><img id="trainerCardAvatar" class="trainer-avatar" alt="Trainer character"><div id="trainerAvatarFallback" class="trainer-avatar-fallback">RF</div></div><div class="trainer-card-info"><div class="trainer-card-kicker">READING FRENZY • TRAINER CARD</div><div id="trainerCardName" class="trainer-card-name">Trainer</div><div id="trainerCardUsername" class="trainer-card-username">@reader</div><div class="trainer-card-meta-grid"><div><span>TEAM</span><strong id="trainerCardTeam">Team</strong></div><div><span>CAUGHT</span><strong id="trainerCardCaught">0 / 0</strong></div><div><span>COMPLETE</span><strong id="trainerCardPercent">0%</strong></div></div><div id="trainerLeaderRibbon" class="trainer-leader-ribbon hidden">TEAM LEADER</div></div></div><div class="trainer-card-orb" aria-hidden="true"><span></span></div></div>
+      <div id="trainerCard" class="trainer-card" aria-label="Trainer Card"><div class="trainer-card-glow"></div><div class="trainer-card-grid"><div class="trainer-avatar-wrap"><img id="trainerCardAvatar" class="trainer-avatar" alt="Trainer character"><div id="trainerAvatarFallback" class="trainer-avatar-fallback">RF</div></div><div class="trainer-card-info"><div class="trainer-card-kicker">READING FRENZY • TRAINER CARD</div><div id="trainerCardName" class="trainer-card-name">Trainer</div><div id="trainerCardUsername" class="trainer-card-username">@reader</div><div class="trainer-card-meta-grid"><div><span>TEAM</span><strong id="trainerCardTeam">Team</strong></div><div><span>CAUGHT</span><strong id="trainerCardCaught">0 / 0</strong></div><div><span>COMPLETE</span><strong id="trainerCardPercent">0%</strong></div></div><div id="trainerLeaderRibbon" class="trainer-leader-ribbon hidden"><span>TEAM LEADER</span><strong id="trainerLeaderName"></strong></div></div></div><div class="trainer-card-orb" aria-hidden="true"><span></span></div></div>
       <div class="trainer-card-actions"><button id="editTrainerCardBtn" class="secondary" onclick="editTrainerCard()">Edit Card</button><button id="downloadTrainerCardBtn" class="secondary" onclick="downloadTrainerCard()">Download Card</button></div>
       <div id="trainerCardInlineEdit" class="trainer-card-inline-edit hidden">
         <div class="trainer-card-inline-title">Edit Trainer Card</div>
@@ -1046,7 +1081,6 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
       </div>
     </div>
   </div>
-  <div class="hero compact-progress"><div class="muted">Overall Progress</div><div class="progress-track"><div class="progress-fill" id="homeProgress"></div></div></div>
   <h3 class="section-title">Regions</h3><div id="regionGrid" class="region-grid"></div>
 </section>
 <section id="dexPage" class="page"><div id="adminImageEditBar" class="admin-image-edit-bar hidden"><button id="adminImageEditBtn" class="secondary" onclick="toggleAdminImageEditMode()">Edit Pokédex Images</button><span id="adminImageEditStatus" class="muted">Admin only • changes save for everyone</span></div><div class="toolbar"><input class="search" id="searchInput" placeholder="Search Pokémon or form..." oninput="renderDex()"><div class="filters"><select id="regionFilter" onchange="renderDex();applyRegionTheme(this.value)"><option value="all">All Regions</option></select><select id="statusFilter" onchange="renderDex()"><option value="all">All Statuses</option><option value="caught">Caught</option><option value="uncaught">Uncaught</option></select><select id="sortFilter" onchange="renderDex()"><option value="dex">Dex Order</option><option value="az">A–Z</option><option value="uncaught">Uncaught First</option><option value="caught">Caught First</option></select><select id="formFilter" onchange="renderDex()"><option value="all">Standard + Forms</option><option value="standard">Standard Only</option><option value="forms">Forms Only</option></select></div></div><div id="dexLoading" class="loading">Loading Pokédex...</div><div id="dexGrid" class="dex-grid"></div></section>
@@ -1108,6 +1142,16 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
     <label>New Username</label>
     <input id="adminUsernameEdit" placeholder="3–30 letters, numbers, underscores">
     <button class="primary" style="width:100%;margin-top:10px" onclick="saveAdminMemberUsername()">Update Username</button>
+
+    <div class="admin-team-switcher">
+      <h4>Switch Member Team</h4>
+      <div class="admin-note">Admin only. Use this when someone needs to leave or switch teams after their choice is locked.</div>
+      <label>Team</label>
+      <select id="adminMemberTeamSelect">
+        <option value="">No Team</option>
+      </select>
+      <button class="primary" style="width:100%;margin-top:10px" onclick="saveAdminMemberTeam()">Update Team</button>
+    </div>
   </div>
 </div>
 
@@ -1302,7 +1346,25 @@ const all=()=>[...pokemonData,...globalPokemon,...customPokemon].filter(p=>{
 }const caught=p=>!!challengeData[p.id]?.caught;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2200)}
 function cloud(m,ok=false){if(publicMode)return;document.getElementById("cloudPill").classList.remove("hidden");document.getElementById("cloudText").textContent=m;document.getElementById("cloudDot").classList.toggle("ok",ok)}
-function setAuthMode(m){authMode=m;loginTab.className=m==="login"?"primary":"secondary";signupTab.className=m==="signup"?"primary":"secondary";authSubmit.textContent=m==="login"?"Log In":"Create Account";authMessage.textContent=""}
+function setAuthMode(m){authMode=m;loginTab.className=m==="login"?"primary":"secondary";signupTab.className=m==="signup"?"primary":"secondary";authSubmit.textContent=m==="login"?"Log In":"Create Account";authMessage.textContent="";authRecoveryBtn?.classList.toggle("hidden",m!=="login");if(m!=="login")authRecoveryPanel?.classList.add("hidden")}
+function toggleAuthRecovery(){
+  const panel=document.getElementById("authRecoveryPanel");
+  if(!panel)return;
+  panel.classList.toggle("hidden");
+  if(!panel.classList.contains("hidden")){
+    const r=document.getElementById("recoveryEmail");
+    if(r&&!r.value)r.value=authEmail?.value||"";
+  }
+}
+async function sendPasswordReset(){
+  const email=(document.getElementById("recoveryEmail")?.value||authEmail?.value||"").trim();
+  const msg=document.getElementById("recoveryMessage");
+  if(!email){if(msg)msg.textContent="Enter the email address you use to log in.";return}
+  if(msg)msg.textContent="Sending…";
+  const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error){if(msg)msg.textContent=error.message||"Could not send reset email.";return}
+  if(msg)msg.textContent="If that email is registered, a password reset message is on the way. Your username is not needed to log in.";
+}
 async function submitAuth(){const email=authEmail.value.trim(),password=authPassword.value;if(!email||password.length<6){authMessage.textContent="Enter a valid email and a password with at least 6 characters.";return}if(authMode==="login"){const{error}=await sb.auth.signInWithPassword({email,password});if(error)authMessage.textContent=error.message}else{const{data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error)authMessage.textContent=error.message;else if(!data.session)authMessage.textContent="Account created. Check your email to confirm it, then return here and log in."}}
 async function signOut(){await sb.auth.signOut();location.reload()}
 async function loadProfile(){
@@ -1618,7 +1680,10 @@ function renderTrainerCard(){
   trainerCardCaught.textContent=`${c} / ${a.length}`;
   const percentText=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";
   if(document.getElementById("trainerCardPercent"))trainerCardPercent.textContent=percentText;
-  trainerLeaderRibbon.classList.toggle("hidden",!isCurrentTeamLeader());
+  const leaderNow=isCurrentTeamLeader();
+  trainerLeaderRibbon.classList.toggle("hidden",!leaderNow);
+  card.classList.toggle("team-leader-card",leaderNow);
+  if(document.getElementById("trainerLeaderName"))trainerLeaderName.textContent=leaderNow?(f.leader_character||"Team Leader"):"";
   const avatar=trainerCardAvatar,fb=trainerAvatarFallback,url=trainerCardAvatarUrl();
   avatar.style.display=url?"block":"none";fb.style.display=url?"none":"flex";
   avatar.onload=()=>{avatar.style.display="block";fb.style.display="none"};
@@ -1662,9 +1727,10 @@ function openTeamPicker(){goPage("settings");setTimeout(()=>document.getElementB
 
 function loadCanvasImage(url){return new Promise(resolve=>{if(!url)return resolve(null);const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=url})}
 function roundedRectPath(ctx,x,y,w,h,r){const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath()}
-async function downloadTrainerCard(){if(publicMode||!trainerCardFaction())return toast("Join a team to create a Trainer Card.");const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=1200,H=700;canvas.width=W;canvas.height=H;const colors=trainerCardColors(),grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,colors[0]);grad.addColorStop(1,colors[1]);roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.fillStyle=grad;ctx.fill();ctx.save();roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.clip();ctx.globalAlpha=.11;ctx.strokeStyle="#fff";ctx.lineWidth=56;ctx.beginPath();ctx.arc(1050,640,250,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.12;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(120,80,220,0,Math.PI*2);ctx.fill();ctx.restore();const display=profile?.display_name||profile?.username||"Trainer",f=trainerCardFaction(),a=all(),c=a.filter(caught).length;ctx.fillStyle="rgba(255,255,255,.16)";roundedRectPath(ctx,65,112,315,455,34);ctx.fill();ctx.strokeStyle="rgba(255,255,255,.28)";ctx.lineWidth=2;ctx.stroke();const img=await loadCanvasImage(trainerCardAvatarUrl());if(img){const scale=Math.min(280/img.width,420/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,65+(315-dw)/2,135+(410-dh),dw,dh)}else{ctx.fillStyle="rgba(255,255,255,.85)";ctx.font="900 92px system-ui";ctx.textAlign="center";ctx.fillText((display.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("")||"RF").toUpperCase(),222,385);ctx.textAlign="left"}ctx.fillStyle="rgba(255,255,255,.82)";ctx.font="900 21px system-ui";ctx.fillText("READING FRENZY • TRAINER CARD",430,150);ctx.fillStyle="#fff";ctx.font="1000 62px system-ui";ctx.fillText(display.slice(0,28),430,230);ctx.fillStyle="rgba(255,255,255,.86)";ctx.font="800 29px system-ui";ctx.fillText(profile?.username?`@${profile.username}`:"@reader",430,278);const pct=a.length?c/a.length*100:0,pctText=pct<1&&c?pct.toFixed(1)+"%":Math.round(pct)+"%";const boxes=[[430,330,215,125,"TEAM",f?.name||"Team"],[665,330,215,125,"CAUGHT",`${c} / ${a.length}`],[900,330,215,125,"COMPLETE",pctText]];boxes.forEach(([x,y,w,h,label,value])=>{ctx.fillStyle="rgba(0,0,0,.15)";roundedRectPath(ctx,x,y,w,h,20);ctx.fill();ctx.fillStyle="rgba(255,255,255,.72)";ctx.font="900 17px system-ui";ctx.fillText(label,x+22,y+36);ctx.fillStyle="#fff";ctx.font="900 28px system-ui";ctx.fillText(String(value).slice(0,20),x+22,y+82)});if(isCurrentTeamLeader()){ctx.fillStyle="#f6d25b";roundedRectPath(ctx,430,500,210,50,25);ctx.fill();ctx.fillStyle="#3c2b00";ctx.font="1000 18px system-ui";ctx.fillText("TEAM LEADER",464,532)}ctx.strokeStyle="rgba(255,255,255,.72)";ctx.lineWidth=8;ctx.beginPath();ctx.arc(1080,105,44,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(1080,105,12,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,.88)";ctx.fill();ctx.beginPath();ctx.moveTo(1000,105);ctx.lineTo(1036,105);ctx.moveTo(1124,105);ctx.lineTo(1160,105);ctx.stroke();try{const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));if(!blob)throw new Error("No image");const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`Reading-Frenzy-Trainer-Card-${(profile?.username||"trainer").replace(/[^a-z0-9_-]/gi,"-")}.png`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast("Trainer Card downloaded.")}catch(e){console.error(e);toast("Could not download Trainer Card.")}}
+async function downloadTrainerCard(){if(publicMode||!trainerCardFaction())return toast("Join a team to create a Trainer Card.");const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=1200,H=700;canvas.width=W;canvas.height=H;const colors=trainerCardColors(),grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,colors[0]);grad.addColorStop(1,colors[1]);roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.fillStyle=grad;ctx.fill();
+  if(isCurrentTeamLeader()){ctx.strokeStyle="#f3c84b";ctx.lineWidth=10;roundedRectPath(ctx,17,17,W-34,H-34,38);ctx.stroke();}ctx.save();roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.clip();ctx.globalAlpha=.11;ctx.strokeStyle="#fff";ctx.lineWidth=56;ctx.beginPath();ctx.arc(1050,640,250,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.12;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(120,80,220,0,Math.PI*2);ctx.fill();ctx.restore();const display=profile?.display_name||profile?.username||"Trainer",f=trainerCardFaction(),a=all(),c=a.filter(caught).length;ctx.fillStyle="rgba(255,255,255,.16)";roundedRectPath(ctx,65,112,315,455,34);ctx.fill();ctx.strokeStyle="rgba(255,255,255,.28)";ctx.lineWidth=2;ctx.stroke();const img=await loadCanvasImage(trainerCardAvatarUrl());if(img){const scale=Math.min(280/img.width,420/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,65+(315-dw)/2,135+(410-dh),dw,dh)}else{ctx.fillStyle="rgba(255,255,255,.85)";ctx.font="900 92px system-ui";ctx.textAlign="center";ctx.fillText((display.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("")||"RF").toUpperCase(),222,385);ctx.textAlign="left"}ctx.fillStyle="rgba(255,255,255,.82)";ctx.font="900 21px system-ui";ctx.fillText("READING FRENZY • TRAINER CARD",430,150);ctx.fillStyle="#fff";ctx.font="1000 62px system-ui";ctx.fillText(display.slice(0,28),430,230);ctx.fillStyle="rgba(255,255,255,.86)";ctx.font="800 29px system-ui";ctx.fillText(profile?.username?`@${profile.username}`:"@reader",430,278);const pct=a.length?c/a.length*100:0,pctText=pct<1&&c?pct.toFixed(1)+"%":Math.round(pct)+"%";const boxes=[[430,330,215,125,"TEAM",f?.name||"Team"],[665,330,215,125,"CAUGHT",`${c} / ${a.length}`],[900,330,215,125,"COMPLETE",pctText]];boxes.forEach(([x,y,w,h,label,value])=>{ctx.fillStyle="rgba(0,0,0,.15)";roundedRectPath(ctx,x,y,w,h,20);ctx.fill();ctx.fillStyle="rgba(255,255,255,.72)";ctx.font="900 17px system-ui";ctx.fillText(label,x+22,y+36);ctx.fillStyle="#fff";ctx.font="900 28px system-ui";ctx.fillText(String(value).slice(0,20),x+22,y+82)});if(isCurrentTeamLeader()){const leaderLabel=f?.leader_character?`TEAM LEADER • ${f.leader_character}`:"TEAM LEADER";ctx.fillStyle="#f6d25b";roundedRectPath(ctx,430,500,360,50,25);ctx.fill();ctx.fillStyle="#3c2b00";ctx.font="1000 18px system-ui";ctx.fillText(leaderLabel.slice(0,30),454,532)}ctx.strokeStyle="rgba(255,255,255,.72)";ctx.lineWidth=8;ctx.beginPath();ctx.arc(1080,105,44,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(1080,105,12,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,.88)";ctx.fill();ctx.beginPath();ctx.moveTo(1000,105);ctx.lineTo(1036,105);ctx.moveTo(1124,105);ctx.lineTo(1160,105);ctx.stroke();try{const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));if(!blob)throw new Error("No image");const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`Reading-Frenzy-Trainer-Card-${(profile?.username||"trainer").replace(/[^a-z0-9_-]/gi,"-")}.png`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast("Trainer Card downloaded.")}catch(e){console.error(e);toast("Could not download Trainer Card.")}}
 
-function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homeProgress.style.width=p+"%";renderTrainerCard();regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
+function renderHome(){const a=all();renderTrainerCard();regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
 function toggleAdminImageEditMode(){
   if(!isAdmin)return toast("Admin access required.");
   adminImageEditMode=!adminImageEditMode;
@@ -2464,6 +2530,33 @@ function loadAdminUsernameEditor(id){
   const m=adminMembers.find(x=>String(x.user_id)===String(id));
   const input=document.getElementById("adminUsernameEdit");
   if(input)input.value=m?.username||"";
+  refreshAdminMemberTeamSelect(m);
+}
+function refreshAdminMemberTeamSelect(member=null){
+  const s=document.getElementById("adminMemberTeamSelect");
+  if(!s)return;
+  const currentName=member?.faction_name||"";
+  s.innerHTML='<option value="">No Team</option>';
+  factions.forEach(f=>{
+    if(f.is_active===false)return;
+    const opt=new Option(factionName(f),String(f.id));
+    if(currentName&&String(factionName(f)).toLowerCase()===String(currentName).toLowerCase())opt.selected=true;
+    s.add(opt);
+  });
+}
+async function saveAdminMemberTeam(){
+  if(!isAdmin)return toast("Admin access required.");
+  const id=document.getElementById("adminUsernameMemberSelect")?.value||"";
+  if(!id)return toast("Choose a member first.");
+  const factionId=document.getElementById("adminMemberTeamSelect")?.value||null;
+  const{data,error}=await sb.rpc("admin_set_member_team",{target_user_id:id,new_faction_id:factionId});
+  if(error){console.error(error);toast(error.message||"Could not update team.");return}
+  await loadAdminMembers();
+  if(String(id)===String(user?.id)){
+    currentFactionId=factionId||null;
+    renderFactions();applyTeamTheme();renderTrainerCard();refreshTrainerSettings();
+  }
+  toast(factionId?"Team updated.":"Member removed from team.");
 }
 async function saveAdminMemberUsername(){
   if(!isAdmin)return toast("Admin access required.");
@@ -2621,6 +2714,7 @@ async function loadFactions(){
   if(!uErr&&userFaction)currentFactionId=userFaction.faction_id;
   renderFactions();
   refreshTeamLeaderEditor();
+  if(document.getElementById("adminUsernameMemberSelect")?.value)loadAdminUsernameEditor(document.getElementById("adminUsernameMemberSelect").value);
   applyTeamTheme();
   refreshTrainerSettings();
   renderTrainerCard();
