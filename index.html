@@ -541,7 +541,16 @@ async function resolveFormImage(apiName,dex=0,formLabel="",baseName=""){
 const all=()=>[...pokemonData,...globalPokemon,...customPokemon].filter(p=>{
   const combined=`${p?.name||""} ${p?.apiName||""} ${p?.form||""}`.toLowerCase();
   return !combined.includes("totem");
-});function entry(id){return challengeData[id]||(challengeData[id]={prompt:"",notes:"",books:[],caught:false})}const caught=p=>!!challengeData[p.id]?.caught;
+});function entry(id){
+  let e=challengeData[id];
+  if(!e||typeof e!=="object"||Array.isArray(e))e={};
+  if(typeof e.prompt!=="string")e.prompt="";
+  if(typeof e.notes!=="string")e.notes="";
+  if(!Array.isArray(e.books))e.books=[];
+  if(typeof e.caught!=="boolean")e.caught=!!e.caught;
+  challengeData[id]=e;
+  return e;
+}const caught=p=>!!challengeData[p.id]?.caught;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2200)}
 function cloud(m,ok=false){if(publicMode)return;document.getElementById("cloudPill").classList.remove("hidden");document.getElementById("cloudText").textContent=m;document.getElementById("cloudDot").classList.toggle("ok",ok)}
 function setAuthMode(m){authMode=m;loginTab.className=m==="login"?"primary":"secondary";signupTab.className=m==="signup"?"primary":"secondary";authSubmit.textContent=m==="login"?"Log In":"Create Account";authMessage.textContent=""}
@@ -888,7 +897,17 @@ function openPokemon(id){
   applyRegionTheme(p.region);
 }
 function saveText(){const e=entry(currentPokemonId),p=all().find(x=>x.id===currentPokemonId);const v=detailPrompt.value;e.prompt=(p?.prompt&&v===p.prompt)?"":v;e.notes=detailNotes.value;saveSoon();toast("Saved")}
-function renderBooks(){const e=entry(currentPokemonId);bookList.innerHTML=e.books.length?"":'<div class="muted">No books added yet.</div>';e.books.forEach((b,i)=>bookList.insertAdjacentHTML("beforeend",`<div class="book-row">${b.cover?`<img class="book-cover" src="${esc(b.cover)}">`:""}<strong>${esc(b.title)}</strong>${b.author?`<div class="muted">${esc(b.author)}</div>`:""}${publicMode?"":`<div class="book-actions"><button class="small-btn" onclick="bookModal(${i})">Edit</button><button class="small-btn" onclick="deleteBook(${i})">Delete</button></div>`}</div>`))}
+function renderBooks(){
+  const e=entry(currentPokemonId);
+  const books=Array.isArray(e.books)?e.books:[];
+  const list=document.getElementById("bookList");
+  if(!list)return;
+  list.innerHTML=books.length?"":'<div class="muted">No books added yet.</div>';
+  books.forEach((raw,i)=>{
+    const b=(raw&&typeof raw==="object")?raw:{};
+    list.insertAdjacentHTML("beforeend",`<div class="book-row">${b.cover?`<img class="book-cover" src="${esc(b.cover)}">`:""}<strong>${esc(b.title||"Untitled")}</strong>${b.author?`<div class="muted">${esc(b.author)}</div>`:""}${publicMode?"":`<div class="book-actions"><button class="small-btn" onclick="bookModal(${i})">Edit</button><button class="small-btn" onclick="deleteBook(${i})">Delete</button></div>`}</div>`)
+  });
+}
 function bookModal(i=null){bookSaving=false;const e=entry(currentPokemonId),b=i===null?{}:e.books[i],m=document.createElement("div");m.className="modal open";m.id="bookModal";m.innerHTML=`<div class="modal-card"><div class="modal-handle"></div><h2>${i===null?"Add":"Edit"} Book</h2><label>Title</label><input id="bookTitle" value="${esc(b.title||"")}"><label>Author</label><input id="bookAuthor" value="${esc(b.author||"")}"><label>Cover URL</label><input id="bookCoverUrl" value="${esc(b.cover||"")}"><label>Or upload cover</label><input id="bookCoverUpload" type="file" accept="image/*"><button id="bookSaveBtn" class="primary" style="width:100%;margin-top:14px" onclick="saveBook(${i===null?"null":i})">Save Book</button><button id="bookCancelBtn" class="secondary" style="width:100%;margin-top:8px" onclick="closeBookModal()">Cancel</button></div>`;document.body.appendChild(m)}
 function closeBookModal(){if(bookSaving)return;const m=document.getElementById("bookModal");if(m)m.remove()}
 async function saveBook(i){
