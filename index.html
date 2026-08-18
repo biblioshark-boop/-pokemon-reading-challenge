@@ -324,7 +324,6 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 </style>
 </head>
 <body>
-<div id="buildMarker" style="position:fixed;right:8px;top:8px;z-index:99999;background:#111;color:#fff;padding:4px 7px;border-radius:6px;font:700 10px/1.2 system-ui;opacity:.85;pointer-events:none">BUILD 8/18 • BOOKFIX</div>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
 <header><div class="header-row"><div><h1>Pokémon Reading Challenge</h1><div class="sub" id="headerSubtitle">Reading Frenzy • Cloud Reading Dex</div></div><div class="header-actions"><span id="cloudPill" class="cloud-pill hidden"><span id="cloudDot" class="cloud-dot"></span><span id="cloudText">Saving</span></span></div></div></header>
 <main>
@@ -1686,4 +1685,60 @@ init();
 .pokemon-card .pokemon-img-wrap{width:100%}
 .pokemon-card .type-row{justify-content:center;width:100%}
 .pokemon-card .form-tag{align-self:center}
+
+/* Gym battle readability refresh */
+#gymsPage{
+  --gym-panel:#20242b;
+  --gym-panel-2:#2a3038;
+  --gym-border:rgba(255,255,255,.14);
+  --gym-text:#f6f7f9;
+  --gym-muted:#c6cbd2;
+}
+#gymsPage .gym-card{
+  background:linear-gradient(180deg,var(--gym-panel-2),var(--gym-panel)) !important;
+  border-color:var(--gym-border) !important;
+  color:var(--gym-text) !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+}
+#gymsPage .gym-card .muted,
+#gymsPage .gym-card .gym-meta,
+#gymsPage .gym-card .gym-subtitle{
+  color:var(--gym-muted) !important;
+}
+#gymsPage .gym-mon,
+#gymsPage .gym-member,
+#gymsPage .gym-pokemon-row{
+  background:linear-gradient(180deg,#303741,#252b33) !important;
+  border-color:rgba(255,255,255,.13) !important;
+  color:var(--gym-text) !important;
+}
+#gymsPage .gym-mon img,
+#gymsPage .gym-member img,
+#gymsPage .gym-pokemon-row img{
+  background:radial-gradient(circle at 50% 42%,#5a6470 0%,#3c444e 58%,#2a3037 100%) !important;
+  border-radius:12px;
+  padding:4px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+#gymsPage .gym-mon .reading-prompt,
+#gymsPage .gym-member .reading-prompt,
+#gymsPage .gym-pokemon-row .reading-prompt,
+#gymsPage .gym-prompt{
+  background:#1d2228 !important;
+  color:#eef1f4 !important;
+  border-color:rgba(255,255,255,.1) !important;
+}
+#gymsPage .gym-mon .reading-prompt .muted,
+#gymsPage .gym-member .reading-prompt .muted,
+#gymsPage .gym-pokemon-row .reading-prompt .muted,
+#gymsPage .gym-prompt .muted{
+  color:#bfc6ce !important;
+}
+#gymsPage .gym-card button.secondary,
+#gymsPage .gym-card .small-btn{
+  background:#f4f5f7 !important;
+  color:#171a1f !important;
+  border-color:rgba(255,255,255,.5) !important;
+}
+
 </style>
