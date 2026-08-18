@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787086633 -->
+<!-- RF_BUILD:1787094580 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787086633";
+const RF_BUILD="1787094580";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1271,12 +1271,51 @@ body:has(#gymsPage.active) main{
 }
 </style>
 
+
+<style id="authPasswordVisibility20260818">
+.password-field-wrap{
+  position:relative;
+  display:flex;
+  align-items:stretch;
+  gap:8px;
+}
+.password-field-wrap input{
+  flex:1;
+  min-width:0;
+}
+.password-toggle{
+  width:auto;
+  min-width:76px;
+  padding:0 14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--surface2);
+  color:var(--text);
+  font-weight:900;
+  cursor:pointer;
+}
+.password-toggle:hover{
+  filter:brightness(.98);
+}
+@media(max-width:520px){
+  .password-toggle{
+    min-width:68px;
+    padding:0 12px;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
 <header><div class="header-row"><div><h1>Pokémon Reading Challenge</h1><div class="sub" id="headerSubtitle">Reading Frenzy • Cloud Reading Dex</div></div><div class="header-actions"><span id="cloudPill" class="cloud-pill hidden"><span id="cloudDot" class="cloud-dot"></span><span id="cloudText">Saving</span></span></div></div></header>
 <main>
-<section id="authPage" class="page"><div class="auth-shell"><div class="auth-card"><h2>Welcome to Reading Frenzy</h2><div class="muted">Sign in to save your challenge in the cloud and use it on any device.</div><div class="auth-tabs"><button id="loginTab" class="primary" onclick="setAuthMode('login')">Log In</button><button id="signupTab" class="secondary" onclick="setAuthMode('signup')">Sign Up</button></div><label>Email</label><input id="authEmail" type="email"><label>Password</label><input id="authPassword" type="password"><button id="authSubmit" class="primary" style="width:100%;margin-top:16px" onclick="submitAuth()">Log In</button>
+<section id="authPage" class="page"><div class="auth-shell"><div class="auth-card"><h2>Welcome to Reading Frenzy</h2><div class="muted">Sign in to save your challenge in the cloud and use it on any device.</div><div class="auth-tabs"><button id="loginTab" class="primary" onclick="setAuthMode('login')">Log In</button><button id="signupTab" class="secondary" onclick="setAuthMode('signup')">Sign Up</button></div><label>Email</label><input id="authEmail" type="email"><label>Password</label>
+<div class="password-field-wrap">
+  <input id="authPassword" type="password" autocomplete="current-password">
+  <button id="authPasswordToggle" class="password-toggle" type="button" aria-label="Show password" aria-pressed="false" onclick="togglePasswordVisibility()">Show</button>
+</div>
+<button id="authSubmit" class="primary" style="width:100%;margin-top:16px" onclick="submitAuth()">Log In</button>
 <button id="authRecoveryBtn" class="secondary auth-recovery-btn" style="width:100%;margin-top:8px" onclick="toggleAuthRecovery()">Forgot password or username?</button>
 <div id="authRecoveryPanel" class="auth-recovery-panel hidden">
   <strong>Account Help</strong>
@@ -1588,6 +1627,17 @@ const all=()=>[...pokemonData,...globalPokemon,...customPokemon].filter(p=>{
 }const caught=p=>!!challengeData[p.id]?.caught;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2200)}
 function cloud(m,ok=false){if(publicMode)return;document.getElementById("cloudPill").classList.remove("hidden");document.getElementById("cloudText").textContent=m;document.getElementById("cloudDot").classList.toggle("ok",ok)}
+function togglePasswordVisibility(){
+  const input=document.getElementById("authPassword");
+  const btn=document.getElementById("authPasswordToggle");
+  if(!input||!btn)return;
+  const showing=input.type==="text";
+  input.type=showing?"password":"text";
+  btn.textContent=showing?"Show":"Hide";
+  btn.setAttribute("aria-label",showing?"Show password":"Hide password");
+  btn.setAttribute("aria-pressed",showing?"false":"true");
+}
+
 function setAuthMode(m){authMode=m;loginTab.className=m==="login"?"primary":"secondary";signupTab.className=m==="signup"?"primary":"secondary";authSubmit.textContent=m==="login"?"Log In":"Create Account";authMessage.textContent="";authRecoveryBtn?.classList.toggle("hidden",m!=="login");if(m!=="login")authRecoveryPanel?.classList.add("hidden")}
 function toggleAuthRecovery(){
   const panel=document.getElementById("authRecoveryPanel");
@@ -1597,7 +1647,7 @@ function toggleAuthRecovery(){
     const r=document.getElementById("recoveryEmail");
     if(r&&!r.value)r.value=authEmail?.value||"";
   }
-}
+authPassword?.setAttribute("autocomplete",m==="login"?"current-password":"new-password");}
 async function sendPasswordReset(){
   const email=(document.getElementById("recoveryEmail")?.value||authEmail?.value||"").trim();
   const msg=document.getElementById("recoveryMessage");
