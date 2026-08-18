@@ -321,6 +321,48 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .team-leader-open{font-size:12px;color:var(--muted);margin-top:8px;text-align:left}
 .team-admin-preview{margin-top:12px;min-height:130px;border:1px dashed var(--line);border-radius:16px;background:var(--surface2);display:flex;align-items:center;justify-content:center;padding:10px;text-align:center;color:var(--muted);overflow:hidden}
 .team-admin-preview img{max-width:100%;max-height:150px;object-fit:contain}
+
+/* Legendary + Mythical Pokédex card treatment */
+.pokemon-card.legendary-card{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(185,132,20,.72);
+  background:linear-gradient(145deg,#fffaf0 0%,#fff 47%,#f7e8b5 100%);
+  box-shadow:0 8px 20px rgba(113,78,5,.14),inset 0 0 0 1px rgba(255,255,255,.8);
+}
+.pokemon-card.legendary-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(120deg,transparent 26%,rgba(255,233,154,.23) 45%,transparent 62%);
+}
+.pokemon-card.legendary-card::after{
+  content:"★";
+  position:absolute;
+  right:9px;
+  top:8px;
+  z-index:3;
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  color:#6e4d00;
+  background:rgba(255,231,135,.95);
+  border:1px solid rgba(165,112,0,.4);
+  box-shadow:0 2px 6px rgba(84,57,0,.14);
+  font-size:12px;
+  font-weight:900;
+}
+.pokemon-card.legendary-card .pokemon-img-wrap{
+  background:linear-gradient(180deg,rgba(255,250,226,.94),rgba(249,237,193,.7));
+}
+.pokemon-card.legendary-card .dex-number{color:#795700;font-weight:800}
+.pokemon-card.legendary-card.caught{border-color:#c39320}
+.pokemon-card.legendary-card.admin-image-card::after{right:34px}
+
 </style>
 </head>
 <body>
@@ -839,6 +881,24 @@ async function savePokemonCardImage(id,file){
     console.error(e);toast("Image upload failed.");
   }finally{card?.classList.remove("image-uploading")}
 }
+
+const LEGENDARY_MYTHICAL_DEX=new Set([
+144,145,146,150,151,
+243,244,245,249,250,251,
+377,378,379,380,381,382,383,384,385,386,
+480,481,482,483,484,485,486,487,488,489,490,491,492,493,
+494,
+638,639,640,641,642,643,644,645,646,647,648,649,
+716,717,718,719,720,721,
+772,773,785,786,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,807,808,809,
+888,889,890,891,892,893,894,895,896,897,898,
+905,
+1001,1002,1003,1004,1007,1008,1009,1010,1014,1015,1016,1017,1024,1025
+]);
+function isLegendaryOrMythical(p){
+  return !!p&&!p.isBonus&&LEGENDARY_MYTHICAL_DEX.has(+p.dex||+p.dex_number||0);
+}
+
 function renderDex(){
   let l=all(),q=(searchInput.value||"").toLowerCase();
   l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));
@@ -855,7 +915,7 @@ function renderDex(){
   l.forEach(p=>{
     const editable=adminImageEditMode&&isAdmin&&!p.custom&&!!catalogSlugForPokemon(p);
     const b=document.createElement(editable?"div":"button");
-    b.className="pokemon-card"+(caught(p)?" caught":"")+(editable?" admin-image-card":"");
+    b.className="pokemon-card"+(caught(p)?" caught":"")+(isLegendaryOrMythical(p)?" legendary-card":"")+(editable?" admin-image-card":"");
     b.dataset.pokemonId=p.id;
     if(editable){
       b.ondragover=e=>{e.preventDefault();b.classList.add("image-drag-over")};
