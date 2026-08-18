@@ -1545,18 +1545,35 @@ async function chooseFaction(id){
 
 async function migrateLocalData(){try{const old=await new Promise((resolve,reject)=>{const r=indexedDB.open("pokemonReadingChallengeDB",1);r.onerror=()=>reject();r.onsuccess=()=>{const d=r.result;if(!d.objectStoreNames.contains("store"))return resolve(null);const s=d.transaction("store").objectStore("store"),out={},ks=["challengeData","customPokemon","genres"];let n=ks.length;ks.forEach(k=>{const q=s.get(k);q.onsuccess=()=>{out[k]=q.result;if(!--n)resolve(out)};q.onerror=()=>{if(!--n)resolve(out)}})}});if(!old)return toast("No local data found.");challengeData={...challengeData,...(old.challengeData||{})};customPokemon=[...customPokemon,...(old.customPokemon||[]).filter(p=>!customPokemon.some(x=>x.id===p.id))];if(old.genres?.length)genres=old.genres;await saveNow();finishLoad();toast("Local data imported")}catch{toast("Could not import local data.")}}
 function applyRegionTheme(r){if(!publicMode&&currentFactionId&&applyTeamTheme())return;if(r==="all")r="Kanto";const v=THEMES[r]||THEMES.Special,keys=["bg","surface","surface2","text","muted","accent","accent2","line"];keys.forEach((k,i)=>document.documentElement.style.setProperty("--"+k,v[i]))}
-const LAST_PAGE_KEY="rfLastPageV1";
+const LAST_PAGE_KEY="rfLastPageV2",PAGE_HASH_PREFIX="#page-";
+function pageFromHash(){
+  const h=String(location.hash||"");
+  return h.startsWith(PAGE_HASH_PREFIX)?h.slice(PAGE_HASH_PREFIX.length):"";
+}
 function savedStartPage(isPublicView=false){
   const allowed=isPublicView?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
-  const saved=localStorage.getItem(LAST_PAGE_KEY)||"home";
+  const hashed=pageFromHash();
+  if(allowed.includes(hashed))return hashed;
+  let saved="home";
+  try{saved=localStorage.getItem(LAST_PAGE_KEY)||localStorage.getItem("rfLastPageV1")||"home"}catch{}
   return allowed.includes(saved)?saved:"home";
+}
+function rememberPage(n){
+  const parent=n==="detail"?"dex":n;
+  const allowed=publicMode?["home","dex","stats"]:["home","dex","safari","gyms","stats","settings"];
+  if(!allowed.includes(parent))return;
+  try{localStorage.setItem(LAST_PAGE_KEY,parent)}catch{}
+  const nextHash=PAGE_HASH_PREFIX+parent;
+  if(location.hash!==nextHash){
+    try{history.replaceState(history.state,"",location.pathname+location.search+nextHash)}
+    catch{location.hash=nextHash}
+  }
 }
 function goPage(n){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(n+"Page")?.classList.add("active");
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===n));
-  if(!publicMode){localStorage.setItem(LAST_PAGE_KEY,n==="detail"?"dex":n)}
-  else if(["home","dex","stats"].includes(n)){localStorage.setItem(LAST_PAGE_KEY,n)}
+  rememberPage(n);
   if(n==="home")renderHome();
   if(n==="dex")renderDex();
   if(n==="safari")renderSafari();
