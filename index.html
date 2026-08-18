@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787096918 -->
+<!-- RF_BUILD:1787097527 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787096918";
+const RF_BUILD="1787097527";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1801,7 +1801,12 @@ body.team-pattern-page::after,
   <div class="team-leader-note">Teams automatically move up and down the rankings as their caught totals change. Poké Dolls are not included in the competition.</div>
   <div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div>
 </section>
-<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Profile & Trainer Card</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName" maxlength="50" aria-describedby="displayNameLockNote"><div id="displayNameLockNote" class="username-lock-note">Loading display name status…</div><label>Username</label><input id="username" aria-describedby="usernameLockNote"><div id="usernameLockNote" class="username-lock-note">Loading username status…</div><button id="saveProfileBtn" class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div></div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div class="team-choice-note">Please choose one team and that will be your choice. If you have any reason for wanting to leave or switch your team, please reach out to Travis or your Team Leader. Admin accounts can make team corrections when needed.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
+<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Profile & Trainer Card</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName" maxlength="50" aria-describedby="displayNameLockNote"><div id="displayNameLockNote" class="username-lock-note">Loading display name status…</div><label>Username</label><input id="username" aria-describedby="usernameLockNote"><div id="usernameLockNote" class="username-lock-note">Loading username status…</div><button id="saveProfileBtn" class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div></div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row">
+  <strong>My Data Backup</strong>
+  <div class="muted">Download a personal copy of your Reading Frenzy progress, books, profile, team, and Gym progress. Keep this file somewhere safe.</div>
+  <button id="downloadBackupBtn" class="secondary" style="width:100%;margin-top:10px" onclick="downloadMyBackup()">Download My Backup</button>
+</div>
+<div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div class="team-choice-note">Please choose one team and that will be your choice. If you have any reason for wanting to leave or switch your team, please reach out to Travis or your Team Leader. Admin accounts can make team corrections when needed.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
 
 
 <div id="adminMembersCard" class="form-card admin-card hidden">
@@ -3844,6 +3849,94 @@ async function chooseFaction(id){
   refreshTrainerSettings();
   renderTrainerCard();
   toast(`Joined ${factionName(f)}!`);
+}
+
+function safeBackupFilenamePart(value){
+  return String(value||"reader").trim().replace(/[^A-Za-z0-9_-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,50)||"reader";
+}
+async function downloadMyBackup(){
+  if(!user||publicMode)return;
+  const btn=document.getElementById("downloadBackupBtn");
+  const original=btn?.textContent||"Download My Backup";
+  if(btn){btn.disabled=true;btn.textContent="Preparing Backup…"}
+  try{
+    // Force the current in-memory challenge state to cloud first.
+    await saveNow();
+
+    const [
+      {data:saveRow,error:saveErr},
+      {data:profileRow,error:profileErr},
+      {data:factionRow,error:factionErr},
+      {data:gymRows,error:gymErr},
+      {data:gymMemberRows,error:gymMemberErr}
+    ]=await Promise.all([
+      sb.from("challenge_saves")
+        .select("challenge_key,data,is_public,created_at,updated_at")
+        .eq("user_id",user.id).eq("challenge_key",CHALLENGE_KEY).maybeSingle(),
+      sb.from("profiles")
+        .select("display_name,username,trainer_sprite,trainer_card_theme,created_at,updated_at")
+        .eq("id",user.id).maybeSingle(),
+      sb.from("user_factions")
+        .select("faction_id,selected_at")
+        .eq("user_id",user.id).maybeSingle(),
+      sb.from("user_gym_progress")
+        .select("gym_id,completed,battle_mode,completed_at")
+        .eq("user_id",user.id),
+      sb.from("user_gym_member_progress")
+        .select("gym_team_member_id,completed,book_title,book_author,book_cover_url,completed_at,completion_source")
+        .eq("user_id",user.id)
+    ]);
+
+    const errors=[saveErr,profileErr,factionErr,gymErr,gymMemberErr].filter(Boolean);
+    if(errors.length)throw errors[0];
+
+    const selectedFaction=factions.find(f=>String(f.id)===String(factionRow?.faction_id||currentFactionId||""));
+    const backup={
+      format:"reading-frenzy-backup",
+      version:1,
+      exported_at:new Date().toISOString(),
+      app:"Pokémon Reading Challenge / Reading Frenzy",
+      account:{
+        email:user.email||null,
+        user_id:user.id
+      },
+      profile:profileRow||profile||{},
+      team:factionRow?{
+        faction_id:factionRow.faction_id,
+        name:selectedFaction?factionName(selectedFaction):null,
+        selected_at:factionRow.selected_at||null
+      }:null,
+      challenge:{
+        challenge_key:CHALLENGE_KEY,
+        is_public:!!saveRow?.is_public,
+        created_at:saveRow?.created_at||null,
+        updated_at:saveRow?.updated_at||null,
+        data:saveRow?.data||{challengeData,customPokemon,genres}
+      },
+      gyms:{
+        progress:gymRows||[],
+        member_progress:gymMemberRows||[]
+      }
+    };
+
+    const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    const identity=safeBackupFilenamePart(profileRow?.username||profileRow?.display_name||user.email?.split("@")[0]);
+    const date=new Date().toISOString().slice(0,10);
+    a.href=url;
+    a.download=`reading-frenzy-backup-${identity}-${date}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    toast("Backup downloaded.");
+  }catch(error){
+    console.error(error);
+    toast("Could not create backup. Your cloud save was not changed.");
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=original}
+  }
 }
 
 async function migrateLocalData(){try{const old=await new Promise((resolve,reject)=>{const r=indexedDB.open("pokemonReadingChallengeDB",1);r.onerror=()=>reject();r.onsuccess=()=>{const d=r.result;if(!d.objectStoreNames.contains("store"))return resolve(null);const s=d.transaction("store").objectStore("store"),out={},ks=["challengeData","customPokemon","genres"];let n=ks.length;ks.forEach(k=>{const q=s.get(k);q.onsuccess=()=>{out[k]=q.result;if(!--n)resolve(out)};q.onerror=()=>{if(!--n)resolve(out)}})}});if(!old)return toast("No local data found.");challengeData={...challengeData,...(old.challengeData||{})};customPokemon=[...customPokemon,...(old.customPokemon||[]).filter(p=>!customPokemon.some(x=>x.id===p.id))];if(old.genres?.length)genres=old.genres;await saveNow();finishLoad();toast("Local data imported")}catch{toast("Could not import local data.")}}
