@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787077657 -->
+<!-- RF_BUILD:1787078513 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787077657";
+const RF_BUILD="1787078513";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1003,6 +1003,25 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 .trainer-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:900px;margin:10px auto 18px}.trainer-card-actions button{width:100%}.trainer-sprite-choices{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))!important}.trainer-sprite-choice{min-height:154px!important;padding:8px!important}.trainer-sprite-choice img{width:100%!important;height:116px!important;object-fit:contain!important;object-position:center bottom!important}.trainer-sprite-choice span{font-size:11px;line-height:1.15}.trainer-avatar{object-fit:contain!important;object-position:center bottom!important;max-height:100%!important}.trainer-character-locked-note{border:1px solid var(--line);background:var(--surface2);padding:11px 12px;border-radius:14px;color:var(--muted);font-size:12px}
 @media(max-width:620px){.trainer-card-locked{align-items:flex-start;padding:17px}.trainer-lock-icon{width:46px;height:46px;flex-basis:46px}.trainer-sprite-choices{grid-template-columns:repeat(2,1fr)!important}}
 </style>
+
+<style id="trainerCardInlineEditUsernameOnce20260818">
+.trainer-card-meta-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.trainer-card-inline-edit{max-width:900px;margin:10px auto 18px;padding:15px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.92);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.trainer-card-inline-edit.hidden{display:none!important}
+.trainer-card-inline-title{font-weight:900;font-size:15px;margin-bottom:3px}
+.trainer-card-inline-edit select{width:100%;margin:10px 0}
+.trainer-card-inline-edit button{width:100%}
+.compact-progress{padding-bottom:22px!important}
+.compact-progress .progress-track{margin-top:12px!important}
+.username-lock-note.username-once-note{color:#7a5b00;background:#fff7d6;border:1px solid #e5cc6b;padding:9px 11px;border-radius:12px;margin-top:7px}
+.username-lock-note.username-locked-note{color:var(--muted);margin-top:7px}
+#username:not(:disabled){background:#fff!important}
+@media(max-width:650px){
+  .trainer-card-meta-grid{grid-template-columns:1fr 1fr!important}
+  .trainer-card-meta-grid>div:first-child{grid-column:1/-1}
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
@@ -1017,11 +1036,17 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
       <button class="primary" onclick="openTeamPicker()">Choose a Team</button></div>
     </div>
     <div id="trainerCardUnlocked">
-      <div id="trainerCard" class="trainer-card" aria-label="Trainer Card"><div class="trainer-card-glow"></div><div class="trainer-card-grid"><div class="trainer-avatar-wrap"><img id="trainerCardAvatar" class="trainer-avatar" alt="Trainer character"><div id="trainerAvatarFallback" class="trainer-avatar-fallback">RF</div></div><div class="trainer-card-info"><div class="trainer-card-kicker">READING FRENZY • TRAINER CARD</div><div id="trainerCardName" class="trainer-card-name">Trainer</div><div id="trainerCardUsername" class="trainer-card-username">@reader</div><div class="trainer-card-meta-grid"><div><span>TEAM</span><strong id="trainerCardTeam">Team</strong></div><div><span>CAUGHT</span><strong id="trainerCardCaught">0 / 0</strong></div></div><div id="trainerLeaderRibbon" class="trainer-leader-ribbon hidden">TEAM LEADER</div></div></div><div class="trainer-card-orb" aria-hidden="true"><span></span></div></div>
+      <div id="trainerCard" class="trainer-card" aria-label="Trainer Card"><div class="trainer-card-glow"></div><div class="trainer-card-grid"><div class="trainer-avatar-wrap"><img id="trainerCardAvatar" class="trainer-avatar" alt="Trainer character"><div id="trainerAvatarFallback" class="trainer-avatar-fallback">RF</div></div><div class="trainer-card-info"><div class="trainer-card-kicker">READING FRENZY • TRAINER CARD</div><div id="trainerCardName" class="trainer-card-name">Trainer</div><div id="trainerCardUsername" class="trainer-card-username">@reader</div><div class="trainer-card-meta-grid"><div><span>TEAM</span><strong id="trainerCardTeam">Team</strong></div><div><span>CAUGHT</span><strong id="trainerCardCaught">0 / 0</strong></div><div><span>COMPLETE</span><strong id="trainerCardPercent">0%</strong></div></div><div id="trainerLeaderRibbon" class="trainer-leader-ribbon hidden">TEAM LEADER</div></div></div><div class="trainer-card-orb" aria-hidden="true"><span></span></div></div>
       <div class="trainer-card-actions"><button id="editTrainerCardBtn" class="secondary" onclick="editTrainerCard()">Edit Card</button><button id="downloadTrainerCardBtn" class="secondary" onclick="downloadTrainerCard()">Download Card</button></div>
+      <div id="trainerCardInlineEdit" class="trainer-card-inline-edit hidden">
+        <div class="trainer-card-inline-title">Edit Trainer Card</div>
+        <div id="trainerCardInlineHelp" class="muted">Choose the character shown on your card.</div>
+        <select id="trainerCardCharacterSelect" onchange="chooseTrainerSprite(this.value)"></select>
+        <button class="secondary" type="button" onclick="closeTrainerCardEditor()">Done</button>
+      </div>
     </div>
   </div>
-  <div class="hero"><div class="muted">Overall Progress</div><h2 id="homePercent">0%</h2><div class="progress-track"><div class="progress-fill" id="homeProgress"></div></div><div class="big-count" id="homeCount">0 / 0 caught</div></div>
+  <div class="hero compact-progress"><div class="muted">Overall Progress</div><div class="progress-track"><div class="progress-fill" id="homeProgress"></div></div></div>
   <h3 class="section-title">Regions</h3><div id="regionGrid" class="region-grid"></div>
 </section>
 <section id="dexPage" class="page"><div id="adminImageEditBar" class="admin-image-edit-bar hidden"><button id="adminImageEditBtn" class="secondary" onclick="toggleAdminImageEditMode()">Edit Pokédex Images</button><span id="adminImageEditStatus" class="muted">Admin only • changes save for everyone</span></div><div class="toolbar"><input class="search" id="searchInput" placeholder="Search Pokémon or form..." oninput="renderDex()"><div class="filters"><select id="regionFilter" onchange="renderDex();applyRegionTheme(this.value)"><option value="all">All Regions</option></select><select id="statusFilter" onchange="renderDex()"><option value="all">All Statuses</option><option value="caught">Caught</option><option value="uncaught">Uncaught</option></select><select id="sortFilter" onchange="renderDex()"><option value="dex">Dex Order</option><option value="az">A–Z</option><option value="uncaught">Uncaught First</option><option value="caught">Caught First</option></select><select id="formFilter" onchange="renderDex()"><option value="all">Standard + Forms</option><option value="standard">Standard Only</option><option value="forms">Forms Only</option></select></div></div><div id="dexLoading" class="loading">Loading Pokédex...</div><div id="dexGrid" class="dex-grid"></div></section>
@@ -1061,7 +1086,7 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 </div>
 </section>
 <section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">Team Competition</h3><div class="team-leader-note">Every caught Pokémon adds 1 point to your team. Poke Dolls are not included in the competition.</div><div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
-<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Profile & Trainer Card</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" disabled aria-disabled="true"><div class="username-lock-note">* Usernames are set and cannot be changed from your account settings. If you need to change your username for any reason, please reach out to Travis or your Team Leader.</div><button class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Display Name</button></div><div id="trainerCharacterRow" class="setting-row"><strong>Trainer Card Character</strong><div id="trainerCharacterHelp" class="muted">Join a team to unlock your Trainer Card character choices.</div><div id="trainerSpriteChoices" class="trainer-sprite-choices"></div></div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div class="team-choice-note">Please choose one team and that will be your choice. If you have any reason for wanting to leave or switch your team, please reach out to Travis or your Team Leader. Admin accounts can make team corrections when needed.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
+<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Profile & Trainer Card</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" aria-describedby="usernameLockNote"><div id="usernameLockNote" class="username-lock-note">Loading username status…</div><button id="saveProfileBtn" class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div></div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div class="team-choice-note">Please choose one team and that will be your choice. If you have any reason for wanting to leave or switch your team, please reach out to Travis or your Team Leader. Admin accounts can make team corrections when needed.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
 
 
 <div id="adminMembersCard" class="form-card admin-card hidden">
@@ -1280,17 +1305,47 @@ function cloud(m,ok=false){if(publicMode)return;document.getElementById("cloudPi
 function setAuthMode(m){authMode=m;loginTab.className=m==="login"?"primary":"secondary";signupTab.className=m==="signup"?"primary":"secondary";authSubmit.textContent=m==="login"?"Log In":"Create Account";authMessage.textContent=""}
 async function submitAuth(){const email=authEmail.value.trim(),password=authPassword.value;if(!email||password.length<6){authMessage.textContent="Enter a valid email and a password with at least 6 characters.";return}if(authMode==="login"){const{error}=await sb.auth.signInWithPassword({email,password});if(error)authMessage.textContent=error.message}else{const{data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error)authMessage.textContent=error.message;else if(!data.session)authMessage.textContent="Account created. Check your email to confirm it, then return here and log in."}}
 async function signOut(){await sb.auth.signOut();location.reload()}
-async function loadProfile(){const{data}=await sb.from("profiles").select("display_name,username,trainer_sprite,trainer_card_theme,created_at").eq("id",user.id).maybeSingle();profile=data||{};accountEmail.textContent=user.email||"Signed in";displayName.value=profile.display_name||"";username.value=profile.username||"";if(document.getElementById("trainerCardTheme"))trainerCardTheme.value=profile.trainer_card_theme||"classic";renderTrainerSpriteChoices();refreshTrainerSettings();renderTrainerCard();updateShare()}
+async function loadProfile(){
+  const{data}=await sb.from("profiles").select("display_name,username,trainer_sprite,trainer_card_theme,username_change_used,created_at").eq("id",user.id).maybeSingle();
+  profile=data||{};
+  accountEmail.textContent=user.email||"Signed in";
+  displayName.value=profile.display_name||"";
+  username.value=profile.username||"";
+  refreshUsernameEditor();
+  refreshTrainerSettings();
+  renderTrainerCard();
+  updateShare();
+}
+function refreshUsernameEditor(){
+  const input=document.getElementById("username"),note=document.getElementById("usernameLockNote"),btn=document.getElementById("saveProfileBtn");
+  if(!input||!note)return;
+  const used=profile?.username_change_used===true;
+  input.disabled=used;
+  input.setAttribute("aria-disabled",used?"true":"false");
+  note.className="username-lock-note "+(used?"username-locked-note":"username-once-note");
+  note.textContent=used
+    ?"* Your username is locked. If you need to change it for any reason, please reach out to Travis or your Team Leader."
+    :"* You may set or change your username one time. Once you save a new username, it will be permanently locked unless Travis or your Team Leader helps with a change.";
+  if(btn)btn.textContent=used?"Save Display Name":"Save Profile";
+}
 async function saveProfile(){
-  const d=displayName.value.trim();
-  const{data,error}=await sb.from("profiles").update({display_name:d,updated_at:new Date().toISOString()}).eq("id",user.id).select("display_name,username,trainer_sprite,trainer_card_theme,created_at").single();
+  const d=displayName.value.trim(),updates={display_name:d,updated_at:new Date().toISOString()};
+  if(profile?.username_change_used!==true){
+    const u=username.value.trim();
+    if(u!==String(profile?.username||"").trim()){
+      if(!/^[A-Za-z0-9_]{3,30}$/.test(u)){toast("Username must be 3–30 letters, numbers, or underscores.");return}
+      updates.username=u;
+    }
+  }
+  const{data,error}=await sb.from("profiles").update(updates).eq("id",user.id).select("display_name,username,trainer_sprite,trainer_card_theme,username_change_used,created_at").single();
   if(error){toast(error.message);return}
   profile={...profile,...data};
   displayName.value=profile.display_name||"";
   username.value=profile.username||"";
+  refreshUsernameEditor();
   updateShare();
   renderTrainerCard();
-  toast("Profile saved");
+  toast(updates.username?"Username saved and locked.":"Profile saved");
 }
 function publicData(){const c={};for(const[id,e]of Object.entries(challengeData))if(e.caught)c[id]={caught:true,prompt:e.prompt||"",books:(e.books||[]).map(b=>({title:b.title||"",author:b.author||"",cover:b.cover||""}))};return{challengeData:c,customPokemon,genres}}
 async function loadSave(){const{data}=await sb.from("challenge_saves").select("data,is_public").eq("user_id",user.id).eq("challenge_key",CHALLENGE_KEY).maybeSingle();if(data){challengeData=data.data?.challengeData||{};customPokemon=data.data?.customPokemon||[];genres=data.data?.genres?.length?data.data.genres:[...DEFAULT_GENRES];isPublic=!!data.is_public}else await saveNow();updateShare()}
@@ -1549,18 +1604,67 @@ function currentTrainerCharacter(){const list=teamTrainerOptions();if(!list.leng
 function trainerCardAvatarUrl(){const f=trainerCardFaction();if(!f)return "";if(isCurrentTeamLeader())return String(f?.leader_image_url||"").trim()||(f?.leader_character?trainerShowdownUrl(f.leader_character):"");return currentTrainerCharacter()?.url||""}
 function trainerCardColors(){const f=trainerCardFaction();if(f){const map={"team-rocket":["#080808","#a81818"],"team-aqua":["#0c4b92","#2f9ed3"],"team-magma":["#71201e","#d95735"],"team-plasma":["#26394d","#4f9bc2"],"team-galactic":["#24103e","#7751c5"],"pokemon-rangers":["#315f76","#7ba9bc"],"aether-foundation":["#657d35","#c2ab52"],"poke-dolls":["#a34f72","#e28fad"]};return map[f.slug]||[f.primary_color||"#444",f.secondary_color||"#777"]}return TRAINER_CARD_THEMES.classic}
 function applyTrainerCardThemeClass(){}
-function renderTrainerCard(){const card=document.getElementById("trainerCard"),locked=document.getElementById("trainerCardLocked"),unlocked=document.getElementById("trainerCardUnlocked");if(!card||!locked||!unlocked)return;const f=trainerCardFaction(),hasTeam=!!f;locked.classList.toggle("hidden",hasTeam);unlocked.classList.toggle("hidden",!hasTeam);if(!hasTeam)return;const a=all(),c=a.filter(caught).length,display=profile?.display_name||profile?.username||"Trainer";trainerCardName.textContent=display;trainerCardUsername.textContent=profile?.username?`@${profile.username}`:"@reader";trainerCardTeam.textContent=f.name||"Team";trainerCardCaught.textContent=`${c} / ${a.length}`;trainerLeaderRibbon.classList.toggle("hidden",!isCurrentTeamLeader());const avatar=trainerCardAvatar,fb=trainerAvatarFallback,url=trainerCardAvatarUrl();avatar.style.display=url?"block":"none";fb.style.display=url?"none":"flex";avatar.onload=()=>{avatar.style.display="block";fb.style.display="none"};avatar.onerror=()=>{avatar.style.display="none";fb.style.display="flex";fb.textContent=(display||"RF").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"RF"};if(url)avatar.src=url;const colors=trainerCardColors();card.style.setProperty("--tc1",colors[0]);card.style.setProperty("--tc2",colors[1]);downloadTrainerCardBtn?.classList.toggle("hidden",publicMode);editTrainerCardBtn?.classList.toggle("hidden",publicMode)}
+function renderTrainerCard(){
+  const card=document.getElementById("trainerCard"),locked=document.getElementById("trainerCardLocked"),unlocked=document.getElementById("trainerCardUnlocked");
+  if(!card||!locked||!unlocked)return;
+  const f=trainerCardFaction(),hasTeam=!!f;
+  locked.classList.toggle("hidden",hasTeam);
+  unlocked.classList.toggle("hidden",!hasTeam);
+  if(!hasTeam){closeTrainerCardEditor();return}
+  const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0,display=profile?.display_name||profile?.username||"Trainer";
+  trainerCardName.textContent=display;
+  trainerCardUsername.textContent=profile?.username?`@${profile.username}`:"@reader";
+  trainerCardTeam.textContent=f.name||"Team";
+  trainerCardCaught.textContent=`${c} / ${a.length}`;
+  const percentText=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";
+  if(document.getElementById("trainerCardPercent"))trainerCardPercent.textContent=percentText;
+  trainerLeaderRibbon.classList.toggle("hidden",!isCurrentTeamLeader());
+  const avatar=trainerCardAvatar,fb=trainerAvatarFallback,url=trainerCardAvatarUrl();
+  avatar.style.display=url?"block":"none";fb.style.display=url?"none":"flex";
+  avatar.onload=()=>{avatar.style.display="block";fb.style.display="none"};
+  avatar.onerror=()=>{avatar.style.display="none";fb.style.display="flex";fb.textContent=(display||"RF").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"RF"};
+  if(url)avatar.src=url;
+  const colors=trainerCardColors();card.style.setProperty("--tc1",colors[0]);card.style.setProperty("--tc2",colors[1]);
+  downloadTrainerCardBtn?.classList.toggle("hidden",publicMode);
+  editTrainerCardBtn?.classList.toggle("hidden",publicMode);
+  renderInlineTrainerEditor();
+}
+function renderInlineTrainerEditor(){
+  const panel=document.getElementById("trainerCardInlineEdit"),select=document.getElementById("trainerCardCharacterSelect"),help=document.getElementById("trainerCardInlineHelp");
+  if(!panel||!select||!help)return;
+  const f=trainerCardFaction();
+  if(!f){panel.classList.add("hidden");return}
+  if(isCurrentTeamLeader()){
+    select.innerHTML=`<option value="">${esc(f.leader_character||"Team Leader Character")}</option>`;
+    select.disabled=true;
+    help.textContent="Your Team Leader character is assigned automatically.";
+    return;
+  }
+  const list=teamTrainerOptions(),selected=currentTrainerCharacter()?.key||"";
+  select.disabled=false;
+  select.innerHTML=list.map(s=>`<option value="${esc(s.key)}" ${s.key===selected?"selected":""}>${esc(s.label)}</option>`).join("");
+  help.textContent=`Choose the character shown on your ${f.name} Trainer Card. Changes save immediately.`;
+}
+function editTrainerCard(){
+  if(!trainerCardFaction())return openTeamPicker();
+  const panel=document.getElementById("trainerCardInlineEdit");
+  if(!panel)return;
+  renderInlineTrainerEditor();
+  panel.classList.toggle("hidden");
+  if(!panel.classList.contains("hidden"))panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function closeTrainerCardEditor(){document.getElementById("trainerCardInlineEdit")?.classList.add("hidden")}
 function renderTrainerSpriteChoices(){const box=document.getElementById("trainerSpriteChoices"),help=document.getElementById("trainerCharacterHelp");if(!box)return;const f=trainerCardFaction();if(!f){box.innerHTML="";if(help)help.textContent="Join a team to unlock your Trainer Card and character choices.";return}if(isCurrentTeamLeader()){box.innerHTML=`<div class="trainer-character-locked-note">As <strong>${esc(f.name)}</strong> Team Leader, your Trainer Card uses the assigned leader character automatically.</div>`;if(help)help.textContent="Your Team Leader character is assigned automatically.";return}const list=teamTrainerOptions(),selected=currentTrainerCharacter()?.key||"";if(help)help.textContent=`Choose the character shown on your ${f.name} Trainer Card.`;box.innerHTML=list.map(s=>`<button type="button" class="trainer-sprite-choice ${s.key===selected?"selected":""}" onclick="chooseTrainerSprite('${s.key}')"><img src="${s.url}" alt="${esc(s.label)}"><span>${esc(s.label)}</span></button>`).join("")}
-async function chooseTrainerSprite(key){if(publicMode||!user||isCurrentTeamLeader()||!trainerCharacterByKey(key))return;const old=profile?.trainer_sprite||"";profile={...(profile||{}),trainer_sprite:key};renderTrainerSpriteChoices();renderTrainerCard();const{error}=await sb.from("profiles").update({trainer_sprite:key,updated_at:new Date().toISOString()}).eq("id",user.id);if(error){profile.trainer_sprite=old;renderTrainerSpriteChoices();renderTrainerCard();toast("Could not save Trainer Card character.");return}toast("Trainer Card character saved.")}
-function refreshTrainerSettings(){renderTrainerSpriteChoices()}
+async function chooseTrainerSprite(key){if(publicMode||!user||isCurrentTeamLeader()||!trainerCharacterByKey(key))return;const old=profile?.trainer_sprite||"";profile={...(profile||{}),trainer_sprite:key};renderTrainerSpriteChoices();renderTrainerCard();renderInlineTrainerEditor();const{error}=await sb.from("profiles").update({trainer_sprite:key,updated_at:new Date().toISOString()}).eq("id",user.id);if(error){profile.trainer_sprite=old;renderTrainerSpriteChoices();renderTrainerCard();renderInlineTrainerEditor();toast("Could not save Trainer Card character.");return}renderInlineTrainerEditor();toast("Trainer Card character saved.")}
+function refreshTrainerSettings(){renderInlineTrainerEditor()}
 async function setTrainerCardTheme(theme){return}
 function openTeamPicker(){goPage("settings");setTimeout(()=>document.getElementById("factionList")?.scrollIntoView({behavior:"smooth",block:"center"}),120)}
-function editTrainerCard(){if(!trainerCardFaction())return openTeamPicker();goPage("settings");setTimeout(()=>document.getElementById("trainerCharacterRow")?.scrollIntoView({behavior:"smooth",block:"center"}),120)}
+
 function loadCanvasImage(url){return new Promise(resolve=>{if(!url)return resolve(null);const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=url})}
 function roundedRectPath(ctx,x,y,w,h,r){const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath()}
-async function downloadTrainerCard(){if(publicMode||!trainerCardFaction())return toast("Join a team to create a Trainer Card.");const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=1200,H=700;canvas.width=W;canvas.height=H;const colors=trainerCardColors(),grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,colors[0]);grad.addColorStop(1,colors[1]);roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.fillStyle=grad;ctx.fill();ctx.save();roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.clip();ctx.globalAlpha=.11;ctx.strokeStyle="#fff";ctx.lineWidth=56;ctx.beginPath();ctx.arc(1050,640,250,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.12;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(120,80,220,0,Math.PI*2);ctx.fill();ctx.restore();const display=profile?.display_name||profile?.username||"Trainer",f=trainerCardFaction(),a=all(),c=a.filter(caught).length;ctx.fillStyle="rgba(255,255,255,.16)";roundedRectPath(ctx,65,112,315,455,34);ctx.fill();ctx.strokeStyle="rgba(255,255,255,.28)";ctx.lineWidth=2;ctx.stroke();const img=await loadCanvasImage(trainerCardAvatarUrl());if(img){const scale=Math.min(280/img.width,420/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,65+(315-dw)/2,135+(410-dh),dw,dh)}else{ctx.fillStyle="rgba(255,255,255,.85)";ctx.font="900 92px system-ui";ctx.textAlign="center";ctx.fillText((display.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("")||"RF").toUpperCase(),222,385);ctx.textAlign="left"}ctx.fillStyle="rgba(255,255,255,.82)";ctx.font="900 21px system-ui";ctx.fillText("READING FRENZY • TRAINER CARD",430,150);ctx.fillStyle="#fff";ctx.font="1000 62px system-ui";ctx.fillText(display.slice(0,28),430,230);ctx.fillStyle="rgba(255,255,255,.86)";ctx.font="800 29px system-ui";ctx.fillText(profile?.username?`@${profile.username}`:"@reader",430,278);const boxes=[[430,340,325,125,"TEAM",f?.name||"Team"],[780,340,325,125,"CAUGHT",`${c} / ${a.length}`]];boxes.forEach(([x,y,w,h,label,value])=>{ctx.fillStyle="rgba(0,0,0,.15)";roundedRectPath(ctx,x,y,w,h,20);ctx.fill();ctx.fillStyle="rgba(255,255,255,.72)";ctx.font="900 17px system-ui";ctx.fillText(label,x+22,y+36);ctx.fillStyle="#fff";ctx.font="900 28px system-ui";ctx.fillText(String(value).slice(0,20),x+22,y+82)});if(isCurrentTeamLeader()){ctx.fillStyle="#f6d25b";roundedRectPath(ctx,430,500,210,50,25);ctx.fill();ctx.fillStyle="#3c2b00";ctx.font="1000 18px system-ui";ctx.fillText("TEAM LEADER",464,532)}ctx.strokeStyle="rgba(255,255,255,.72)";ctx.lineWidth=8;ctx.beginPath();ctx.arc(1080,105,44,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(1080,105,12,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,.88)";ctx.fill();ctx.beginPath();ctx.moveTo(1000,105);ctx.lineTo(1036,105);ctx.moveTo(1124,105);ctx.lineTo(1160,105);ctx.stroke();try{const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));if(!blob)throw new Error("No image");const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`Reading-Frenzy-Trainer-Card-${(profile?.username||"trainer").replace(/[^a-z0-9_-]/gi,"-")}.png`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast("Trainer Card downloaded.")}catch(e){console.error(e);toast("Could not download Trainer Card.")}}
+async function downloadTrainerCard(){if(publicMode||!trainerCardFaction())return toast("Join a team to create a Trainer Card.");const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=1200,H=700;canvas.width=W;canvas.height=H;const colors=trainerCardColors(),grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,colors[0]);grad.addColorStop(1,colors[1]);roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.fillStyle=grad;ctx.fill();ctx.save();roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.clip();ctx.globalAlpha=.11;ctx.strokeStyle="#fff";ctx.lineWidth=56;ctx.beginPath();ctx.arc(1050,640,250,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.12;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(120,80,220,0,Math.PI*2);ctx.fill();ctx.restore();const display=profile?.display_name||profile?.username||"Trainer",f=trainerCardFaction(),a=all(),c=a.filter(caught).length;ctx.fillStyle="rgba(255,255,255,.16)";roundedRectPath(ctx,65,112,315,455,34);ctx.fill();ctx.strokeStyle="rgba(255,255,255,.28)";ctx.lineWidth=2;ctx.stroke();const img=await loadCanvasImage(trainerCardAvatarUrl());if(img){const scale=Math.min(280/img.width,420/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,65+(315-dw)/2,135+(410-dh),dw,dh)}else{ctx.fillStyle="rgba(255,255,255,.85)";ctx.font="900 92px system-ui";ctx.textAlign="center";ctx.fillText((display.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("")||"RF").toUpperCase(),222,385);ctx.textAlign="left"}ctx.fillStyle="rgba(255,255,255,.82)";ctx.font="900 21px system-ui";ctx.fillText("READING FRENZY • TRAINER CARD",430,150);ctx.fillStyle="#fff";ctx.font="1000 62px system-ui";ctx.fillText(display.slice(0,28),430,230);ctx.fillStyle="rgba(255,255,255,.86)";ctx.font="800 29px system-ui";ctx.fillText(profile?.username?`@${profile.username}`:"@reader",430,278);const pct=a.length?c/a.length*100:0,pctText=pct<1&&c?pct.toFixed(1)+"%":Math.round(pct)+"%";const boxes=[[430,330,215,125,"TEAM",f?.name||"Team"],[665,330,215,125,"CAUGHT",`${c} / ${a.length}`],[900,330,215,125,"COMPLETE",pctText]];boxes.forEach(([x,y,w,h,label,value])=>{ctx.fillStyle="rgba(0,0,0,.15)";roundedRectPath(ctx,x,y,w,h,20);ctx.fill();ctx.fillStyle="rgba(255,255,255,.72)";ctx.font="900 17px system-ui";ctx.fillText(label,x+22,y+36);ctx.fillStyle="#fff";ctx.font="900 28px system-ui";ctx.fillText(String(value).slice(0,20),x+22,y+82)});if(isCurrentTeamLeader()){ctx.fillStyle="#f6d25b";roundedRectPath(ctx,430,500,210,50,25);ctx.fill();ctx.fillStyle="#3c2b00";ctx.font="1000 18px system-ui";ctx.fillText("TEAM LEADER",464,532)}ctx.strokeStyle="rgba(255,255,255,.72)";ctx.lineWidth=8;ctx.beginPath();ctx.arc(1080,105,44,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(1080,105,12,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,.88)";ctx.fill();ctx.beginPath();ctx.moveTo(1000,105);ctx.lineTo(1036,105);ctx.moveTo(1124,105);ctx.lineTo(1160,105);ctx.stroke();try{const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));if(!blob)throw new Error("No image");const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`Reading-Frenzy-Trainer-Card-${(profile?.username||"trainer").replace(/[^a-z0-9_-]/gi,"-")}.png`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast("Trainer Card downloaded.")}catch(e){console.error(e);toast("Could not download Trainer Card.")}}
 
-function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homePercent.textContent=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";homeProgress.style.width=p+"%";homeCount.textContent=`${c} / ${a.length} caught`;renderTrainerCard();regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
+function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homeProgress.style.width=p+"%";renderTrainerCard();regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
 function toggleAdminImageEditMode(){
   if(!isAdmin)return toast("Admin access required.");
   adminImageEditMode=!adminImageEditMode;
