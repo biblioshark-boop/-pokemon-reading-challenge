@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787081082 -->
+<!-- RF_BUILD:1787081319 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787081082";
+const RF_BUILD="1787081319";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1098,6 +1098,40 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 }
 </style>
 
+
+<style id="dexDetailPrevNext20260818">
+.dex-detail-nav{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:10px;
+  margin:0 0 12px;
+}
+.dex-detail-nav button{
+  min-height:44px;
+  border-radius:14px;
+  font-weight:900;
+}
+.dex-detail-nav .dex-prev{text-align:left}
+.dex-detail-nav .dex-next{text-align:right}
+.dex-detail-nav .dex-position{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+}
+@media(max-width:520px){
+  .dex-detail-nav{
+    grid-template-columns:1fr 1fr;
+  }
+  .dex-detail-nav .dex-position{
+    grid-column:1/-1;
+    grid-row:2;
+    text-align:center;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
@@ -2011,6 +2045,48 @@ function renderDex(){
     dexGrid.appendChild(b)
   })
 }
+
+function dexTraversalList(){
+  return [...all()].sort((a,b)=>{
+    const d=(+a.dex||99999)-(+b.dex||99999);
+    if(d)return d;
+    if(+a.dex===201&&+b.dex===201)return String(a.form||"").localeCompare(String(b.form||""),undefined,{numeric:true});
+    const sa=(a.sortOrder??99999),sb=(b.sortOrder??99999);
+    if(sa!==sb)return sa-sb;
+    const nf=Number(!!a.isForm)-Number(!!b.isForm);
+    if(nf)return nf;
+    return String(a.form||a.name||"").localeCompare(String(b.form||b.name||""),undefined,{numeric:true});
+  });
+}
+function dexNeighborInfo(id){
+  const list=dexTraversalList();
+  const i=list.findIndex(p=>String(p.id)===String(id));
+  if(i<0||!list.length)return null;
+  return {
+    index:i,
+    total:list.length,
+    prev:list[(i-1+list.length)%list.length],
+    next:list[(i+1)%list.length]
+  };
+}
+function openDexNeighbor(direction){
+  const info=dexNeighborInfo(currentPokemonId);
+  if(!info)return;
+  const target=direction<0?info.prev:info.next;
+  if(target)openPokemon(target.id);
+}
+function dexDetailNavHtml(id){
+  const info=dexNeighborInfo(id);
+  if(!info)return "";
+  const prevLabel=info.prev?`${info.prev.name}${info.prev.form?` • ${info.prev.form}`:""}`:"Previous";
+  const nextLabel=info.next?`${info.next.name}${info.next.form?` • ${info.next.form}`:""}`:"Next";
+  return `<div class="dex-detail-nav" aria-label="Pokédex navigation">
+    <button class="secondary dex-prev" type="button" onclick="openDexNeighbor(-1)">← ${esc(prevLabel)}</button>
+    <div class="dex-position">${info.index+1} / ${info.total}</div>
+    <button class="secondary dex-next" type="button" onclick="openDexNeighbor(1)">${esc(nextLabel)} →</button>
+  </div>`;
+}
+
 function openPokemon(id,fromHistory=false){
   currentPokemonId=id;
   const p=all().find(x=>x.id===id),e=entry(id);
@@ -2023,7 +2099,7 @@ function openPokemon(id,fromHistory=false){
   const booksBlock=`<div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>`;
   const caughtBlock=publicMode?"":`<div class="form-card"><h3>Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" style="width:100%;margin-top:12px" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button>${p.custom?`<button class="danger" style="width:100%;margin-top:10px" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" style="width:100%;margin-top:10px" onclick="goPage('settings');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}');setTimeout(()=>adminGlobalCard?.scrollIntoView({behavior:'smooth'}),50)">Edit Global Entry</button>`:""}</div>`;
 
-  detailContent.innerHTML=`<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div><div id="rotomFactSlot">${rotomFactHtml(p.fact||localRotomFact(p))}</div>${promptBlock}</div>${booksBlock}${caughtBlock}`;
+  detailContent.innerHTML=`${dexDetailNavHtml(p.id)}<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div><div id="rotomFactSlot">${rotomFactHtml(p.fact||localRotomFact(p))}</div>${promptBlock}</div>${booksBlock}${caughtBlock}`;
   renderBooks();
   if(!p.fact)loadRotomFactForPokemon(p);
   if(!fromHistory){
