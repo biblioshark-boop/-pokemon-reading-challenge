@@ -261,6 +261,8 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .gym-team{display:grid;gap:8px;margin-top:13px}
 .gym-mon{display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:10px;padding:9px;border:1px solid var(--line);border-radius:15px;background:var(--bg)}
 .gym-mon img{width:48px;height:48px;object-fit:contain}.gym-mon-name{font-weight:900}.gym-mon-form{font-size:11px;color:var(--muted)}
+.gym-mon-prompt{margin-top:6px;padding:7px 9px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-size:11px;line-height:1.35;color:var(--text)}
+.gym-mon-prompt strong{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px}
 .gym-status{font-size:12px;font-weight:900;text-align:right}.gym-status.done{color:var(--accent)}
 .gym-defeat-btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:11px;padding:8px 9px;font-size:11px;font-weight:900}
 .gym-defeat-btn.done{background:var(--accent);color:white;border-color:var(--accent)}
@@ -991,6 +993,22 @@ function gymMemberPokemon(m){
   }
   return candidates.find(p=>!p.isForm)||candidates[0]||all().find(p=>String(p.name).toLowerCase()===String(m.pokemon_name).toLowerCase())||null;
 }
+function gymMemberPrompt(m,p){
+  if(p?.prompt)return p.prompt;
+  const dex=+m.dex_number||0;
+  const wanted=String(m.form_name||"").toLowerCase().trim();
+  let row=null;
+  if(dex&&wanted){
+    row=globalChallengeData.find(r=>+r.dex_number===dex&&String(r.form_name||"").toLowerCase().includes(wanted));
+  }
+  if(!row&&dex)row=globalChallengeData.find(r=>+r.dex_number===dex&&!r.form_name);
+  if(!row&&dex)row=globalChallengeData.find(r=>+r.dex_number===dex);
+  if(!row&&m.pokemon_name){
+    const name=String(m.pokemon_name).toLowerCase();
+    row=globalChallengeData.find(r=>String(r.name||"").toLowerCase()===name);
+  }
+  return row?.reading_prompt||"Prompt coming soon.";
+}
 function gymMemberDone(gymId,m){
   return !!gymMemberProgress[m.id]?.completed;
 }
@@ -1088,6 +1106,8 @@ function renderGyms(){
       const progress=gymMemberProgress[m.id]||{};
       const img=p?.image||(+m.dex_number?image(m.dex_number):"");
       const form=m.form_name?`<div class="gym-mon-form">${esc(m.form_name)}</div>`:"";
+      const prompt=gymMemberPrompt(m,p);
+      const promptHtml=`<div class="gym-mon-prompt"><strong>Reading Prompt</strong>${esc(prompt)}</div>`;
       const sourceNote=done
         ?`<div class="gym-mon-note">${progress.completion_source==="existing"?"Used existing Pokédex catch":progress.book_title?`Gym entry: ${esc(progress.book_title)}`:"Defeated"}</div>`
         :"";
@@ -1097,7 +1117,7 @@ function renderGyms(){
       const media=img
         ?`<div><img src="${esc(img)}" data-stage="0" onerror="gymMonImgError(this,${+m.dex_number||0})" alt="${esc(m.pokemon_name)}"><div class="gym-mon-fallback" style="display:none">#${String(m.dex_number||"").padStart(4,"0")}</div></div>`
         :`<div class="gym-mon-fallback">#${String(m.dex_number||"").padStart(4,"0")}</div>`;
-      return `<div class="gym-mon">${media}<div><div class="gym-mon-name">${esc(m.pokemon_name)}</div>${form}${sourceNote}</div>${control}</div>`;
+      return `<div class="gym-mon">${media}<div><div class="gym-mon-name">${esc(m.pokemon_name)}</div>${form}${promptHtml}${sourceNote}</div>${control}</div>`;
     }).join("");
     const trainerUrl=g.leader_image_url||trainerShowdownUrl(g.leader_name);
     const initials=trainerInitials(g.leader_name);
