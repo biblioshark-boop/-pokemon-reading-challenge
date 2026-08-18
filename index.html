@@ -466,6 +466,45 @@ const title=s=>s.replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
 function region(n){n=+n;if(n<=151)return"Kanto";if(n<=251)return"Johto";if(n<=386)return"Hoenn";if(n<=493)return"Sinnoh";if(n<=649)return"Unova";if(n<=721)return"Kalos";if(n<=809)return"Alola";if(n<=905)return"Galar";if(n<=1025)return"Paldea";return"Special"}
 function form(n){if(n.endsWith("-alola"))return["Alolan","Alola"];if(n.endsWith("-galar"))return["Galarian","Galar"];if(n.endsWith("-hisui"))return["Hisuian","Hisui"];if(n.endsWith("-paldea"))return["Paldean","Paldea"];return null}
 const image=id=>`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const FORM_IMAGE_CACHE_KEY="rfFormImageCacheV1";
+let formImageCache={};
+try{formImageCache=JSON.parse(localStorage.getItem(FORM_IMAGE_CACHE_KEY)||"{}")||{}}catch{formImageCache={}}
+const formImagePending=new Map();
+function formApiNameFromRow(r){
+  const slug=String(r?.slug||"").replace(/^data-\d{4}-/,"").replace(/^data-\d+-/,"");
+  return slug||String(r?.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+}
+function formSpriteGuess(r){
+  const dex=+r?.dex_number||0,api=formApiNameFromRow(r),base=String(r?.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+  let suffix=api.startsWith(base+"-")?api.slice(base.length+1):"";
+  if(!dex||!suffix)return dex?image(dex):"";
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${dex}-${suffix}.png`;
+}
+async function resolveFormImage(apiName){
+  apiName=String(apiName||"").trim().toLowerCase();
+  if(!apiName)return "";
+  if(formImageCache[apiName])return formImageCache[apiName];
+  if(formImagePending.has(apiName))return formImagePending.get(apiName);
+  const job=(async()=>{
+    const urls=[`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(apiName)}`,`https://pokeapi.co/api/v2/pokemon-form/${encodeURIComponent(apiName)}`];
+    for(const url of urls){
+      try{
+        const res=await fetch(url);
+        if(!res.ok)continue;
+        const j=await res.json();
+        const found=j?.sprites?.other?.["official-artwork"]?.front_default||j?.sprites?.other?.home?.front_default||j?.sprites?.front_default||"";
+        if(found){
+          formImageCache[apiName]=found;
+          try{localStorage.setItem(FORM_IMAGE_CACHE_KEY,JSON.stringify(formImageCache))}catch{}
+          return found;
+        }
+      }catch{}
+    }
+    return "";
+  })().finally(()=>formImagePending.delete(apiName));
+  formImagePending.set(apiName,job);
+  return job;
+}
 const all=()=>[...pokemonData,...globalPokemon,...customPokemon].filter(p=>{
   const combined=`${p?.name||""} ${p?.apiName||""} ${p?.form||""}`.toLowerCase();
   return !combined.includes("totem");
@@ -543,7 +582,8 @@ async function loadGlobalCatalog(){
       form:displayFormLabel(r.name,r.form_name),
       rawForm:r.form_name||"",
       isForm:true,
-      image:r.image_url||(r.dex_number?image(r.dex_number):""),
+      image:r.image_url||formSpriteGuess(r),
+      formApiName:r.image_url?"":formApiNameFromRow(r),
       types:[r.type_1,r.type_2].filter(Boolean),
       prompt:r.reading_prompt||"",
       fact:r.dex_fact||"",
@@ -695,14 +735,14 @@ function fillRegions(){
 }
 function finishLoad(){applyGlobalMetadata();fillRegions();renderHome();renderDex();renderStats();dexLoading.style.display="none"}
 function renderHome(){const a=all(),c=a.filter(caught).length,p=a.length?c/a.length*100:0;homePercent.textContent=p<1&&c?p.toFixed(1)+"%":Math.round(p)+"%";homeProgress.style.width=p+"%";homeCount.textContent=`${c} / ${a.length} caught`;regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
-function renderDex(){let l=all(),q=(searchInput.value||"").toLowerCase();l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));if(sortFilter.value==="az")l.sort((a,b)=>a.name.localeCompare(b.name));else if(sortFilter.value==="caught")l.sort((a,b)=>+caught(b)-+caught(a));else if(sortFilter.value==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));else l.sort((a,b)=>(+a.dex||99999)-(+b.dex||99999));dexGrid.innerHTML="";if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}l.forEach(p=>{const b=document.createElement("button");b.className="pokemon-card"+(caught(p)?" caught":"");const media=p.image?`<img loading="lazy" src="${esc(p.image)}" data-stage="0" onerror="pokemonImgError(this,${+p.dex||0})"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global"}</span>`:""}`;b.onclick=()=>openPokemon(p.id);dexGrid.appendChild(b)})}
+function renderDex(){let l=all(),q=(searchInput.value||"").toLowerCase();l=l.filter(p=>(!q||`${p.name} ${p.form} ${p.dex}`.toLowerCase().includes(q))&&(regionFilter.value==="all"||p.region===regionFilter.value)&&(statusFilter.value==="all"||statusFilter.value==="caught"===caught(p))&&(formFilter.value==="all"||formFilter.value==="forms"===p.isForm));if(sortFilter.value==="az")l.sort((a,b)=>a.name.localeCompare(b.name));else if(sortFilter.value==="caught")l.sort((a,b)=>+caught(b)-+caught(a));else if(sortFilter.value==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));else l.sort((a,b)=>(+a.dex||99999)-(+b.dex||99999));dexGrid.innerHTML="";if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}l.forEach(p=>{const b=document.createElement("button");b.className="pokemon-card"+(caught(p)?" caught":"");const media=p.image?`<img loading="lazy" src="${esc(p.image)}" data-stage="0" data-form-api="${esc(p.formApiName||"")}" onerror="pokemonImgError(this,${+p.dex||0})"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global"}</span>`:""}`;b.onclick=()=>openPokemon(p.id);dexGrid.appendChild(b)})}
 function openPokemon(id){
   currentPokemonId=id;
   const p=all().find(x=>x.id===id),e=entry(id);
   if(!p)return toast("Pokémon entry not found.");
   const promptValue=e.prompt||p.prompt||"";
   const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
-  const media=p.image?`<img src="${esc(p.image)}" data-stage="0" onerror="pokemonImgError(this,${+p.dex||0})"><div class="placeholder-mon" style="padding:50px 0;display:none">?</div>`:`<div class="placeholder-mon" style="padding:50px 0">?</div>`;
+  const media=p.image?`<img src="${esc(p.image)}" data-stage="0" data-form-api="${esc(p.formApiName||"")}" onerror="pokemonImgError(this,${+p.dex||0})"><div class="placeholder-mon" style="padding:50px 0;display:none">?</div>`:`<div class="placeholder-mon" style="padding:50px 0">?</div>`;
 
   const promptBlock=`<div class="prompt-display"><div class="prompt-label">Reading Prompt</div><div class="prompt-text">${promptValue?esc(promptValue):"Prompt coming soon."}</div></div>`;
   const booksBlock=`<div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>`;
@@ -791,7 +831,7 @@ function searchSafari(){
   const e=entry(p.id);
   const prompt=e.prompt||p.prompt||"Prompt coming soon.";
   const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
-  const media=p.image?`<img src="${esc(p.image)}" data-stage="0" onerror="pokemonImgError(this,${+p.dex||0})" alt="${esc(p.name)}"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;
+  const media=p.image?`<img src="${esc(p.image)}" data-stage="0" data-form-api="${esc(p.formApiName||"")}" onerror="pokemonImgError(this,${+p.dex||0})" alt="${esc(p.name)}"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;
   box.innerHTML=`<div class="safari-encounter"><div class="wild-label">The grass is rustling...</div><h3>A wild ${esc(p.name)} appeared!</h3>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}<div class="safari-mon-wrap">${media}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="safari-prompt"><div class="prompt-label">Reading Prompt</div><div class="prompt-text">${esc(prompt)}</div></div><div class="safari-actions"><button class="primary" onclick="openPokemon('${esc(p.id)}')">View Pokémon</button><button class="secondary" onclick="searchSafari()">Search Again</button></div></div>`;
   box.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
@@ -865,15 +905,22 @@ function rewardImgFail(img,reward){
   badgeImgFail(img);
 }
 
-function pokemonImgError(img,dex){
+async function pokemonImgError(img,dex){
   const stage=+(img.dataset.stage||0);
-  if(stage===0){
+  const formApi=String(img.dataset.formApi||"").trim();
+  if(formApi&&stage===0){
     img.dataset.stage="1";
+    const exact=await resolveFormImage(formApi);
+    if(exact){img.src=exact;return}
+  }
+  const current=+(img.dataset.stage||0);
+  if(current<=1){
+    img.dataset.stage="2";
     img.src=`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dex}.png`;
     return;
   }
-  if(stage===1){
-    img.dataset.stage="2";
+  if(current===2){
+    img.dataset.stage="3";
     img.src=`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${dex}.png`;
     return;
   }
