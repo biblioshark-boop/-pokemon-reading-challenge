@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787082164 -->
+<!-- RF_BUILD:1787082791 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787082164";
+const RF_BUILD="1787082791";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1132,6 +1132,63 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 }
 </style>
 
+
+<style id="teamStatsOverhaul20260818">
+.my-team-stats-card{
+  position:relative;overflow:hidden;margin:0 auto 20px;max-width:900px;
+  border-radius:26px;padding:24px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:white;border:2px solid rgba(255,255,255,.24);
+  box-shadow:0 16px 36px rgba(0,0,0,.18)
+}
+.my-team-stats-card::after{
+  content:"";position:absolute;width:280px;height:280px;right:-110px;bottom:-150px;
+  border:34px solid rgba(255,255,255,.09);border-radius:50%
+}
+.my-team-stats-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.my-team-stats-kicker{font-size:11px;font-weight:1000;letter-spacing:.14em;opacity:.82}
+.my-team-stats-name{font-size:34px;font-weight:1000;line-height:1.05;margin-top:5px}
+.my-team-stats-total{font-size:58px;font-weight:1000;line-height:1}
+.my-team-stats-total span{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-top:7px;text-align:right}
+.my-team-stats-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.my-team-pill{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.2);padding:8px 11px;border-radius:999px;font-size:12px;font-weight:900}
+.my-team-leader-row{position:relative;z-index:1;display:flex;gap:12px;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.2)}
+.my-team-leader-row img{width:58px;height:58px;object-fit:contain;object-position:center bottom;background:rgba(255,255,255,.12);border-radius:14px}
+.my-team-leader-title{font-size:10px;font-weight:1000;letter-spacing:.12em;opacity:.78}
+.my-team-leader-name{font-size:15px;font-weight:1000;margin-top:2px}
+.my-team-leader-user{font-size:12px;opacity:.82;margin-top:2px}
+
+.team-recent-catches{display:grid;gap:9px;margin-bottom:22px}
+.team-catch-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px 15px;border-radius:17px;background:var(--surface);border:1px solid var(--line);box-shadow:0 5px 14px rgba(0,0,0,.05)}
+.team-catch-name{font-weight:1000;font-size:15px}
+.team-catch-who{font-size:12px;color:var(--muted);margin-top:3px}
+.team-catch-book{font-size:12px;margin-top:4px}
+.team-catch-time{font-size:11px;color:var(--muted);white-space:nowrap;text-align:right}
+.team-catch-leader{display:inline-block;margin-left:5px;font-size:9px;font-weight:1000;letter-spacing:.07em;padding:3px 6px;border-radius:999px;background:#f3c84b;color:#443200}
+
+.team-rank-row{
+  grid-template-columns:44px minmax(0,1fr) auto!important;
+  align-items:center
+}
+.team-rank-main{min-width:0}
+.team-rank-name-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.team-rank-leader{font-size:11px;color:var(--muted);margin-top:4px}
+.team-rank-leader strong{color:var(--text)}
+.team-rank-score{min-width:92px;text-align:right}
+.team-rank-row.current-team{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent),0 7px 18px rgba(0,0,0,.07)}
+.team-rank-crown{font-size:13px}
+
+@media(max-width:620px){
+  .my-team-stats-grid{grid-template-columns:1fr}
+  .my-team-stats-total{font-size:46px}
+  .my-team-stats-total span{text-align:left}
+  .team-rank-row{grid-template-columns:36px minmax(0,1fr) auto!important}
+  .team-rank-score{min-width:68px}
+  .team-catch-row{grid-template-columns:1fr}
+  .team-catch-time{text-align:left}
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
@@ -1204,7 +1261,18 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
   <div id="badgeCase" class="badge-regions"></div>
 </div>
 </section>
-<section id="statsPage" class="page"><div class="stat-grid"><div class="stat-card"><b id="statCaught">0</b>Caught</div><div class="stat-card"><b id="statRemaining">0</b>Remaining</div><div class="stat-card"><b id="statStandard">0</b>Standard Caught</div><div class="stat-card"><b id="statForms">0</b>Forms Caught</div></div><h3 class="section-title">Team Competition</h3><div class="team-leader-note">Every caught Pokémon adds 1 point to your team. Poke Dolls are not included in the competition.</div><div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div><h3 class="section-title">By Region</h3><div id="statRegions" class="region-grid"></div></section>
+<section id="statsPage" class="page">
+  <div id="myTeamStatsCard" class="my-team-stats-card">
+    <div class="muted">Loading your team…</div>
+  </div>
+
+  <h3 class="section-title">Recent Team Catches</h3>
+  <div id="teamRecentCatches" class="team-recent-catches"><div class="muted">Loading recent catches…</div></div>
+
+  <h3 class="section-title">Team Rankings</h3>
+  <div class="team-leader-note">Teams automatically move up and down the rankings as their caught totals change. Poké Dolls are not included in the competition.</div>
+  <div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div>
+</section>
 <section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Profile & Trainer Card</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" aria-describedby="usernameLockNote"><div id="usernameLockNote" class="username-lock-note">Loading username status…</div><button id="saveProfileBtn" class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div></div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div class="team-choice-note">Please choose one team and that will be your choice. If you have any reason for wanting to leave or switch your team, please reach out to Travis or your Team Leader. Admin accounts can make team corrections when needed.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
 
 
@@ -2190,7 +2258,21 @@ async function saveBook(i){
   }
 }
 function deleteBook(i){const e=entry(currentPokemonId);e.books.splice(i,1);if(!e.books.length)e.caught=false;saveSoon();openPokemon(currentPokemonId)}
-function toggleCaught(){const e=entry(currentPokemonId);if(!e.caught&&!e.books.length){toast("Add at least one book first.");return}e.caught=!e.caught;saveSoon();openPokemon(currentPokemonId);toast(e.caught?"Caught!":"Marked uncaught")}
+async function logTeamCatchForPokemon(p,e,bookTitleOverride=""){
+  if(!user||publicMode||!p||!currentFactionId)return;
+  const books=Array.isArray(e?.books)?e.books:[];
+  const latest=books.length?books[books.length-1]:null;
+  const bookTitle=bookTitleOverride||latest?.title||"";
+  const{error}=await sb.rpc("log_team_catch",{
+    p_pokemon_key:String(p.id||p.slug||p.dex||p.name),
+    p_pokemon_name:String(p.name||"Pokémon"),
+    p_pokemon_form:String(p.form||""),
+    p_book_title:String(bookTitle||"")
+  });
+  if(error)console.warn("Team catch activity was not logged",error);
+}
+
+async function toggleCaught(){const e=entry(currentPokemonId),p=all().find(x=>x.id===currentPokemonId);if(!e.caught&&!e.books.length){toast("Add at least one book first.");return}const becomingCaught=!e.caught;e.caught=becomingCaught;await saveNow();if(becomingCaught)logTeamCatchForPokemon(p,e);openPokemon(currentPokemonId);toast(e.caught?"Caught!":"Marked uncaught")}
 async function addCustomPokemon(){if(!addName.value.trim()){toast("Enter a name.");return}let im=addImage.value.trim(),f=addImageUpload.files[0];if(f)try{im=await upload(f,"pokemon")}catch{toast("Upload failed");return}const p={id:"custom-"+Date.now(),dex:addDex.value?+addDex.value:"",name:addName.value.trim(),region:addRegion.value,form:addForm.value.trim(),types:addTypes.value.trim(),isForm:!!addForm.value.trim(),image:im,custom:true};customPokemon.push(p);saveSoon();finishLoad();openPokemon(p.id)}
 function deleteCustom(id){customPokemon=customPokemon.filter(x=>x.id!==id);delete challengeData[id];saveSoon();goPage("dex")}
 
@@ -2581,6 +2663,7 @@ async function saveGymNewEntry(){
     e.books.push({title,author,cover});
     e.caught=true;
     await saveNow();
+    await logTeamCatchForPokemon(p,e,title);
     closeGymDefeatModal();
     renderHome();
     renderDex();
@@ -2692,17 +2775,70 @@ function renderBadgeCase(){
   }).join("");
 }
 function renderStats(){
-  const a=all(),c=a.filter(caught);
-  statCaught.textContent=c.length;
-  statRemaining.textContent=a.length-c.length;
-  statStandard.textContent=c.filter(p=>!p.isForm).length;
-  statForms.textContent=c.filter(p=>p.isForm).length;
-  statRegions.innerHTML="";
-  REGIONS.forEach(r=>{
-    const g=a.filter(x=>x.region===r);
-    if(g.length)statRegions.insertAdjacentHTML("beforeend",`<div class="region-card"><strong>${r}</strong><span>${g.filter(caught).length} / ${g.length}</span></div>`)
-  });
+  loadMyTeamStats();
+  loadTeamRecentCatches();
   loadTeamLeaderboard();
+}
+function statsLeaderHtml(row){
+  const character=String(row?.leader_character||"").trim();
+  const leaderUser=String(row?.leader_username||"").trim();
+  const imageUrl=String(row?.leader_image_url||"").trim();
+  const visual=imageUrl
+    ?`<img src="${esc(imageUrl)}" alt="${esc(character||"Team leader")}" onerror="this.style.display='none'">`
+    :"";
+  if(!character&&!leaderUser&&!imageUrl)return `<div class="my-team-leader-row"><div><div class="my-team-leader-title">TEAM LEADER</div><div class="my-team-leader-name">Open</div></div></div>`;
+  return `<div class="my-team-leader-row">${visual}<div><div class="my-team-leader-title">TEAM LEADER</div><div class="my-team-leader-name">${esc(character||"Character TBD")}</div><div class="my-team-leader-user">${leaderUser?`@${esc(leaderUser)}`:"Leader account not assigned"}</div></div></div>`;
+}
+async function loadMyTeamStats(){
+  const box=document.getElementById("myTeamStatsCard");
+  if(!box)return;
+  if(publicMode||!user){box.innerHTML='<div class="muted">Team stats are available to signed-in members.</div>';return}
+  box.innerHTML='<div class="muted" style="color:rgba(255,255,255,.78)">Loading your team…</div>';
+  const[{data:summary,error},{data:rankings}]=await Promise.all([
+    sb.rpc("get_my_team_summary"),
+    sb.rpc("get_faction_leaderboard")
+  ]);
+  if(error){console.error(error);box.innerHTML='<div class="muted" style="color:white">Could not load your team right now.</div>';return}
+  const row=Array.isArray(summary)?summary[0]:summary;
+  if(!row){
+    box.innerHTML=`<div class="my-team-stats-kicker">TEAM STATS</div><div class="my-team-stats-name">You haven't joined a team yet</div><div style="margin-top:12px;opacity:.88">Choose a team to unlock team totals, rankings, and recent team catches.</div><button class="secondary" style="margin-top:16px" onclick="openTeamPicker()">Choose a Team</button>`;
+    return;
+  }
+  const rows=Array.isArray(rankings)?rankings:[];
+  const rankIndex=rows.findIndex(r=>String(r.faction_id)===String(row.faction_id));
+  const rank=row.is_competitive!==false&&rankIndex>=0?`#${rankIndex+1} Overall`:"Non-competitive";
+  box.style.background=`linear-gradient(135deg,${row.primary_color||"var(--accent)"},${row.secondary_color||"var(--accent2)"})`;
+  box.innerHTML=`<div class="my-team-stats-grid"><div><div class="my-team-stats-kicker">YOUR TEAM</div><div class="my-team-stats-name">${esc(row.name||"Team")}</div><div class="my-team-stats-meta"><span class="my-team-pill">${esc(rank)}</span></div></div><div class="my-team-stats-total">${Number(row.total_caught||0).toLocaleString()}<span>Pokémon caught by team</span></div></div>${statsLeaderHtml(row)}`;
+}
+function timeAgo(value){
+  const t=new Date(value).getTime();
+  if(!Number.isFinite(t))return "";
+  const seconds=Math.max(0,Math.floor((Date.now()-t)/1000));
+  if(seconds<60)return "just now";
+  const mins=Math.floor(seconds/60);if(mins<60)return `${mins}m ago`;
+  const hrs=Math.floor(mins/60);if(hrs<24)return `${hrs}h ago`;
+  const days=Math.floor(hrs/24);if(days<7)return `${days}d ago`;
+  return new Date(value).toLocaleDateString();
+}
+async function loadTeamRecentCatches(){
+  const box=document.getElementById("teamRecentCatches");
+  if(!box)return;
+  if(publicMode||!user){box.innerHTML='<div class="muted">Sign in to see team activity.</div>';return}
+  box.innerHTML='<div class="muted">Loading recent catches…</div>';
+  const{data,error}=await sb.rpc("get_my_team_recent_catches",{p_limit:12});
+  if(error){console.error(error);box.innerHTML='<div class="muted">Recent team catches are unavailable right now.</div>';return}
+  const rows=Array.isArray(data)?data:[];
+  if(!currentFactionId){box.innerHTML='<div class="muted">Join a team to see recent team catches.</div>';return}
+  if(!rows.length){
+    box.innerHTML='<div class="muted">No new team catches have been logged yet. New catches will start appearing here as members catch Pokémon.</div>';
+    return;
+  }
+  box.innerHTML=rows.map(r=>{
+    const mon=`${r.pokemon_name||"Pokémon"}${r.pokemon_form?` • ${r.pokemon_form}`:""}`;
+    const who=r.username?`@${r.username}`:(r.display_name||"Team member");
+    const leader=r.is_team_leader?'<span class="team-catch-leader">TEAM LEADER</span>':"";
+    return `<div class="team-catch-row"><div><div class="team-catch-name">${esc(mon)}</div><div class="team-catch-who">Caught by ${esc(who)} ${leader}</div>${r.book_title?`<div class="team-catch-book">📖 ${esc(r.book_title)}</div>`:""}</div><div class="team-catch-time">${esc(timeAgo(r.caught_at))}</div></div>`;
+  }).join("");
 }
 async function loadTeamLeaderboard(){
   const box=document.getElementById("teamLeaderboard");
@@ -2719,7 +2855,12 @@ async function loadTeamLeaderboard(){
     box.innerHTML='<div class="muted">No competition teams are available yet.</div>';
     return;
   }
-  box.innerHTML=rows.map((r,i)=>`<div class="team-rank-row" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div><div class="team-rank-name">${esc(r.name)}</div><div class="team-rank-sub">${i===0?"Currently leading":"Team total"}</div></div><div class="team-rank-score">${Number(r.total_caught||0).toLocaleString()}<span>caught</span></div></div>`).join("");
+  box.innerHTML=rows.map((r,i)=>{
+    const current=String(r.faction_id)===String(currentFactionId);
+    const leaderCharacter=String(r.leader_character||"").trim()||"Leader TBD";
+    const leaderUser=String(r.leader_username||"").trim();
+    return `<div class="team-rank-row ${current?"current-team":""}" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div class="team-rank-main"><div class="team-rank-name-line"><div class="team-rank-name">${esc(r.name)}</div>${i===0?'<span class="team-rank-crown">👑</span>':""}</div><div class="team-rank-leader">Leader: <strong>${esc(leaderCharacter)}</strong>${leaderUser?` • @${esc(leaderUser)}`:" • unassigned"}</div></div><div class="team-rank-score">${Number(r.total_caught||0).toLocaleString()}<span>caught</span></div></div>`;
+  }).join("");
 }
 
 function factionName(f){return f?.name||f?.title||title(f?.slug||"Team")}
