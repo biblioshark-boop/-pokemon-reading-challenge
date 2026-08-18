@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787096564 -->
+<!-- RF_BUILD:1787096918 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787096564";
+const RF_BUILD="1787096918";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1351,68 +1351,8 @@ body.team-pattern-page[data-team="team-plasma"] #teamRecentCatches > .muted{
 </style>
 
 
-<style id="tabletIPadResponsiveFix20260818">
-/* ---------- Tablet / iPad polish ---------- */
-@media (min-width: 651px) and (max-width: 1100px){
-  main{
-    width:min(100%,960px);
-    padding-left:20px;
-    padding-right:20px;
-  }
-
-  /* Trainer Card: tablet gets its own proportions instead of desktop squeezed down. */
-  .trainer-card{
-    padding:22px;
-    min-height:260px;
-  }
-  .trainer-card-grid{
-    grid-template-columns:160px minmax(0,1fr);
-    gap:20px;
-    min-height:215px;
-  }
-  .trainer-avatar-wrap{
-    height:190px;
-  }
-  .trainer-avatar{
-    width:100% !important;
-    height:100% !important;
-    max-width:100% !important;
-    max-height:100% !important;
-    object-fit:contain !important;
-    object-position:center bottom !important;
-  }
-  .trainer-card-name{
-    font-size:32px;
-  }
-  .trainer-card-username{
-    font-size:15px;
-  }
-  .trainer-card-meta-grid{
-    gap:8px;
-    margin-top:17px;
-  }
-  .trainer-card-meta-grid>div{
-    padding:9px 10px;
-  }
-  .trainer-card-meta-grid strong{
-    font-size:14px;
-  }
-  .trainer-card-orb{
-    right:18px;
-    top:18px;
-    transform:scale(.88);
-    transform-origin:top right;
-  }
-
-  /* Keep cards comfortable in portrait tablet widths. */
-  .region-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-}
-
-/* ---------- Safari / iOS background compatibility ---------- */
-/* iOS Safari can be unreliable when large decorative art is applied as a body
-   background. Keep the artwork on fixed composited pseudo-layers instead. */
+<style id="ipadSafeFixV2_20260818">
+/* iOS Safari: keep decorative backgrounds on composited pseudo-layers. */
 body.team-pattern-page::before,
 body.team-pattern-page::after,
 #gymsPage.active::before{
@@ -1424,29 +1364,350 @@ body.team-pattern-page::after,
   transform:translateZ(0);
 }
 
-/* Make team art easier to actually see on tablets without changing desktop. */
-@media (min-width: 651px) and (max-width: 1100px){
-  body.team-pattern-page::before{
-    background-size:720px 564px !important;
-    background-position:center top !important;
-  }
-  body.team-pattern-page::after{
-    opacity:.72;
+/* Conservative iPad portrait tuning.
+   Keep the existing Trainer Card design; only prevent crowding/overflow. */
+@media (min-width:651px) and (max-width:900px){
+  main{
+    padding-left:16px;
+    padding-right:16px;
   }
 
+  .trainer-card{
+    padding:22px;
+  }
+
+  .trainer-card-grid{
+    grid-template-columns:150px minmax(0,1fr);
+    gap:18px;
+  }
+
+  .trainer-avatar-wrap{
+    height:185px;
+  }
+
+  .trainer-avatar{
+    max-width:100% !important;
+    max-height:100% !important;
+    object-fit:contain !important;
+    object-position:center bottom !important;
+  }
+
+  .trainer-card-name{
+    font-size:28px;
+    line-height:1.02;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+
+  .trainer-card-kicker{
+    font-size:9px;
+    letter-spacing:.12em;
+    padding-right:44px;
+  }
+
+  .trainer-card-username{
+    font-size:14px;
+    overflow-wrap:anywhere;
+  }
+
+  .trainer-card-meta-grid{
+    gap:8px;
+    margin-top:16px;
+  }
+
+  .trainer-card-meta-grid>div{
+    padding:8px 10px;
+  }
+
+  .trainer-card-meta-grid strong{
+    font-size:14px;
+  }
+
+  .trainer-card-orb{
+    transform:scale(.82);
+    transform-origin:top right;
+  }
+
+  /* Team artwork remains visible without changing the desktop composition. */
+  body.team-pattern-page::before{
+    background-size:760px 595px !important;
+    background-position:center top !important;
+  }
+}
+
+/* Safari/iPad stadium rendering */
+@media (max-width:1100px){
   #gymsPage.active::before{
     background-position:center center !important;
     background-size:cover !important;
   }
 }
+</style>
 
-/* Landscape iPad: preserve a wide card instead of over-expanding vertically. */
-@media (min-width: 900px) and (max-width: 1366px) and (orientation:landscape){
-  .trainer-card-grid{
-    grid-template-columns:175px minmax(0,1fr);
+
+<style id="universalResponsiveLayout20260818">
+/* Universal responsive layer: phones, tablets, laptops, desktops.
+   Keeps the existing visual design, but makes sizing fluid instead of device-specific. */
+
+html{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+main{
+  width:min(100%, 960px);
+  box-sizing:border-box;
+  padding-left:clamp(10px,2.5vw,20px);
+  padding-right:clamp(10px,2.5vw,20px);
+}
+
+/* ---------- Trainer Card ---------- */
+.trainer-card{
+  width:100%;
+  box-sizing:border-box;
+  padding:clamp(16px,3vw,26px);
+  border-radius:clamp(20px,3vw,28px);
+}
+
+.trainer-card-grid{
+  grid-template-columns:clamp(108px,24vw,190px) minmax(0,1fr);
+  gap:clamp(12px,3vw,26px);
+  min-height:unset;
+}
+
+.trainer-avatar-wrap{
+  width:100%;
+  height:clamp(148px,28vw,210px);
+  border-radius:clamp(18px,3vw,24px);
+}
+
+.trainer-avatar{
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  object-position:center bottom !important;
+}
+
+.trainer-card-info{
+  min-width:0;
+}
+
+.trainer-card-kicker{
+  font-size:clamp(8px,1.45vw,11px);
+  letter-spacing:clamp(.10em,.35vw,.16em);
+  padding-right:clamp(30px,7vw,62px);
+  overflow-wrap:anywhere;
+}
+
+.trainer-card-name{
+  font-size:clamp(22px,4.2vw,38px);
+  line-height:1.02;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.trainer-card-username{
+  font-size:clamp(12px,2vw,16px);
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.trainer-card-meta-grid{
+  gap:clamp(7px,1.4vw,10px);
+  margin-top:clamp(13px,2.5vw,23px);
+}
+
+.trainer-card-meta-grid>div{
+  min-width:0;
+  padding:clamp(7px,1.5vw,12px);
+}
+
+.trainer-card-meta-grid span{
+  font-size:clamp(8px,1.2vw,9px);
+}
+
+.trainer-card-meta-grid strong{
+  font-size:clamp(12px,1.9vw,15px);
+}
+
+.trainer-card-orb{
+  right:clamp(12px,2.5vw,22px);
+  top:clamp(12px,2.3vw,20px);
+  transform:scale(clamp(.68, calc(.55 + 0.04vw), 1));
+  transform-origin:top right;
+}
+
+.trainer-card-actions{
+  gap:clamp(8px,1.5vw,10px);
+}
+
+.trainer-card-actions button{
+  min-width:0;
+}
+
+/* Medium / narrow layouts: keep the design, but stop the stat boxes from crushing. */
+@media (max-width:720px){
+  .trainer-card-meta-grid{
+    grid-template-columns:1fr 1fr !important;
   }
+  .trainer-card-meta-grid>div:first-child{
+    grid-column:1/-1;
+  }
+}
+
+/* Very small phones: stack avatar above the information so nothing is cut off. */
+@media (max-width:430px){
+  .trainer-card-grid{
+    grid-template-columns:1fr;
+  }
+
   .trainer-avatar-wrap{
-    height:200px;
+    width:min(58vw,190px);
+    height:min(58vw,190px);
+    margin:0 auto;
+  }
+
+  .trainer-card-kicker,
+  .trainer-card-name,
+  .trainer-card-username{
+    text-align:center;
+  }
+
+  .trainer-card-kicker{
+    padding-right:0;
+  }
+
+  .trainer-card-orb{
+    transform:scale(.68);
+  }
+}
+
+/* ---------- Home / region cards ---------- */
+.region-grid{
+  grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));
+}
+
+@media (max-width:520px){
+  .region-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media (max-width:350px){
+  .region-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ---------- Forms, cards, and auth ---------- */
+.auth-shell{
+  width:min(100%,520px);
+  padding-inline:clamp(0px,2vw,8px);
+}
+
+.hero,.form-card,.auth-card{
+  box-sizing:border-box;
+}
+
+.field-grid{
+  grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));
+}
+
+/* ---------- Pokédex ---------- */
+.dex-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+@media (min-width:900px){
+  .dex-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+@media (max-width:360px){
+  .dex-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ---------- Team Stats ---------- */
+.my-team-stats-grid{
+  grid-template-columns:minmax(0,1fr) auto;
+}
+
+.my-team-stats-name{
+  overflow-wrap:anywhere;
+}
+
+@media (max-width:600px){
+  .my-team-stats-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ---------- Bottom navigation ---------- */
+.bottom-nav{
+  grid-template-columns:repeat(6,minmax(0,1fr));
+}
+
+.nav-btn{
+  min-width:0;
+  font-size:clamp(8px,1.45vw,11px);
+  line-height:1.12;
+  overflow-wrap:anywhere;
+}
+
+.nav-icon{
+  font-size:clamp(18px,3vw,22px);
+}
+
+/* ---------- Background compatibility ---------- */
+body.team-pattern-page::before{
+  background-position:center top !important;
+  background-size:clamp(560px,95vw,920px) auto !important;
+}
+
+#gymsPage.active::before{
+  background-position:center center !important;
+  background-size:cover !important;
+}
+
+/* Safari/iOS compositing stability */
+body.team-pattern-page::before,
+body.team-pattern-page::after,
+#gymsPage.active::before{
+  min-height:100vh;
+  min-height:100dvh;
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
+}
+
+/* Prevent accidental horizontal overflow from long user content. */
+.page,
+.form-card,
+.auth-card,
+.trainer-card,
+.team-rank-row,
+.team-catch-row,
+.gym-card,
+.gym-hero{
+  max-width:100%;
+  box-sizing:border-box;
+}
+
+/* Device rotation / split-screen changes should settle cleanly. */
+@media (orientation:landscape) and (max-height:600px){
+  .trainer-avatar-wrap{
+    height:clamp(140px,24vh,190px);
   }
 }
 </style>
