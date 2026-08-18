@@ -922,7 +922,7 @@ function renderDex(){
   if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}
   l.forEach(p=>{
     const editable=adminImageEditMode&&isAdmin&&!p.custom&&!!catalogSlugForPokemon(p);
-    const b=document.createElement(editable?"div":"button");
+    const b=document.createElement("div");
     b.className="pokemon-card"+(caught(p)?" caught":"")+(isLegendaryOrMythical(p)?" legendary-card":"")+(editable?" admin-image-card":"");
     b.dataset.pokemonId=p.id;
     if(editable){
@@ -934,24 +934,28 @@ function renderDex(){
     const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
     const editTools=editable?`<div class="admin-image-overlay"><span>${p.manualImage?"Custom image ✓":"Drop image here"}</span><button type="button" class="small-btn" onclick="event.stopPropagation();choosePokemonCardImage('${esc(p.id)}')">Replace Image</button></div>`:"";
     b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${isLegendaryOrMythical(p)?`<span class="legendary-label">★ Legendary</span>`:""}${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${editTools}`;
-    if(editable){
-      b.setAttribute("role","button");
-      b.tabIndex=0;
-      b.onclick=e=>{
-        if(e.target.closest("button,input,label"))return;
+    b.setAttribute("role","button");
+    b.tabIndex=0;
+    b.onkeydown=e=>{
+      if((e.key==="Enter"||e.key===" ")&&!e.target.closest("button,input,label")){
+        e.preventDefault();
         openPokemon(p.id);
-      };
-      b.onkeydown=e=>{
-        if(e.key==="Enter"||e.key===" "){
-          if(e.target.closest("button,input,label"))return;
-          e.preventDefault();
-          openPokemon(p.id);
-        }
-      };
-    }else b.onclick=()=>openPokemon(p.id);
+      }
+    };
     dexGrid.appendChild(b)
   })
 }
+
+if(!dexGrid.dataset.clickDelegate){
+  dexGrid.dataset.clickDelegate="1";
+  dexGrid.addEventListener("click",e=>{
+    if(e.target.closest("button,input,label"))return;
+    const card=e.target.closest(".pokemon-card[data-pokemon-id]");
+    if(!card||!dexGrid.contains(card))return;
+    openPokemon(card.dataset.pokemonId);
+  });
+}
+
 function openPokemon(id){
   currentPokemonId=id;
   const p=all().find(x=>x.id===id),e=entry(id);
@@ -1755,5 +1759,14 @@ init();
 .admin-image-card .admin-image-overlay input,
 .admin-image-card .admin-image-overlay label{pointer-events:auto}
 .admin-image-card{cursor:pointer}
+
+
+/* Reliable Pokédex tapping: card owns the tap; only real controls intercept it */
+.pokemon-card{cursor:pointer;touch-action:manipulation}
+.pokemon-card::before,.pokemon-card::after{pointer-events:none}
+.admin-image-card .admin-image-overlay{pointer-events:none}
+.admin-image-card .admin-image-overlay button,
+.admin-image-card .admin-image-overlay input,
+.admin-image-card .admin-image-overlay label{pointer-events:auto}
 
 </style>
