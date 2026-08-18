@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787081943 -->
+<!-- RF_BUILD:1787082164 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787081943";
+const RF_BUILD="1787082164";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1726,7 +1726,7 @@ function rotomFactHtml(fact){
     <div class="rotom-copy"><strong>Rotom Dex</strong><span>${esc(fact)}</span></div>
   </div>`;
 }
-const ROTOM_FACT_CACHE_KEY="rfRotomLoreFactsV1";
+const ROTOM_FACT_CACHE_KEY="rfRotomLoreFactsV2";
 let rotomFactCache={};
 try{rotomFactCache=JSON.parse(localStorage.getItem(ROTOM_FACT_CACHE_KEY)||"{}")||{}}catch{rotomFactCache={}}
 
@@ -1756,28 +1756,39 @@ function scoreLoreText(t){
   if(/attack|damage|power|move|battle|stat|level/.test(s))score-=3;
   return score;
 }
+function completeSentences(t){
+  const cleaned=cleanFlavorText(t);
+  if(!cleaned)return [];
+  const matches=cleaned.match(/[^.!?]+[.!?]+/g);
+  if(matches?.length)return matches.map(x=>x.trim()).filter(Boolean);
+  return [cleaned];
+}
 function pickLoreFlavor(species){
   const entries=(species?.flavor_text_entries||[])
     .filter(x=>x?.language?.name==="en")
     .map(x=>cleanFlavorText(x.flavor_text))
     .filter(Boolean);
   if(!entries.length)return "";
-  const unique=[...new Set(entries)];
-  unique.sort((a,b)=>scoreLoreText(b)-scoreLoreText(a));
-  return unique[0]||"";
-}
-function trimLoreText(t,maxWords=23){
-  const words=String(t||"").split(/\s+/).filter(Boolean);
-  if(words.length<=maxWords)return words.join(" ");
-  let out=words.slice(0,maxWords).join(" ");
-  out=out.replace(/[,:;—-]\s*$/,"").replace(/\s+\S*$/,"");
-  return out.replace(/[.!?]*$/,"")+"…";
+
+  const candidates=[];
+  [...new Set(entries)].forEach(entry=>{
+    completeSentences(entry).forEach(sentence=>{
+      const len=sentence.length;
+      let score=scoreLoreText(sentence);
+      if(len>=45&&len<=175)score+=5;
+      else if(len<=220)score+=2;
+      else score-=3;
+      candidates.push({sentence,score,len});
+    });
+  });
+
+  candidates.sort((a,b)=>b.score-a.score || a.len-b.len);
+  return candidates[0]?.sentence||"";
 }
 function rotomLoreFactFromSpecies(p,species){
   const raw=pickLoreFlavor(species);
   if(raw){
-    const short=trimLoreText(raw,23);
-    return `Bzzzt! ${short}`;
+    return `Bzzzt! ${raw}`;
   }
   if(p?.form){
     return `Bzzzt! Rotom is still digging up a good story about this ${p.form} ${p.name}.`;
