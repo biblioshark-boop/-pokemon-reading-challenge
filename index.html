@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787095423 -->
+<!-- RF_BUILD:1787095965 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787095423";
+const RF_BUILD="1787095965";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1305,6 +1305,44 @@ body:has(#gymsPage.active) main{
 }
 </style>
 
+
+<style id="passwordRecoveryComplete20260818">
+.password-recovery-modal{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(8,10,14,.72);
+  backdrop-filter:blur(8px);
+}
+.password-recovery-modal.hidden{display:none!important}
+.password-recovery-card{
+  width:min(520px,100%);
+  border-radius:26px;
+  padding:24px;
+  background:var(--surface);
+  color:var(--text);
+  border:1px solid var(--line);
+  box-shadow:0 24px 70px rgba(0,0,0,.35);
+}
+.password-recovery-card h2{margin:8px 0 6px}
+.password-recovery-card label{display:block;margin-top:14px;font-weight:900}
+.password-recovery-badge{
+  display:inline-block;
+  padding:7px 10px;
+  border-radius:999px;
+  background:var(--accent);
+  color:#fff;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
@@ -1488,6 +1526,25 @@ body:has(#gymsPage.active) main{
 </section>
 <section id="detailPage" class="page"><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
 </main>
+<div id="passwordRecoveryModal" class="password-recovery-modal hidden" role="dialog" aria-modal="true" aria-labelledby="passwordRecoveryTitle">
+  <div class="password-recovery-card">
+    <div class="password-recovery-badge">Account Recovery</div>
+    <h2 id="passwordRecoveryTitle">Choose a new password</h2>
+    <p class="muted">Your reset link worked. Enter a new password below to finish resetting your Reading Frenzy account.</p>
+    <label for="newRecoveryPassword">New password</label>
+    <div class="password-field-wrap">
+      <input id="newRecoveryPassword" type="password" minlength="6" autocomplete="new-password">
+      <button id="newRecoveryPasswordToggle" class="password-toggle" type="button" onclick="toggleRecoveryPasswordVisibility()">Show</button>
+    </div>
+    <label for="confirmRecoveryPassword">Confirm new password</label>
+    <div class="password-field-wrap">
+      <input id="confirmRecoveryPassword" type="password" minlength="6" autocomplete="new-password">
+      <button id="confirmRecoveryPasswordToggle" class="password-toggle" type="button" onclick="toggleRecoveryConfirmVisibility()">Show</button>
+    </div>
+    <button id="saveRecoveryPasswordBtn" class="primary" style="width:100%;margin-top:16px" onclick="completePasswordRecovery()">Save New Password</button>
+    <div id="passwordRecoveryMessage" class="auth-error" style="margin-top:10px"></div>
+  </div>
+</div>
 <nav id="bottomNav" class="bottom-nav hidden"><button class="nav-btn active" data-page="home" onclick="goPage('home')"><span class="nav-icon">🏠</span>Home</button><button class="nav-btn" data-page="dex" onclick="goPage('dex')"><span class="nav-icon">◉</span>Pokédex</button><button class="nav-btn" data-page="safari" onclick="goPage('safari')"><span class="nav-icon">🌿</span>Safari</button><button class="nav-btn" data-page="gyms" onclick="goPage('gyms')"><span class="nav-icon">◇</span>Gyms</button><button class="nav-btn" data-page="stats" onclick="goPage('stats')"><span class="nav-icon">▥</span>Team Stats</button><button class="nav-btn" data-page="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span>Settings</button></nav>
 
 <div class="modal defeat-modal" id="gymDefeatModal" onclick="if(event.target.id==='gymDefeatModal')closeGymDefeatModal()">
@@ -1637,6 +1694,52 @@ function togglePasswordVisibility(){
   btn.setAttribute("aria-label",showing?"Show password":"Hide password");
   btn.setAttribute("aria-pressed",showing?"false":"true");
 }
+let passwordRecoveryActive=false;
+
+function recoveryLinkLooksActive(){
+  const combined=`${location.search} ${location.hash}`.toLowerCase();
+  return combined.includes("type=recovery")||combined.includes("type%3drecovery");
+}
+function showPasswordRecovery(){
+  passwordRecoveryActive=true;
+  document.getElementById("passwordRecoveryModal")?.classList.remove("hidden");
+  document.getElementById("newRecoveryPassword")?.focus();
+}
+function toggleRecoveryPasswordVisibility(){
+  const input=document.getElementById("newRecoveryPassword"),btn=document.getElementById("newRecoveryPasswordToggle");
+  if(!input||!btn)return;
+  const show=input.type==="password";
+  input.type=show?"text":"password";
+  btn.textContent=show?"Hide":"Show";
+}
+function toggleRecoveryConfirmVisibility(){
+  const input=document.getElementById("confirmRecoveryPassword"),btn=document.getElementById("confirmRecoveryPasswordToggle");
+  if(!input||!btn)return;
+  const show=input.type==="password";
+  input.type=show?"text":"password";
+  btn.textContent=show?"Hide":"Show";
+}
+async function completePasswordRecovery(){
+  const p1=document.getElementById("newRecoveryPassword")?.value||"";
+  const p2=document.getElementById("confirmRecoveryPassword")?.value||"";
+  const msg=document.getElementById("passwordRecoveryMessage");
+  const btn=document.getElementById("saveRecoveryPasswordBtn");
+  if(msg)msg.textContent="";
+  if(p1.length<6){if(msg)msg.textContent="Password must be at least 6 characters.";return}
+  if(p1!==p2){if(msg)msg.textContent="The two passwords do not match.";return}
+  if(btn){btn.disabled=true;btn.textContent="Saving…"}
+  const{error}=await sb.auth.updateUser({password:p1});
+  if(error){
+    if(msg)msg.textContent=error.message||"Could not update password.";
+    if(btn){btn.disabled=false;btn.textContent="Save New Password"}
+    return;
+  }
+  if(msg){msg.style.color="#18733b";msg.textContent="Password updated. Returning you to Log In…"}
+  try{await sb.auth.signOut()}catch{}
+  try{history.replaceState(null,"",location.origin+location.pathname)}catch{}
+  setTimeout(()=>location.reload(),700);
+}
+
 
 function setAuthMode(m){authMode=m;loginTab.className=m==="login"?"primary":"secondary";signupTab.className=m==="signup"?"primary":"secondary";authSubmit.textContent=m==="login"?"Log In":"Create Account";authMessage.textContent="";authRecoveryBtn?.classList.toggle("hidden",m!=="login");if(m!=="login")authRecoveryPanel?.classList.add("hidden")}
 function toggleAuthRecovery(){
@@ -3472,9 +3575,53 @@ window.addEventListener("popstate",(event)=>{
   goPage(allowed.includes(target.page)?target.page:"home","none");
 });
 
-async function init(){const u=new URLSearchParams(location.search).get("u");if(u)return startPublic(u);const{data:{session}}=await sb.auth.getSession();user=session?.user||null;if(user)await startPrivate();else authPage.classList.add("active");sb.auth.onAuthStateChange(async(e,s)=>{if(e==="SIGNED_IN"&&!user){user=s.user;authPage.classList.remove("active");await startPrivate()}})}
+async function init(){
+  const u=new URLSearchParams(location.search).get("u");
+  if(u)return startPublic(u);
 
-document.getElementById("gymLeaderImage")?.addEventListener("input",renderGymAssetPreviews);
+  let recoveryEventSeen=false;
+  sb.auth.onAuthStateChange(async(e,s)=>{
+    if(e==="PASSWORD_RECOVERY"){
+      recoveryEventSeen=true;
+      user=s?.user||null;
+      authPage.classList.remove("active");
+      showPasswordRecovery();
+      return;
+    }
+    if(e==="SIGNED_IN"&&!user&&!passwordRecoveryActive){
+      user=s.user;
+      authPage.classList.remove("active");
+      await startPrivate();
+    }
+  });
+
+  const{data:{session}}=await sb.auth.getSession();
+  user=session?.user||null;
+
+  if(user&&recoveryLinkLooksActive()){
+    showPasswordRecovery();
+    return;
+  }
+
+  if(user&&!passwordRecoveryActive){
+    await startPrivate();
+  }else if(!passwordRecoveryActive){
+    authPage.classList.add("active");
+  }
+
+  // Some mobile browsers finish processing the recovery session just after getSession().
+  if(recoveryLinkLooksActive()&&!recoveryEventSeen){
+    setTimeout(async()=>{
+      if(passwordRecoveryActive)return;
+      const{data:{session:latest}}=await sb.auth.getSession();
+      if(latest?.user){
+        user=latest.user;
+        authPage.classList.remove("active");
+        showPasswordRecovery();
+      }
+    },500);
+  }
+}document.getElementById("gymLeaderImage")?.addEventListener("input",renderGymAssetPreviews);
 document.getElementById("gymBadgeImage")?.addEventListener("input",renderGymAssetPreviews);
 
 
