@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787082791 -->
+<!-- RF_BUILD:1787083042 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787082791";
+const RF_BUILD="1787083042";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1186,6 +1186,48 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
   .team-rank-score{min-width:68px}
   .team-catch-row{grid-template-columns:1fr}
   .team-catch-time{text-align:left}
+}
+</style>
+
+
+<style id="teamStatsReadabilityFix20260818">
+/* Stats text needs stronger contrast against patterned team backgrounds. */
+body.team-pattern-page[data-team="team-rocket"] #statsPage,
+body.team-pattern-page[data-team="team-galactic"] #statsPage{
+  color:#fff8f2;
+}
+body.team-pattern-page[data-team="team-rocket"] #statsPage .section-title,
+body.team-pattern-page[data-team="team-rocket"] #statsPage .team-leader-note,
+body.team-pattern-page[data-team="team-rocket"] #statsPage > .muted,
+body.team-pattern-page[data-team="team-galactic"] #statsPage .section-title,
+body.team-pattern-page[data-team="team-galactic"] #statsPage .team-leader-note,
+body.team-pattern-page[data-team="team-galactic"] #statsPage > .muted{
+  color:#fff8f2 !important;
+  text-shadow:0 2px 8px rgba(0,0,0,.55);
+}
+body.team-pattern-page[data-team="team-rocket"] #statsPage .team-leader-note,
+body.team-pattern-page[data-team="team-galactic"] #statsPage .team-leader-note{
+  opacity:.92;
+}
+
+body.team-pattern-page[data-team="team-plasma"] #statsPage{
+  color:#182734;
+}
+body.team-pattern-page[data-team="team-plasma"] #statsPage .section-title,
+body.team-pattern-page[data-team="team-plasma"] #statsPage .team-leader-note,
+body.team-pattern-page[data-team="team-plasma"] #statsPage > .muted{
+  color:#182734 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
+}
+
+/* Keep empty-state Recent Team Catches copy readable too. */
+body.team-pattern-page[data-team="team-rocket"] #teamRecentCatches > .muted,
+body.team-pattern-page[data-team="team-galactic"] #teamRecentCatches > .muted{
+  color:#fff8f2 !important;
+  text-shadow:0 2px 8px rgba(0,0,0,.55);
+}
+body.team-pattern-page[data-team="team-plasma"] #teamRecentCatches > .muted{
+  color:#243847 !important;
 }
 </style>
 
