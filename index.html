@@ -326,42 +326,50 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .pokemon-card.legendary-card{
   position:relative;
   overflow:hidden;
-  border-color:rgba(185,132,20,.72);
-  background:linear-gradient(145deg,#fffaf0 0%,#fff 47%,#f7e8b5 100%);
-  box-shadow:0 8px 20px rgba(113,78,5,.14),inset 0 0 0 1px rgba(255,255,255,.8);
+  border:3px solid #c79a24 !important;
+  background:
+    linear-gradient(145deg,#fff4bd 0%,#fffdf4 42%,#f0ce63 100%) !important;
+  box-shadow:
+    0 9px 22px rgba(117,78,0,.22),
+    inset 0 0 0 2px rgba(255,255,255,.7) !important;
 }
-.pokemon-card.legendary-card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:linear-gradient(120deg,transparent 26%,rgba(255,233,154,.23) 45%,transparent 62%);
+.pokemon-card.legendary-card:before{
+  height:12px !important;
+  background:linear-gradient(90deg,#8c6500,#e5bb3f,#fff0a3,#b27f00) !important;
 }
-.pokemon-card.legendary-card::after{
-  content:"★";
-  position:absolute;
-  right:9px;
-  top:8px;
-  z-index:3;
-  width:22px;
-  height:22px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:999px;
-  color:#6e4d00;
-  background:rgba(255,231,135,.95);
-  border:1px solid rgba(165,112,0,.4);
-  box-shadow:0 2px 6px rgba(84,57,0,.14);
-  font-size:12px;
-  font-weight:900;
+.pokemon-card.legendary-card:after{
+  background:#ffd85c !important;
+  border-color:#fff8d5 !important;
+  box-shadow:0 0 0 2px rgba(130,89,0,.35),0 0 12px rgba(255,205,50,.5) !important;
 }
 .pokemon-card.legendary-card .pokemon-img-wrap{
-  background:linear-gradient(180deg,rgba(255,250,226,.94),rgba(249,237,193,.7));
+  background:
+    radial-gradient(circle at 50% 35%,rgba(255,255,255,.95),rgba(255,242,184,.8) 58%,rgba(229,188,62,.28)) !important;
+  border-color:rgba(169,118,0,.35) !important;
 }
-.pokemon-card.legendary-card .dex-number{color:#795700;font-weight:800}
-.pokemon-card.legendary-card.caught{border-color:#c39320}
-.pokemon-card.legendary-card.admin-image-card::after{right:34px}
+.pokemon-card.legendary-card .dex-number{
+  color:#6f4e00 !important;
+  font-weight:900;
+}
+.pokemon-card.legendary-card .legendary-label{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:6px;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:9px;
+  line-height:1;
+  letter-spacing:.08em;
+  font-weight:950;
+  color:#624500;
+  background:#ffe486;
+  border:1px solid rgba(157,108,0,.45);
+  text-transform:uppercase;
+}
+.pokemon-card.legendary-card.caught{
+  border-color:#c79a24 !important;
+}
 
 </style>
 </head>
@@ -925,7 +933,7 @@ function renderDex(){
     const media=p.image?`<img loading="lazy" src="${esc(p.image)}" data-stage="0" data-form-api="${esc(p.formApiName||"")}" data-form-label="${esc(p.form||"")}" data-base-name="${esc(p.name||"")}" onerror="pokemonImgError(this,${+p.dex||0})"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;
     const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
     const editTools=editable?`<div class="admin-image-overlay"><span>${p.manualImage?"Custom image ✓":"Drop image here"}</span><button type="button" class="small-btn" onclick="event.stopPropagation();choosePokemonCardImage('${esc(p.id)}')">Replace Image</button></div>`:"";
-    b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${editTools}`;
+    b.innerHTML=`<span class="status-dot"></span><div class="pokemon-img-wrap">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${isLegendaryOrMythical(p)?`<span class="legendary-label">★ Legendary</span>`:""}${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${editTools}`;
     if(!editable)b.onclick=()=>openPokemon(p.id);
     dexGrid.appendChild(b)
   })
