@@ -574,7 +574,7 @@ async function loadGlobalCatalog(){
   const pageSize=1000;
   for(let from=0;;from+=pageSize){
     const{data,error}=await sb.from("pokemon_catalog")
-      .select("slug,name,form_name,dex_number,region,category,type_1,type_2,image_url,reading_prompt,dex_fact,is_bonus,sort_order")
+      .select("slug,name,form_name,dex_number,region,category,type_1,type_2,image_url,reading_prompt,dex_fact,is_bonus,sort_order,updated_at")
       .eq("is_active",true)
       .order("sort_order",{ascending:true})
       .range(from,from+pageSize-1);
@@ -1167,6 +1167,12 @@ function fillGymRegions(){
   s.value=[...s.options].some(o=>o.value===v)?v:"all";
 }
 function gymCatalogRow(m){
+  const linked=String(m?.pokemon_key||"");
+  if(linked.startsWith("catalog:")){
+    const slug=linked.slice(8);
+    const direct=globalChallengeData.find(r=>r.slug===slug);
+    if(direct)return direct;
+  }
   const dex=+m?.dex_number||0;
   const rows=globalChallengeData.filter(r=>+r.dex_number===dex);
   if(!rows.length)return null;
@@ -1206,7 +1212,12 @@ function gymMemberPokemon(m){
 }
 function gymMemberImage(m,p){
   const row=gymCatalogRow(m);
-  return row?.image_url||p?.image||(+m.dex_number?image(m.dex_number):"");
+  if(row?.image_url){
+    const join=row.image_url.includes("?")?"&":"?";
+    const version=row.updated_at?encodeURIComponent(row.updated_at):"manual";
+    return `${row.image_url}${join}v=${version}`;
+  }
+  return p?.image||(+m.dex_number?image(m.dex_number):"");
 }
 function gymMemberPrompt(m,p){
   const row=gymCatalogRow(m);
