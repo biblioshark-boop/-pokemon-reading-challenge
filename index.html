@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787094580 -->
+<!-- RF_BUILD:1787095031 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787094580";
+const RF_BUILD="1787095031";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1394,7 +1394,7 @@ body:has(#gymsPage.active) main{
   <div class="team-leader-note">Teams automatically move up and down the rankings as their caught totals change. Poké Dolls are not included in the competition.</div>
   <div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div>
 </section>
-<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Profile & Trainer Card</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName"><label>Username</label><input id="username" aria-describedby="usernameLockNote"><div id="usernameLockNote" class="username-lock-note">Loading username status…</div><button id="saveProfileBtn" class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div></div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div class="team-choice-note">Please choose one team and that will be your choice. If you have any reason for wanting to leave or switch your team, please reach out to Travis or your Team Leader. Admin accounts can make team corrections when needed.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
+<section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Profile & Trainer Card</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName" maxlength="50" aria-describedby="displayNameLockNote"><div id="displayNameLockNote" class="username-lock-note">Loading display name status…</div><label>Username</label><input id="username" aria-describedby="usernameLockNote"><div id="usernameLockNote" class="username-lock-note">Loading username status…</div><button id="saveProfileBtn" class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div></div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div class="team-choice-note">Please choose one team and that will be your choice. If you have any reason for wanting to leave or switch your team, please reach out to Travis or your Team Leader. Admin accounts can make team corrections when needed.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
 
 
 <div id="adminMembersCard" class="form-card admin-card hidden">
@@ -1660,46 +1660,87 @@ async function sendPasswordReset(){
 async function submitAuth(){const email=authEmail.value.trim(),password=authPassword.value;if(!email||password.length<6){authMessage.textContent="Enter a valid email and a password with at least 6 characters.";return}if(authMode==="login"){const{error}=await sb.auth.signInWithPassword({email,password});if(error)authMessage.textContent=error.message}else{const{data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error)authMessage.textContent=error.message;else if(!data.session)authMessage.textContent="Account created. Check your email to confirm it, then return here and log in."}}
 async function signOut(){await sb.auth.signOut();location.reload()}
 async function loadProfile(){
-  const{data}=await sb.from("profiles").select("display_name,username,trainer_sprite,trainer_card_theme,username_change_used,created_at").eq("id",user.id).maybeSingle();
+  const{data}=await sb.from("profiles").select("display_name,username,trainer_sprite,trainer_card_theme,username_change_used,display_name_change_used,created_at").eq("id",user.id).maybeSingle();
   profile=data||{};
   accountEmail.textContent=user.email||"Signed in";
   displayName.value=profile.display_name||"";
   username.value=profile.username||"";
+  refreshDisplayNameEditor();
   refreshUsernameEditor();
   refreshTrainerSettings();
   renderTrainerCard();
   updateShare();
 }
+function refreshDisplayNameEditor(){
+  const input=document.getElementById("displayName"),note=document.getElementById("displayNameLockNote");
+  if(!input||!note)return;
+  const used=profile?.display_name_change_used===true;
+  const locked=used&&!isAdmin;
+  input.disabled=locked;
+  input.setAttribute("aria-disabled",locked?"true":"false");
+  note.className="username-lock-note "+(locked?"username-locked-note":"username-once-note");
+  if(isAdmin){
+    note.textContent="* Admin account: display name lock is bypassed so you can make corrections when needed.";
+  }else{
+    note.textContent=used
+      ?"* Your display name is locked. If you need it corrected, please reach out to Travis or your Team Leader."
+      :"* You may set or change your display name one time. Once saved, it will be locked unless an admin helps with a correction.";
+  }
+}
+
 function refreshUsernameEditor(){
   const input=document.getElementById("username"),note=document.getElementById("usernameLockNote"),btn=document.getElementById("saveProfileBtn");
   if(!input||!note)return;
   const used=profile?.username_change_used===true;
-  input.disabled=used;
-  input.setAttribute("aria-disabled",used?"true":"false");
-  note.className="username-lock-note "+(used?"username-locked-note":"username-once-note");
-  note.textContent=used
-    ?"* Your username is locked. If you need to change it for any reason, please reach out to Travis or your Team Leader."
-    :"* You may set or change your username one time. Once you save a new username, it will be permanently locked unless Travis or your Team Leader helps with a change.";
-  if(btn)btn.textContent=used?"Save Display Name":"Save Profile";
+  const locked=used&&!isAdmin;
+  input.disabled=locked;
+  input.setAttribute("aria-disabled",locked?"true":"false");
+  note.className="username-lock-note "+(locked?"username-locked-note":"username-once-note");
+  if(isAdmin){
+    note.textContent="* Admin account: username lock is bypassed so you can make corrections when needed.";
+  }else{
+    note.textContent=used
+      ?"* Your username is locked. If you need to change it for any reason, please reach out to Travis or your Team Leader."
+      :"* You may set or change your username one time. Once you save a new username, it will be permanently locked unless Travis or your Team Leader helps with a change.";
+  }
+  if(btn)btn.textContent="Save Profile";
 }
 async function saveProfile(){
-  const d=displayName.value.trim(),updates={display_name:d,updated_at:new Date().toISOString()};
-  if(profile?.username_change_used!==true){
-    const u=username.value.trim();
-    if(u!==String(profile?.username||"").trim()){
-      if(!/^[A-Za-z0-9_]{3,30}$/.test(u)){toast("Username must be 3–30 letters, numbers, or underscores.");return}
-      updates.username=u;
-    }
+  const d=displayName.value.trim();
+  const u=username.value.trim();
+  const updates={updated_at:new Date().toISOString()};
+  const oldDisplay=String(profile?.display_name||"").trim();
+  const oldUsername=String(profile?.username||"").trim();
+
+  if(d!==oldDisplay){
+    if(profile?.display_name_change_used===true&&!isAdmin){toast("Your display name is locked. Contact Travis or your Team Leader if it needs to be corrected.");return}
+    if(!d){toast("Display name cannot be blank.");return}
+    if(d.length>50){toast("Display name must be 50 characters or fewer.");return}
+    updates.display_name=d;
   }
-  const{data,error}=await sb.from("profiles").update(updates).eq("id",user.id).select("display_name,username,trainer_sprite,trainer_card_theme,username_change_used,created_at").single();
+
+  if(u!==oldUsername){
+    if(profile?.username_change_used===true&&!isAdmin){toast("Your username is locked. Contact Travis or your Team Leader if it needs to be corrected.");return}
+    if(!/^[A-Za-z0-9_]{3,30}$/.test(u)){toast("Username must be 3–30 letters, numbers, or underscores.");return}
+    updates.username=u;
+  }
+
+  if(!updates.display_name&&!updates.username){toast("No profile changes to save.");return}
+
+  const{data,error}=await sb.from("profiles").update(updates).eq("id",user.id).select("display_name,username,trainer_sprite,trainer_card_theme,username_change_used,display_name_change_used,created_at").single();
   if(error){toast(error.message);return}
   profile={...profile,...data};
   displayName.value=profile.display_name||"";
   username.value=profile.username||"";
+  refreshDisplayNameEditor();
   refreshUsernameEditor();
   updateShare();
   renderTrainerCard();
-  toast(updates.username?"Username saved and locked.":"Profile saved");
+
+  const locked=[];
+  if(updates.display_name&&!isAdmin)locked.push("display name");
+  if(updates.username&&!isAdmin)locked.push("username");
+  toast(locked.length?`${locked.join(" and ")} saved and locked.`:"Profile saved");
 }
 function publicData(){const c={};for(const[id,e]of Object.entries(challengeData))if(e.caught)c[id]={caught:true,prompt:e.prompt||"",books:(e.books||[]).map(b=>({title:b.title||"",author:b.author||"",cover:b.cover||""}))};return{challengeData:c,customPokemon,genres}}
 async function loadSave(){const{data}=await sb.from("challenge_saves").select("data,is_public").eq("user_id",user.id).eq("challenge_key",CHALLENGE_KEY).maybeSingle();if(data){challengeData=data.data?.challengeData||{};customPokemon=data.data?.customPokemon||[];genres=data.data?.genres?.length?data.data.genres:[...DEFAULT_GENRES];isPublic=!!data.is_public}else await saveNow();updateShare()}
@@ -1783,6 +1824,8 @@ async function loadAdminStatus(){
   adminMembersCard?.classList.toggle("hidden",!isAdmin);
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
   adminImageEditBar?.classList.toggle("hidden",!isAdmin);
+  refreshDisplayNameEditor();
+  refreshUsernameEditor();
   if(isAdmin)await loadAdminMembers();
 }
 async function loadGlobalCatalog(){
