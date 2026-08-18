@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787081617 -->
+<!-- RF_BUILD:1787081943 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787081617";
+const RF_BUILD="1787081943";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1726,82 +1726,63 @@ function rotomFactHtml(fact){
     <div class="rotom-copy"><strong>Rotom Dex</strong><span>${esc(fact)}</span></div>
   </div>`;
 }
-const ROTOM_FACT_CACHE_KEY="rfRotomFactsV2";
+const ROTOM_FACT_CACHE_KEY="rfRotomLoreFactsV1";
 let rotomFactCache={};
 try{rotomFactCache=JSON.parse(localStorage.getItem(ROTOM_FACT_CACHE_KEY)||"{}")||{}}catch{rotomFactCache={}}
 
-function prettyWords(v){
-  return String(v||"").replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
-}
 function rotomExactKey(p){
   return String(p?.catalogSlug||p?.slug||p?.formApiName||p?.apiName||p?.id||p?.dex||"").toLowerCase();
 }
-function rotomPokemonApiName(p){
-  const direct=String(p?.formApiName||p?.apiName||"").trim().toLowerCase();
-  if(direct)return direct;
-  const slug=String(p?.slug||"").replace(/^data-\d{4}-/,"").replace(/^data-\d+-/,"").trim().toLowerCase();
-  return slug||String(p?.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+function cleanFlavorText(v){
+  return String(v||"")
+    .replace(/[\f\n\r\t]+/g," ")
+    .replace(/\s+/g," ")
+    .replace(/\u00ad/g,"")
+    .trim();
 }
-function localRotomFact(p){
-  if(!p)return "Rotom fact coming soon.";
-  const types=(p.types||[]).filter(Boolean);
-  const typeText=types.length===2?`${types[0]}/${types[1]}`:(types[0]||"unknown");
-  if(p.form)return `Bzzzt! This ${p.form} ${p.name} is registered as ${typeText}-type. Rotom is still scanning its exact data!`;
-  if(p.isBonus)return `Bzzzt! ${p.name} is a bonus Pokémon in the Reading Dex, registered with ${typeText} typing.`;
-  return `Bzzzt! ${p.name} is a ${typeText}-type Pokémon from ${p.region||"the Pokédex"}. Rotom is still scanning!`;
+function scoreLoreText(t){
+  const s=String(t||"").toLowerCase();
+  let score=0;
+  const behavior=[
+    "sleep","sleeps","night","day","moon","sun","forest","cave","sea","ocean","river","mountain",
+    "group","groups","herd","pack","flock","nest","nests","burrow","territory","friend","partner",
+    "protect","protects","care","cares","play","plays","dance","dances","sing","sings","cry","cries",
+    "food","eat","eats","berry","berries","hunt","hunts","hide","hides","swim","swims","fly","flies",
+    "tail","ears","fur","feathers","shell","flower","scent","smell","sound","light","glow","dream"
+  ];
+  behavior.forEach(k=>{if(s.includes(k))score+=2});
+  if(s.length>=55&&s.length<=210)score+=3;
+  if(/people|trainer|children|village|legend|ancient|story|myth|folklore/.test(s))score+=2;
+  if(/attack|damage|power|move|battle|stat|level/.test(s))score-=3;
+  return score;
 }
-function strongestBaseStat(apiPokemon){
-  const stats=Array.isArray(apiPokemon?.stats)?apiPokemon.stats:[];
-  if(!stats.length)return null;
-  return stats.reduce((best,s)=>!best||(+s.base_stat||0)>(+best.base_stat||0)?s:best,null);
+function pickLoreFlavor(species){
+  const entries=(species?.flavor_text_entries||[])
+    .filter(x=>x?.language?.name==="en")
+    .map(x=>cleanFlavorText(x.flavor_text))
+    .filter(Boolean);
+  if(!entries.length)return "";
+  const unique=[...new Set(entries)];
+  unique.sort((a,b)=>scoreLoreText(b)-scoreLoreText(a));
+  return unique[0]||"";
 }
-function buildUniqueRotomFact(p,apiPokemon,species){
-  if(!apiPokemon&&!species)return localRotomFact(p);
-
-  const name=p?.name||prettyWords(apiPokemon?.name)||"This Pokémon";
-  const genus=(species?.genera||[]).find(g=>g?.language?.name==="en")?.genus||"";
-  const height=Number.isFinite(+apiPokemon?.height)?(+apiPokemon.height/10):null;
-  const weight=Number.isFinite(+apiPokemon?.weight)?(+apiPokemon.weight/10):null;
-  const top=strongestBaseStat(apiPokemon);
-  const topName=top?prettyWords(top.stat?.name||"stat"):"";
-  const ability=(apiPokemon?.abilities||[]).find(a=>!a?.is_hidden)?.ability?.name
-    ||(apiPokemon?.abilities||[])[0]?.ability?.name||"";
-  const evolvesFrom=species?.evolves_from_species?.name?prettyWords(species.evolves_from_species.name):"";
-
-  let parts=[];
-  if(genus)parts.push(`${name} is classified as the ${genus}.`);
-
-  if(evolvesFrom){
-    parts.push(`It evolves from ${evolvesFrom}.`);
-  }else if(species?.is_mythical){
-    parts.push(`Rotom flags it as a Mythical Pokémon.`);
-  }else if(species?.is_legendary){
-    parts.push(`Rotom flags it as a Legendary Pokémon.`);
-  }else if(species?.is_baby){
-    parts.push(`It is registered as a baby Pokémon species.`);
+function trimLoreText(t,maxWords=23){
+  const words=String(t||"").split(/\s+/).filter(Boolean);
+  if(words.length<=maxWords)return words.join(" ");
+  let out=words.slice(0,maxWords).join(" ");
+  out=out.replace(/[,:;—-]\s*$/,"").replace(/\s+\S*$/,"");
+  return out.replace(/[.!?]*$/,"")+"…";
+}
+function rotomLoreFactFromSpecies(p,species){
+  const raw=pickLoreFlavor(species);
+  if(raw){
+    const short=trimLoreText(raw,23);
+    return `Bzzzt! ${short}`;
   }
-
-  const measures=[];
-  if(height!==null)measures.push(`${height.toFixed(height%1?1:0)} m tall`);
-  if(weight!==null)measures.push(`${weight.toFixed(weight%1?1:0)} kg`);
-  if(measures.length===2)parts.push(`It stands ${measures[0]} and weighs ${measures[1]}.`);
-  else if(measures.length===1)parts.push(`Pokédex data lists it at ${measures[0]}.`);
-
-  if(top){
-    parts.push(`Its highest base stat is ${topName} at ${top.base_stat}.`);
-  }else if(ability){
-    parts.push(`One of its abilities is ${prettyWords(ability)}.`);
+  if(p?.form){
+    return `Bzzzt! Rotom is still digging up a good story about this ${p.form} ${p.name}.`;
   }
-
-  // Exact form data gets one extra identifier so forms don't inherit the base species wording.
-  if(p?.form&&ability){
-    parts.push(`This form can use ${prettyWords(ability)}.`);
-  }
-
-  let fact=parts.join(" ");
-  if(!fact)fact=localRotomFact(p);
-  if(!/^Bzzzt!/i.test(fact))fact=`Bzzzt! ${fact}`;
-  return fact;
+  return `Bzzzt! Rotom is still digging up a cute or curious bit of lore about ${p?.name||"this Pokémon"}.`;
 }
 async function loadRotomFactForPokemon(p){
   if(!p||p.fact)return;
@@ -1815,16 +1796,12 @@ async function loadRotomFactForPokemon(p){
   }
 
   try{
-    const apiName=rotomPokemonApiName(p);
-    const pokemonReq=apiName
-      ?fetch(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(apiName)}`).then(r=>r.ok?r.json():null).catch(()=>null)
-      :Promise.resolve(null);
-    const speciesReq=p.dex
-      ?fetch(`https://pokeapi.co/api/v2/pokemon-species/${encodeURIComponent(+p.dex)}`).then(r=>r.ok?r.json():null).catch(()=>null)
-      :Promise.resolve(null);
-
-    const[apiPokemon,species]=await Promise.all([pokemonReq,speciesReq]);
-    const fact=buildUniqueRotomFact(p,apiPokemon,species);
+    const dex=+p.dex||0;
+    if(!dex)throw new Error("No species number");
+    const res=await fetch(`https://pokeapi.co/api/v2/pokemon-species/${encodeURIComponent(dex)}`);
+    if(!res.ok)throw new Error("Species lore unavailable");
+    const species=await res.json();
+    const fact=rotomLoreFactFromSpecies(p,species);
     rotomFactCache[key]=fact;
     try{localStorage.setItem(ROTOM_FACT_CACHE_KEY,JSON.stringify(rotomFactCache))}catch{}
     if(currentPokemonId===p.id){
@@ -1832,10 +1809,9 @@ async function loadRotomFactForPokemon(p){
       if(currentSlot)currentSlot.innerHTML=rotomFactHtml(fact);
     }
   }catch(e){
-    console.warn("Rotom fact lookup skipped",e);
+    console.warn("Rotom lore lookup skipped",e);
   }
 }
-
 function loadGlobalEditor(slug){
   const p=globalPokemon.find(x=>x.slug===slug);
   globalName.value=p?.name||"";
@@ -2131,7 +2107,7 @@ function openPokemon(id,fromHistory=false){
   const booksBlock=`<div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>`;
   const caughtBlock=publicMode?"":`<div class="form-card"><h3>Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" style="width:100%;margin-top:12px" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button>${p.custom?`<button class="danger" style="width:100%;margin-top:10px" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" style="width:100%;margin-top:10px" onclick="goPage('settings');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}');setTimeout(()=>adminGlobalCard?.scrollIntoView({behavior:'smooth'}),50)">Edit Global Entry</button>`:""}</div>`;
 
-  detailContent.innerHTML=`${dexDetailNavHtml(p.id)}<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div><div id="rotomFactSlot">${rotomFactHtml(p.fact||localRotomFact(p))}</div>${promptBlock}</div>${booksBlock}${caughtBlock}`;
+  detailContent.innerHTML=`${dexDetailNavHtml(p.id)}<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div><div id="rotomFactSlot">${rotomFactHtml(p.fact||`Bzzzt! Rotom is scanning for a cute or curious bit of lore about ${p.name}…`)}</div>${promptBlock}</div>${booksBlock}${caughtBlock}`;
   renderBooks();
   if(!p.fact)loadRotomFactForPokemon(p);
   if(!fromHistory){
