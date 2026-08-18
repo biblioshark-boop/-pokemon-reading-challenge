@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- RF_BUILD:1787079301 -->
+<!-- RF_BUILD:1787080013 -->
 
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <script>
-const RF_BUILD="1787079301";
+const RF_BUILD="1787080013";
 (async()=>{
   try{
     const probeUrl=new URL(location.href);
@@ -1047,6 +1047,57 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 }
 </style>
 
+
+<style id="adminUserCardPreview20260818">
+.admin-member-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.admin-member-actions button{padding:7px 10px;font-size:11px}
+.admin-user-card-modal{
+  position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.68);
+  display:flex;align-items:center;justify-content:center;padding:18px
+}
+.admin-user-card-modal.hidden{display:none!important}
+.admin-user-card-dialog{
+  width:min(960px,96vw);max-height:90vh;overflow:auto;
+  background:var(--surface);color:var(--text);border:1px solid var(--line);
+  border-radius:24px;padding:18px;box-shadow:0 30px 70px rgba(0,0,0,.35)
+}
+.admin-user-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.admin-user-card-head h3{margin:0}
+.admin-preview-card{
+  --pc1:#555;--pc2:#888;
+  position:relative;overflow:hidden;border-radius:28px;padding:26px;min-height:285px;color:#fff;
+  background:linear-gradient(135deg,var(--pc1),var(--pc2));
+  border:2px solid rgba(255,255,255,.28);box-shadow:0 18px 38px rgba(22,18,15,.22);
+  isolation:isolate;margin-top:12px
+}
+.admin-preview-card.leader{
+  border:4px solid #f3c84b;
+  box-shadow:0 0 0 3px rgba(255,225,110,.28),0 0 28px rgba(243,200,75,.34),0 18px 38px rgba(22,18,15,.24)
+}
+.admin-preview-card::before{
+  content:"";position:absolute;inset:0;z-index:-2;
+  background:radial-gradient(circle at 78% 15%,rgba(255,255,255,.22),transparent 27%),linear-gradient(115deg,transparent 0 54%,rgba(0,0,0,.14) 54% 56%,transparent 56% 100%)
+}
+.admin-preview-card::after{
+  content:"";position:absolute;width:330px;height:330px;right:-135px;bottom:-155px;
+  border:38px solid rgba(255,255,255,.10);border-radius:50%;z-index:-1
+}
+.admin-preview-grid{display:grid;grid-template-columns:190px 1fr;gap:26px;align-items:center;min-height:230px}
+.admin-preview-avatar-wrap{height:210px;border-radius:24px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.30)}
+.admin-preview-avatar{display:block;max-width:92%;max-height:205px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 8px 8px rgba(0,0,0,.24))}
+.admin-preview-kicker{font-size:11px;font-weight:900;letter-spacing:.16em;color:rgba(255,255,255,.82);margin-bottom:7px}
+.admin-preview-name{font-size:38px;line-height:1.02;font-weight:1000;letter-spacing:-.03em}
+.admin-preview-username{margin-top:6px;font-size:16px;font-weight:800;color:rgba(255,255,255,.82)}
+.admin-preview-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:23px}
+.admin-preview-meta>div{background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.16);border-radius:15px;padding:10px 12px}
+.admin-preview-meta span{display:block;font-size:9px;font-weight:900;letter-spacing:.14em;opacity:.72;margin-bottom:3px}
+.admin-preview-meta strong{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-preview-leader{display:inline-flex;gap:7px;align-items:center;margin-top:12px;border-radius:999px;background:rgba(255,215,80,.94);color:#402f00;padding:7px 11px;font-size:10px;font-weight:1000;letter-spacing:.08em}
+@media(max-width:650px){
+  .admin-preview-grid{grid-template-columns:125px 1fr;gap:14px}.admin-preview-avatar-wrap{height:170px}.admin-preview-name{font-size:26px}.admin-preview-meta{grid-template-columns:1fr 1fr}.admin-preview-meta>div:first-child{grid-column:1/-1}
+}
+</style>
+
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
@@ -1235,6 +1286,13 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
     <button class="secondary" style="width:100%;margin-top:12px" onclick="closeGymDefeatModal()">Cancel</button>
   </div>
 </div>
+<div id="adminUserCardModal" class="admin-user-card-modal hidden" onclick="if(event.target===this)closeAdminUserCard()">
+  <div class="admin-user-card-dialog">
+    <div class="admin-user-card-head"><h3>Member Trainer Card Preview</h3><button class="secondary small-btn" onclick="closeAdminUserCard()">Close</button></div>
+    <div id="adminUserCardStatus" class="muted">Loading…</div>
+    <div id="adminUserCardPreview"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -1419,6 +1477,66 @@ async function togglePublicSharing(){if(!profile?.username){toast("Save a userna
 async function copyShareLink(){await navigator.clipboard.writeText(shareURL());toast("Public link copied")}
 async function loadPublic(u){publicMode=true;publicBanner.classList.remove("hidden");const{data,error}=await sb.rpc("get_public_challenge",{p_username:u,p_challenge_key:CHALLENGE_KEY});if(error||!data){document.querySelector("main").innerHTML='<div class="form-card"><h2>Challenge not found</h2></div>';return false}profile=data.profile||{};challengeData=data.data?.challengeData||{};customPokemon=data.data?.customPokemon||[];genres=data.data?.genres||DEFAULT_GENRES;headerSubtitle.textContent=`${profile.display_name||profile.username||"Reader"}'s public Reading Dex`;return true}
 async function upload(file,prefix){const ext=(file.name.split(".").pop()||"jpg").replace(/[^a-z0-9]/gi,"").toLowerCase(),path=`${user.id}/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;const{error}=await sb.storage.from("challenge-covers").upload(path,file);if(error)throw error;return sb.storage.from("challenge-covers").getPublicUrl(path).data.publicUrl}
+
+function adminPreviewTeamColors(team){
+  const map={
+    "team-rocket":["#080808","#a81818"],"team-aqua":["#0c4b92","#2f9ed3"],"team-magma":["#71201e","#d95735"],"team-plasma":["#26394d","#4f9bc2"],
+    "team-galactic":["#24103e","#7751c5"],"pokemon-rangers":["#315f76","#7ba9bc"],"aether-foundation":["#657d35","#c2ab52"],"poke-dolls":["#a34f72","#e28fad"]
+  };
+  return team?(map[team.slug]||[team.primary_color||"#444",team.secondary_color||"#777"]):["#555","#888"];
+}
+function adminPreviewIsLeader(profileData,team){
+  const u=String(profileData?.username||"").trim().toLowerCase(),lu=String(team?.leader_username||"").trim().toLowerCase();
+  return !!(team&&u&&lu&&u===lu);
+}
+function adminPreviewCharacter(team,profileData){
+  if(!team)return null;
+  if(adminPreviewIsLeader(profileData,team)){
+    return {label:team.leader_character||"Team Leader",url:String(team.leader_image_url||"").trim()||(team.leader_character?trainerShowdownUrl(team.leader_character):"")};
+  }
+  const list=TEAM_TRAINER_CHARACTERS[team.slug]||[];
+  return list.find(x=>x.key===profileData?.trainer_sprite)||list[0]||null;
+}
+function countAdminPreviewCaught(saveData){
+  const entries=saveData?.challengeData||{};
+  return Object.values(entries).filter(e=>e&&e.caught===true).length;
+}
+async function viewAdminUserCard(userId){
+  if(!isAdmin)return toast("Admin access required.");
+  const modal=document.getElementById("adminUserCardModal"),status=document.getElementById("adminUserCardStatus"),preview=document.getElementById("adminUserCardPreview");
+  if(!modal||!status||!preview)return;
+  modal.classList.remove("hidden");status.classList.remove("hidden");status.textContent="Loading member card…";preview.innerHTML="";
+  const{data,error}=await sb.rpc("get_admin_member_card",{target_user_id:userId,p_challenge_key:CHALLENGE_KEY});
+  if(error){console.error(error);status.textContent=error.message||"Could not load member card.";return}
+  const p=data?.profile||{},team=data?.team||null,saveData=data?.save_data||{},character=adminPreviewCharacter(team,p),leader=adminPreviewIsLeader(p,team);
+  const caughtCount=countAdminPreviewCaught(saveData);
+  const customCount=Array.isArray(saveData?.customPokemon)?saveData.customPokemon.length:0;
+  const total=Math.max(0,(all()?.length||0)+customCount);
+  const percent=total?caughtCount/total*100:0;
+  const pctText=percent<1&&caughtCount?percent.toFixed(1)+"%":Math.round(percent)+"%";
+  const colors=adminPreviewTeamColors(team);
+  const display=p.display_name||p.username||"Trainer";
+  const username=p.username?`@${p.username}`:"No username";
+  status.classList.add("hidden");
+  preview.innerHTML=`<div class="admin-preview-card ${leader?"leader":""}" style="--pc1:${esc(colors[0])};--pc2:${esc(colors[1])}">
+    <div class="admin-preview-grid">
+      <div class="admin-preview-avatar-wrap">${character?.url?`<img class="admin-preview-avatar" src="${character.url}" alt="${esc(character.label||"Trainer character")}" onerror="this.style.display='none'">`:`<div style="font-size:42px;font-weight:900">RF</div>`}</div>
+      <div>
+        <div class="admin-preview-kicker">READING FRENZY • TRAINER CARD</div>
+        <div class="admin-preview-name">${esc(display)}</div>
+        <div class="admin-preview-username">${esc(username)}</div>
+        <div class="admin-preview-meta">
+          <div><span>TEAM</span><strong>${esc(team?.name||"No Team")}</strong></div>
+          <div><span>CAUGHT</span><strong>${caughtCount} / ${total}</strong></div>
+          <div><span>COMPLETE</span><strong>${esc(pctText)}</strong></div>
+        </div>
+        ${leader?`<div class="admin-preview-leader"><span>TEAM LEADER</span><strong>${esc(team?.leader_character||"Team Leader")}</strong></div>`:""}
+      </div>
+    </div>
+  </div>`;
+}
+function closeAdminUserCard(){document.getElementById("adminUserCardModal")?.classList.add("hidden")}
+
 async function loadAdminStatus(){
   if(!user||publicMode){isAdmin=false;return}
   const{data,error}=await sb.rpc("is_app_admin");
@@ -2510,7 +2628,7 @@ function renderAdminMembers(){
     const username=m.username?`@${m.username}`:"No username yet";
     const display=m.display_name&&m.display_name!==m.username?m.display_name:"";
     const email=m.email||"";
-    return `<div class="admin-member-row" role="button" tabindex="0" onclick="adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')" onkeydown="if(event.key==='Enter'){adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')}"><div class="admin-member-main"><div class="admin-member-name">${esc(name)}</div><div class="admin-member-meta">${esc([display,username,email].filter(Boolean).join(" • "))}</div></div><div class="admin-member-team">${esc(m.faction_name||"No team")}</div></div>`;
+    return `<div class="admin-member-row"><div class="admin-member-main" role="button" tabindex="0" onclick="adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')" onkeydown="if(event.key==='Enter'){adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')}"><div class="admin-member-name">${esc(name)}</div><div class="admin-member-meta">${esc([display,username,email].filter(Boolean).join(" • "))}</div><div class="admin-member-actions"><button type="button" class="secondary" onclick="event.stopPropagation();viewAdminUserCard('${esc(m.user_id)}')">View User Card</button></div></div><div class="admin-member-team">${esc(m.faction_name||"No team")}</div></div>`;
   }).join("");
 }
 
