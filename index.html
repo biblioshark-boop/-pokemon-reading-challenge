@@ -958,19 +958,23 @@ body[data-team] .bottom-nav .nav-btn.active .nav-icon{
 .trainer-card::before{content:"";position:absolute;inset:0;z-index:-3;background:radial-gradient(circle at 78% 15%,rgba(255,255,255,.22),transparent 27%),linear-gradient(115deg,transparent 0 54%,rgba(0,0,0,.14) 54% 56%,transparent 56% 100%)}
 .trainer-card::after{content:"";position:absolute;width:330px;height:330px;right:-135px;bottom:-155px;border:38px solid rgba(255,255,255,.10);border-radius:50%;z-index:-2}
 .trainer-card-glow{position:absolute;left:-90px;top:-100px;width:310px;height:310px;border-radius:50%;background:rgba(255,255,255,.10);filter:blur(2px);z-index:-2}
-.trainer-card-grid{display:grid;grid-template-columns:190px 1fr;gap:26px;align-items:center;min-height:230px}
-.trainer-avatar-wrap{height:210px;border-radius:24px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.30);box-shadow:inset 0 0 30px rgba(255,255,255,.08)}
+.trainer-card-grid{display:grid;grid-template-columns:180px minmax(0,1fr) 118px;gap:20px;align-items:center;min-height:230px}
+.trainer-avatar-wrap{height:210px;border-radius:24px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:rgba(255,255,255,.29);border:2px solid rgba(255,255,255,.58);box-shadow:inset 0 0 30px rgba(255,255,255,.14),0 5px 18px rgba(0,0,0,.12)}
 .trainer-avatar{display:block;max-width:92%;max-height:205px;image-rendering:auto;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.24))}
 .trainer-avatar-fallback{display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:52px;font-weight:900;color:rgba(255,255,255,.9)}
 .trainer-card-kicker{font-size:11px;font-weight:900;letter-spacing:.16em;color:var(--tcSoft);margin-bottom:7px}
 .trainer-card-name{font-size:38px;line-height:1.02;font-weight:1000;letter-spacing:-.03em;text-shadow:0 3px 10px rgba(0,0,0,.16)}
 .trainer-card-username{margin-top:6px;font-size:16px;font-weight:800;color:var(--tcSoft)}
 .trainer-card-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:23px}
-.trainer-card-meta-grid>div{background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.16);border-radius:15px;padding:10px 12px}
-.trainer-card-meta-grid span{display:block;font-size:9px;font-weight:900;letter-spacing:.14em;opacity:.72;margin-bottom:3px}
-.trainer-card-meta-grid strong{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trainer-card-meta-grid>div{background:rgba(4,7,12,.48);border:2px solid rgba(255,255,255,.48);border-radius:15px;padding:10px 12px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.trainer-card-meta-grid span{display:block;font-size:9px;font-weight:1000;letter-spacing:.14em;color:#fff;opacity:.94;margin-bottom:3px;text-shadow:0 1px 4px rgba(0,0,0,.75)}
+.trainer-card-meta-grid strong{display:block;font-size:15px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 5px rgba(0,0,0,.78)}
+.trainer-team-card{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;align-content:center;min-width:0}
+.trainer-team-mon{aspect-ratio:1;border-radius:14px;display:grid;place-items:center;overflow:hidden;background:rgba(255,255,255,.28);border:2px solid rgba(255,255,255,.62);box-shadow:0 5px 14px rgba(0,0,0,.18),inset 0 0 14px rgba(255,255,255,.12)}
+.trainer-team-mon img{display:block;width:94%;height:94%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.34))}
+.trainer-team-mon.empty{font-size:18px;font-weight:1000;color:rgba(255,255,255,.9);text-shadow:0 2px 5px rgba(0,0,0,.7)}
 .trainer-leader-ribbon{display:inline-flex;margin-top:12px;border-radius:999px;background:rgba(255,215,80,.94);color:#402f00;padding:7px 11px;font-size:10px;font-weight:1000;letter-spacing:.12em;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.trainer-card-orb{position:absolute;right:22px;top:20px;width:46px;height:46px;border:5px solid rgba(255,255,255,.78);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:.72}
+.trainer-card-orb{position:absolute;right:148px;top:20px;width:46px;height:46px;border:5px solid rgba(255,255,255,.86);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:.82}
 .trainer-card-orb::before,.trainer-card-orb::after{content:"";position:absolute;background:rgba(255,255,255,.78)}
 .trainer-card-orb::before{width:21px;height:5px;left:-21px;top:16px}
 .trainer-card-orb::after{width:21px;height:5px;right:-21px;top:16px}
@@ -996,8 +1000,8 @@ body.trainer-theme-ocean .trainer-card{--tc1:#0b5ea8;--tc2:#37a7d9}
 body.trainer-theme-forest .trainer-card{--tc1:#315d39;--tc2:#76a759}
 body.trainer-theme-gold .trainer-card{--tc1:#7c5a14;--tc2:#d4a72c}
 body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
-@media(max-width:650px){.trainer-card{padding:18px;min-height:245px;border-radius:22px}.trainer-card-grid{grid-template-columns:125px 1fr;gap:16px;min-height:200px}.trainer-avatar-wrap{height:170px}.trainer-avatar{max-height:166px}.trainer-card-name{font-size:27px}.trainer-card-meta-grid{grid-template-columns:1fr;margin-top:14px}.trainer-card-meta-grid>div{padding:7px 9px}.trainer-card-orb{transform:scale(.75);transform-origin:top right}.trainer-sprite-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:410px){.trainer-card-grid{grid-template-columns:105px 1fr;gap:12px}.trainer-avatar-wrap{height:145px}.trainer-avatar{max-height:142px}.trainer-card-name{font-size:23px}.trainer-card-kicker{font-size:8px}.trainer-card-username{font-size:13px}}
+@media(max-width:650px){.trainer-card{padding:18px;min-height:245px;border-radius:22px}.trainer-card-grid{grid-template-columns:108px minmax(0,1fr) 82px;gap:11px;min-height:200px}.trainer-avatar-wrap{height:170px}.trainer-avatar{max-height:166px}.trainer-card-name{font-size:27px}.trainer-card-meta-grid{grid-template-columns:1fr;margin-top:14px}.trainer-card-meta-grid>div{padding:7px 9px}.trainer-team-card{gap:6px}.trainer-team-mon{border-radius:11px}.trainer-card-orb{right:98px;transform:scale(.62);transform-origin:top right}.trainer-sprite-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:410px){.trainer-card-grid{grid-template-columns:76px minmax(0,1fr) 66px;gap:8px}.trainer-avatar-wrap{height:145px}.trainer-avatar{max-height:142px}.trainer-card-name{font-size:23px}.trainer-card-kicker{font-size:8px}.trainer-card-username{font-size:13px}.trainer-team-card{gap:4px}.trainer-team-mon{border-radius:9px;border-width:1px}.trainer-card-orb{right:76px;transform:scale(.5)}}
 </style>
 
 <style id="teamCharacterTrainerCard20260818">
@@ -1020,6 +1024,24 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 .trainer-banner-choice::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 20%,rgba(0,0,0,.72));z-index:0}
 .trainer-banner-choice span{position:absolute;z-index:1;left:7px;right:7px;bottom:6px;font-size:10px;font-weight:900;line-height:1.1;text-align:left}
 .trainer-banner-choice.selected{border-color:#fff;box-shadow:0 0 0 3px var(--accent)!important}
+.trainer-team-editor-title{font-weight:900;font-size:13px;margin:16px 0 7px}
+.trainer-team-editor-help{font-size:12px;color:var(--muted);margin-bottom:8px}
+.trainer-team-editor-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-bottom:14px}
+.trainer-team-editor-slot{position:relative;min-height:94px!important;padding:6px!important;border:2px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--text);overflow:hidden}
+.trainer-team-editor-slot:hover{border-color:var(--accent)}
+.trainer-team-editor-slot img{display:block;width:100%;height:62px;object-fit:contain;margin:auto}
+.trainer-team-editor-slot span{display:block;font-size:9px;font-weight:900;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trainer-team-editor-slot.empty{display:grid;place-items:center;color:var(--muted);font-size:11px;font-weight:900}
+.trainer-team-picker-card{width:min(760px,calc(100vw - 24px));max-height:min(82vh,760px);display:flex;flex-direction:column}
+.trainer-team-picker-card .search{flex:0 0 auto;margin:4px 0 10px}
+.trainer-team-picker-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px;overflow:auto;padding:3px 3px 12px}
+.trainer-team-picker-mon{position:relative;min-height:132px;padding:8px;border:2px solid var(--line);border-radius:15px;background:var(--surface2);color:var(--text)}
+.trainer-team-picker-mon:hover{border-color:var(--accent)}
+.trainer-team-picker-mon:disabled{opacity:.42;cursor:not-allowed}
+.trainer-team-picker-mon img{display:block;width:100%;height:88px;object-fit:contain}
+.trainer-team-picker-mon strong,.trainer-team-picker-mon small{display:block;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trainer-team-picker-mon strong{font-size:11px}.trainer-team-picker-mon small{font-size:9px;color:var(--muted);margin-top:2px}
+.trainer-team-picker-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .compact-progress{padding-bottom:22px!important}
 .compact-progress .progress-track{margin-top:12px!important}
 .username-lock-note.username-once-note{color:#7a5b00;background:#fff7d6;border:1px solid #e5cc6b;padding:9px 11px;border-radius:12px;margin-top:7px}
@@ -1044,6 +1066,7 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
   .trainer-card-meta-grid{gap:8px;margin-top:13px}
   .trainer-card-meta-grid>div{min-width:0;padding:7px 9px}
   .trainer-card-meta-grid strong{font-size:13px}
+  .trainer-team-editor-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:390px){.trainer-banner-choices{grid-template-columns:1fr}.trainer-banner-choice{min-height:58px!important}}
 </style>
@@ -1379,7 +1402,7 @@ body.gyms-active main{
       <button class="primary" onclick="openTeamPicker()">Choose a Team</button></div>
     </div>
     <div id="trainerCardUnlocked">
-      <div id="trainerCard" class="trainer-card" aria-label="Trainer Card"><div class="trainer-card-glow"></div><div class="trainer-card-grid"><div class="trainer-avatar-wrap"><img id="trainerCardAvatar" class="trainer-avatar" alt="Trainer character"><div id="trainerAvatarFallback" class="trainer-avatar-fallback">RF</div></div><div class="trainer-card-info"><div class="trainer-card-kicker">READING FRENZY • TRAINER CARD</div><div id="trainerCardName" class="trainer-card-name">Trainer</div><div id="trainerCardUsername" class="trainer-card-username">@reader</div><div class="trainer-card-meta-grid"><div><span>TEAM</span><strong id="trainerCardTeam">Team</strong></div><div><span>CAUGHT</span><strong id="trainerCardCaught">0 / 0</strong></div><div><span>COMPLETE</span><strong id="trainerCardPercent">0%</strong></div></div><div id="trainerLeaderRibbon" class="trainer-leader-ribbon hidden"><span>TEAM LEADER</span><strong id="trainerLeaderName"></strong></div></div></div><div class="trainer-card-orb" aria-hidden="true"><span></span></div></div>
+      <div id="trainerCard" class="trainer-card" aria-label="Trainer Card"><div class="trainer-card-glow"></div><div class="trainer-card-grid"><div class="trainer-avatar-wrap"><img id="trainerCardAvatar" class="trainer-avatar" alt="Trainer character"><div id="trainerAvatarFallback" class="trainer-avatar-fallback">RF</div></div><div class="trainer-card-info"><div class="trainer-card-kicker">READING FRENZY • TRAINER CARD</div><div id="trainerCardName" class="trainer-card-name">Trainer</div><div id="trainerCardUsername" class="trainer-card-username">@reader</div><div class="trainer-card-meta-grid"><div><span>TEAM</span><strong id="trainerCardTeam">Team</strong></div><div><span>CAUGHT</span><strong id="trainerCardCaught">0 / 0</strong></div><div><span>COMPLETE</span><strong id="trainerCardPercent">0%</strong></div></div><div id="trainerLeaderRibbon" class="trainer-leader-ribbon hidden"><span>TEAM LEADER</span><strong id="trainerLeaderName"></strong></div></div><div id="trainerCardPokemonTeam" class="trainer-team-card" aria-label="Chosen Pokémon team"></div></div><div class="trainer-card-orb" aria-hidden="true"><span></span></div></div>
       <div class="trainer-card-actions"><button id="editTrainerCardBtn" class="secondary" onclick="editTrainerCard()">Edit Card</button><button id="downloadTrainerCardBtn" class="secondary" onclick="downloadTrainerCard()">Download Card</button></div>
       <div id="trainerCardInlineEdit" class="trainer-card-inline-edit hidden">
         <div class="trainer-card-inline-title">Edit Trainer Card</div>
@@ -1387,6 +1410,9 @@ body.gyms-active main{
         <select id="trainerCardCharacterSelect" onchange="chooseTrainerCardCharacter(this.value)"></select>
         <div class="trainer-banner-title">Card Background</div>
         <div id="trainerCardBannerChoices" class="trainer-banner-choices"></div>
+        <div class="trainer-team-editor-title">Your Pokémon Team</div>
+        <div class="trainer-team-editor-help">Choose up to six Pokémon to appear on the right side of your Trainer Card.</div>
+        <div id="trainerTeamEditorGrid" class="trainer-team-editor-grid"></div>
         <button class="secondary" type="button" onclick="closeTrainerCardEditor()">Done</button>
       </div>
     </div>
@@ -1725,7 +1751,7 @@ async function sendPasswordReset(){
 async function submitAuth(){const email=authEmail.value.trim(),password=authPassword.value;if(!email||password.length<6){authMessage.textContent="Enter a valid email and a password with at least 6 characters.";return}if(authMode==="login"){const{error}=await sb.auth.signInWithPassword({email,password});if(error)authMessage.textContent=error.message}else{const{data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error)authMessage.textContent=error.message;else if(!data.session)authMessage.textContent="Account created. Check your email to confirm it, then return here and log in."}}
 async function signOut(){await sb.auth.signOut();location.reload()}
 async function loadProfile(){
-  const{data}=await sb.from("profiles").select("display_name,username,trainer_sprite,trainer_card_theme,trainer_card_banner,username_change_used,display_name_change_used,created_at").eq("id",user.id).maybeSingle();
+  const{data}=await sb.from("profiles").select("display_name,username,trainer_sprite,trainer_card_theme,trainer_card_banner,trainer_card_team,username_change_used,display_name_change_used,created_at").eq("id",user.id).maybeSingle();
   profile=data||{};
   accountEmail.textContent=user.email||"Signed in";
   displayName.value=profile.display_name||"";
@@ -1792,7 +1818,7 @@ async function saveProfile(){
 
   if(!updates.display_name&&!updates.username){toast("No profile changes to save.");return}
 
-  const{data,error}=await sb.from("profiles").update(updates).eq("id",user.id).select("display_name,username,trainer_sprite,trainer_card_theme,trainer_card_banner,username_change_used,display_name_change_used,created_at").single();
+  const{data,error}=await sb.from("profiles").update(updates).eq("id",user.id).select("display_name,username,trainer_sprite,trainer_card_theme,trainer_card_banner,trainer_card_team,username_change_used,display_name_change_used,created_at").single();
   if(error){toast(error.message);return}
   profile={...profile,...data};
   displayName.value=profile.display_name||"";
@@ -2246,6 +2272,25 @@ function resolvedLeaderImage(source){
 function trainerCardAvatarUrl(){const f=trainerCardFaction();if(!f)return "";if(isCurrentTeamLeader())return resolvedLeaderImage(f);return currentTrainerCharacter()?.url||""}
 function trainerCardColors(){const f=trainerCardFaction();if(f){const map={"team-rocket":["#080808","#a81818"],"team-aqua":["#0c4b92","#2f9ed3"],"team-magma":["#71201e","#d95735"],"team-plasma":["#26394d","#4f9bc2"],"team-galactic":["#24103e","#7751c5"],"pokemon-rangers":["#315f76","#7ba9bc"],"aether-foundation":["#657d35","#c2ab52"],"poke-dolls":["#a34f72","#e28fad"],"team-flare":["#160b09","#e94b18"],"team-skull":["#100c16","#8f2ca8"],"team-yell":["#111111","#ed2c93"]};return map[f.slug]||[f.primary_color||"#444",f.secondary_color||"#777"]}return TRAINER_CARD_THEMES.classic}
 function applyTrainerCardThemeClass(){}
+function trainerTeamIds(){
+  const raw=Array.isArray(profile?.trainer_card_team)?profile.trainer_card_team:[];
+  return [...new Set(raw.map(String).filter(Boolean))].slice(0,6);
+}
+function trainerTeamPokemon(){
+  const byId=new Map(all().map(p=>[String(p.id),p]));
+  return trainerTeamIds().map(id=>byId.get(id)).filter(Boolean);
+}
+function renderTrainerCardPokemonTeam(){
+  const box=document.getElementById("trainerCardPokemonTeam");
+  if(!box)return;
+  const mons=trainerTeamPokemon();
+  box.innerHTML=Array.from({length:6},(_,i)=>{
+    const p=mons[i];
+    if(!p)return '<div class="trainer-team-mon empty" aria-hidden="true">+</div>';
+    const label=`${p.name||"Pokémon"}${p.form?" "+p.form:""}`;
+    return `<div class="trainer-team-mon" title="${esc(label)}"><img src="${esc(p.image||image(p.dex||0))}" alt="${esc(label)}" onerror="this.style.display='none'"></div>`;
+  }).join("");
+}
 function renderTrainerCard(){
   const card=document.getElementById("trainerCard"),locked=document.getElementById("trainerCardLocked"),unlocked=document.getElementById("trainerCardUnlocked");
   if(!card||!locked||!unlocked)return;
@@ -2269,6 +2314,7 @@ function renderTrainerCard(){
   avatar.onload=()=>{avatar.style.display="block";fb.style.display="none"};
   avatar.onerror=()=>{avatar.style.display="none";fb.style.display="flex";fb.textContent=(display||"RF").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"RF"};
   if(url)avatar.src=url;
+  renderTrainerCardPokemonTeam();
   const colors=trainerCardColors();card.style.setProperty("--tc1",colors[0]);card.style.setProperty("--tc2",colors[1]);
   const bannerUrl=trainerCardBannerUrl();
   card.style.backgroundImage=bannerUrl?`linear-gradient(105deg,rgba(0,0,0,.18),rgba(0,0,0,.48)),url("${bannerUrl}")`:"";
@@ -2289,6 +2335,7 @@ function renderInlineTrainerEditor(){
     select.innerHTML=options.map(name=>`<option value="${esc(name)}" ${name===f.leader_character?"selected":""}>${esc(name)}</option>`).join("");
     help.textContent=options.length>1?`Choose which ${f.name} leader represents you. This updates your card and the team leaderboards.`:"This team has one permanent leader character.";
     renderTrainerBannerChoices(bannerBox);
+    renderTrainerTeamEditor();
     return;
   }
   const list=teamTrainerOptions(),selected=currentTrainerCharacter()?.key||"";
@@ -2296,6 +2343,7 @@ function renderInlineTrainerEditor(){
   select.innerHTML=list.map(s=>`<option value="${esc(s.key)}" ${s.key===selected?"selected":""}>${esc(s.label)}</option>`).join("");
   help.textContent=`Choose the character shown on your ${f.name} Trainer Card. Changes save immediately.`;
   renderTrainerBannerChoices(bannerBox);
+  renderTrainerTeamEditor();
 }
 function renderTrainerBannerChoices(box=document.getElementById("trainerCardBannerChoices")){
   if(!box)return;
@@ -2310,6 +2358,73 @@ async function chooseTrainerCardBanner(key){
   if(error){profile.trainer_card_banner=old;renderTrainerCard();renderTrainerBannerChoices();toast("Could not save Trainer Card background.");return}
   toast("Trainer Card background saved.");
 }
+let trainerTeamPickerSlot=0;
+function renderTrainerTeamEditor(){
+  const box=document.getElementById("trainerTeamEditorGrid");
+  if(!box)return;
+  const byId=new Map(all().map(p=>[String(p.id),p])),ids=trainerTeamIds();
+  box.innerHTML="";
+  for(let i=0;i<6;i++){
+    const p=byId.get(ids[i]),btn=document.createElement("button");
+    btn.type="button";
+    btn.className="trainer-team-editor-slot"+(p?"":" empty");
+    btn.title=p?`Replace ${p.name}${p.form?" "+p.form:""}`:`Choose Pokémon ${i+1}`;
+    btn.innerHTML=p?`<img src="${esc(p.image||image(p.dex||0))}" alt=""><span>${esc(p.name)}${p.form?" • "+esc(p.form):""}</span>`:`<span>+ Pokémon ${i+1}</span>`;
+    btn.onclick=()=>openTrainerTeamPicker(i);
+    box.appendChild(btn);
+  }
+}
+function trainerTeamPickerList(query=""){
+  const q=String(query||"").trim().toLowerCase();
+  return all().filter(p=>!q||`${p.name||""} ${p.form||""} ${p.dex||""}`.toLowerCase().includes(q)).sort((a,b)=>(+a.dex||99999)-(+b.dex||99999)||String(a.form||a.name||"").localeCompare(String(b.form||b.name||""),undefined,{numeric:true})).slice(0,160);
+}
+function openTrainerTeamPicker(slot){
+  if(publicMode||!user)return;
+  trainerTeamPickerSlot=Math.max(0,Math.min(5,+slot||0));
+  document.getElementById("trainerTeamPickerModal")?.remove();
+  const modal=document.createElement("div");
+  modal.className="modal open";modal.id="trainerTeamPickerModal";
+  modal.innerHTML=`<div class="modal-card trainer-team-picker-card"><div class="modal-handle"></div><h2>Choose Pokémon ${trainerTeamPickerSlot+1}</h2><input id="trainerTeamPickerSearch" class="search" placeholder="Search by Pokémon, form, or number…"><div id="trainerTeamPickerResults" class="trainer-team-picker-results"></div><div class="trainer-team-picker-actions"><button type="button" class="secondary" id="trainerTeamClearBtn">Clear Slot</button><button type="button" class="secondary" id="trainerTeamCancelBtn">Cancel</button></div></div>`;
+  document.body.appendChild(modal);
+  const search=modal.querySelector("#trainerTeamPickerSearch");
+  search.oninput=()=>renderTrainerTeamPickerResults(search.value);
+  modal.querySelector("#trainerTeamClearBtn").onclick=()=>clearTrainerTeamSlot(trainerTeamPickerSlot);
+  modal.querySelector("#trainerTeamCancelBtn").onclick=closeTrainerTeamPicker;
+  modal.onclick=e=>{if(e.target===modal)closeTrainerTeamPicker()};
+  renderTrainerTeamPickerResults();
+  setTimeout(()=>search.focus(),50);
+}
+function renderTrainerTeamPickerResults(query=""){
+  const box=document.getElementById("trainerTeamPickerResults");if(!box)return;
+  const ids=trainerTeamIds(),current=ids[trainerTeamPickerSlot]||"",used=new Set(ids);
+  box.innerHTML="";
+  for(const p of trainerTeamPickerList(query)){
+    const id=String(p.id),btn=document.createElement("button");
+    btn.type="button";btn.className="trainer-team-picker-mon";btn.disabled=used.has(id)&&id!==current;
+    btn.innerHTML=`<img loading="lazy" src="${esc(p.image||image(p.dex||0))}" alt=""><strong>${esc(p.name||"Pokémon")}</strong><small>${p.dex?"#"+String(p.dex).padStart(4,"0"):"Bonus"}${p.form?" • "+esc(p.form):""}</small>`;
+    btn.onclick=()=>chooseTrainerTeamPokemon(id);
+    box.appendChild(btn);
+  }
+  if(!box.children.length)box.innerHTML='<div class="empty">No Pokémon match.</div>';
+}
+function closeTrainerTeamPicker(){document.getElementById("trainerTeamPickerModal")?.remove()}
+async function saveTrainerTeam(next,successMessage){
+  if(publicMode||!user)return;
+  const old=trainerTeamIds(),clean=[...new Set(next.map(String).filter(Boolean))].slice(0,6);
+  profile={...(profile||{}),trainer_card_team:clean};renderTrainerCard();renderTrainerTeamEditor();
+  const{data,error}=await sb.from("profiles").update({trainer_card_team:clean,updated_at:new Date().toISOString()}).eq("id",user.id).select("trainer_card_team").single();
+  if(error){profile.trainer_card_team=old;renderTrainerCard();renderTrainerTeamEditor();toast("Could not save your Pokémon team.");return false}
+  profile.trainer_card_team=Array.isArray(data?.trainer_card_team)?data.trainer_card_team:clean;
+  closeTrainerTeamPicker();toast(successMessage);return true;
+}
+function chooseTrainerTeamPokemon(id){
+  const next=trainerTeamIds(),existing=next.indexOf(String(id));
+  if(existing>=0&&existing!==trainerTeamPickerSlot)return;
+  while(next.length<trainerTeamPickerSlot)next.push("");
+  next[trainerTeamPickerSlot]=String(id);
+  saveTrainerTeam(next,"Trainer Card Pokémon saved.");
+}
+function clearTrainerTeamSlot(slot){const next=trainerTeamIds();next.splice(slot,1);saveTrainerTeam(next,"Pokémon removed from your Trainer Card.")}
 function chooseTrainerCardCharacter(value){
   if(isCurrentTeamLeader())return chooseTeamLeaderCharacter(value);
   return chooseTrainerSprite(value);
@@ -2353,6 +2468,38 @@ async function downloadTrainerCard(){if(publicMode||!trainerCardFaction())return
   if(banner){ctx.save();roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.clip();const scale=Math.max(W/banner.width,H/banner.height),dw=banner.width*scale,dh=banner.height*scale;ctx.drawImage(banner,(W-dw)/2,(H-dh)/2,dw,dh);const shade=ctx.createLinearGradient(0,0,W,0);shade.addColorStop(0,"rgba(0,0,0,.12)");shade.addColorStop(1,"rgba(0,0,0,.52)");ctx.fillStyle=shade;ctx.fillRect(0,0,W,H);ctx.restore();}
   if(isCurrentTeamLeader()){ctx.strokeStyle="#f3c84b";ctx.lineWidth=10;roundedRectPath(ctx,17,17,W-34,H-34,38);ctx.stroke();}ctx.save();roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.clip();ctx.globalAlpha=.11;ctx.strokeStyle="#fff";ctx.lineWidth=56;ctx.beginPath();ctx.arc(1050,640,250,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.12;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(120,80,220,0,Math.PI*2);ctx.fill();ctx.restore();const display=profile?.display_name||profile?.username||"Trainer",f=trainerCardFaction(),a=all(),c=a.filter(caught).length;ctx.fillStyle="rgba(255,255,255,.16)";roundedRectPath(ctx,65,112,315,455,34);ctx.fill();ctx.strokeStyle="rgba(255,255,255,.28)";ctx.lineWidth=2;ctx.stroke();const img=await loadCanvasImage(trainerCardAvatarUrl());if(img){const scale=Math.min(280/img.width,420/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,65+(315-dw)/2,135+(410-dh),dw,dh)}else{ctx.fillStyle="rgba(255,255,255,.85)";ctx.font="900 92px system-ui";ctx.textAlign="center";ctx.fillText((display.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("")||"RF").toUpperCase(),222,385);ctx.textAlign="left"}ctx.fillStyle="rgba(255,255,255,.82)";ctx.font="900 21px system-ui";ctx.fillText("READING FRENZY • TRAINER CARD",430,150);ctx.fillStyle="#fff";ctx.font="1000 62px system-ui";ctx.fillText(display.slice(0,28),430,230);ctx.fillStyle="rgba(255,255,255,.86)";ctx.font="800 29px system-ui";ctx.fillText(profile?.username?`@${profile.username}`:"@reader",430,278);const pct=a.length?c/a.length*100:0,pctText=pct<1&&c?pct.toFixed(1)+"%":Math.round(pct)+"%";const boxes=[[430,330,215,125,"TEAM",f?.name||"Team"],[665,330,215,125,"CAUGHT",`${c} / ${a.length}`],[900,330,215,125,"COMPLETE",pctText]];boxes.forEach(([x,y,w,h,label,value])=>{ctx.fillStyle="rgba(0,0,0,.15)";roundedRectPath(ctx,x,y,w,h,20);ctx.fill();ctx.fillStyle="rgba(255,255,255,.72)";ctx.font="900 17px system-ui";ctx.fillText(label,x+22,y+36);ctx.fillStyle="#fff";ctx.font="900 28px system-ui";ctx.fillText(String(value).slice(0,20),x+22,y+82)});if(isCurrentTeamLeader()){const leaderLabel=f?.leader_character?`TEAM LEADER • ${f.leader_character}`:"TEAM LEADER";ctx.fillStyle="#f6d25b";roundedRectPath(ctx,430,500,360,50,25);ctx.fill();ctx.fillStyle="#3c2b00";ctx.font="1000 18px system-ui";ctx.fillText(leaderLabel.slice(0,30),454,532)}ctx.strokeStyle="rgba(255,255,255,.72)";ctx.lineWidth=8;ctx.beginPath();ctx.arc(1080,105,44,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(1080,105,12,0,Math.PI*2);ctx.fillStyle="rgba(255,255,255,.88)";ctx.fill();ctx.beginPath();ctx.moveTo(1000,105);ctx.lineTo(1036,105);ctx.moveTo(1124,105);ctx.lineTo(1160,105);ctx.stroke();try{const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));if(!blob)throw new Error("No image");const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`Reading-Frenzy-Trainer-Card-${(profile?.username||"trainer").replace(/[^a-z0-9_-]/gi,"-")}.png`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast("Trainer Card downloaded.")}catch(e){console.error(e);toast("Could not download Trainer Card.")}}
 
+function drawImageCover(ctx,img,x,y,w,h){const scale=Math.max(w/img.width,h/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh)}
+function drawImageContain(ctx,img,x,y,w,h){const scale=Math.min(w/img.width,h/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh)}
+async function downloadTrainerCardWithPokemon(){
+  if(publicMode||!trainerCardFaction())return toast("Join a team to create a Trainer Card.");
+  const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=1200,H=700;
+  canvas.width=W;canvas.height=H;
+  const colors=trainerCardColors(),banner=await loadCanvasImage(trainerCardBannerUrl()),avatar=await loadCanvasImage(trainerCardAvatarUrl());
+  const mons=trainerTeamPokemon(),monImages=await Promise.all(mons.map(p=>loadCanvasImage(p.image||image(p.dex||0))));
+  const grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,colors[0]);grad.addColorStop(1,colors[1]);
+  roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.fillStyle=grad;ctx.fill();ctx.save();ctx.clip();
+  if(banner){ctx.globalAlpha=.96;drawImageCover(ctx,banner,0,0,W,H);ctx.globalAlpha=1}
+  const shade=ctx.createLinearGradient(0,0,W,0);shade.addColorStop(0,"rgba(0,0,0,.18)");shade.addColorStop(.55,"rgba(0,0,0,.30)");shade.addColorStop(1,"rgba(0,0,0,.48)");ctx.fillStyle=shade;ctx.fillRect(0,0,W,H);ctx.restore();
+  const leader=isCurrentTeamLeader();roundedRectPath(ctx,12,12,W-24,H-24,42);ctx.lineWidth=leader?10:5;ctx.strokeStyle=leader?"#f4c430":"rgba(255,255,255,.42)";ctx.stroke();
+  roundedRectPath(ctx,48,94,272,510,34);ctx.fillStyle="rgba(255,255,255,.29)";ctx.fill();ctx.lineWidth=3;ctx.strokeStyle="rgba(255,255,255,.62)";ctx.stroke();
+  if(avatar)drawImageContain(ctx,avatar,58,108,252,480);else{ctx.fillStyle="rgba(255,255,255,.88)";ctx.font="700 80px system-ui";ctx.textAlign="center";ctx.fillText("RF",184,385);ctx.textAlign="left"}
+  const display=profile?.display_name||profile?.username||"Trainer",a=all(),caughtTotal=a.filter(caught).length,percent=a.length?caughtTotal/a.length*100:0;
+  ctx.fillStyle="rgba(255,255,255,.94)";ctx.font="700 21px system-ui";ctx.letterSpacing="4px";ctx.fillText("READING FRENZY • TRAINER CARD",360,132);ctx.letterSpacing="0px";
+  ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,.55)";ctx.shadowBlur=8;ctx.font="800 54px system-ui";ctx.fillText(display,360,202);ctx.font="700 29px system-ui";ctx.fillText(profile?.username?`@${profile.username}`:"@reader",360,246);ctx.shadowBlur=0;
+  const boxes=[{x:360,w:205,label:"TEAM",value:trainerCardFaction()?.name||"Team"},{x:580,w:165,label:"CAUGHT",value:`${caughtTotal} / ${a.length}`},{x:760,w:165,label:"COMPLETE",value:percent<1&&caughtTotal?percent.toFixed(1)+"%":Math.round(percent)+"%"}];
+  boxes.forEach(b=>{roundedRectPath(ctx,b.x,300,b.w,142,25);ctx.fillStyle="rgba(4,7,12,.55)";ctx.fill();ctx.lineWidth=3;ctx.strokeStyle="rgba(255,255,255,.55)";ctx.stroke();ctx.fillStyle="rgba(255,255,255,.95)";ctx.font="800 18px system-ui";ctx.fillText(b.label,b.x+18,337);ctx.fillStyle="#fff";ctx.font=`800 ${b.label==="TEAM"?27:30}px system-ui`;ctx.fillText(b.value,b.x+18,392,b.w-34)});
+  if(leader){roundedRectPath(ctx,360,470,330,58,28);ctx.fillStyle="#f4c430";ctx.fill();ctx.fillStyle="#241800";ctx.font="800 17px system-ui";ctx.fillText("TEAM LEADER",382,507);ctx.font="800 20px system-ui";ctx.fillText(trainerCardFaction()?.leader_character||"Team Leader",515,507)}
+  ctx.fillStyle="rgba(255,255,255,.95)";ctx.font="800 17px system-ui";ctx.fillText("MY POKÉMON TEAM",957,124);
+  for(let i=0;i<6;i++){
+    const col=i%2,row=Math.floor(i/2),x=950+col*111,y=150+row*166;
+    roundedRectPath(ctx,x,y,96,142,22);ctx.fillStyle="rgba(255,255,255,.30)";ctx.fill();ctx.lineWidth=3;ctx.strokeStyle="rgba(255,255,255,.62)";ctx.stroke();
+    if(monImages[i])drawImageContain(ctx,monImages[i],x+7,y+7,82,105);
+    else{ctx.fillStyle="rgba(255,255,255,.48)";ctx.font="700 34px system-ui";ctx.textAlign="center";ctx.fillText("+",x+48,y+82);ctx.textAlign="left"}
+    if(mons[i]){ctx.fillStyle="#fff";ctx.font="700 13px system-ui";ctx.textAlign="center";ctx.fillText(mons[i].name||"Pokémon",x+48,y+130,88);ctx.textAlign="left"}
+  }
+  canvas.toBlob(blob=>{if(!blob)return toast("Could not create Trainer Card image.");const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`${String(profile?.username||"reading-frenzy").replace(/[^a-z0-9_-]+/gi,"-")}-trainer-card.png`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1500);toast("Trainer Card downloaded.")},"image/png");
+}
+downloadTrainerCard=downloadTrainerCardWithPokemon;
 function renderHome(){const a=all();renderTrainerCard();regionGrid.innerHTML="";REGIONS.forEach(r=>{const g=a.filter(x=>x.region===r);if(!g.length)return;const b=document.createElement(publicMode?"div":"button");b.className="region-card";b.innerHTML=`<strong>${r}</strong><span>${g.filter(caught).length} / ${g.length} caught</span>`;if(!publicMode)b.onclick=()=>{goPage("dex");regionFilter.value=r;applyRegionTheme(r);renderDex()};regionGrid.appendChild(b)})}
 function toggleAdminImageEditMode(){
   if(!isAdmin)return toast("Admin access required.");
