@@ -1525,7 +1525,7 @@ body.gyms-active main{
 </div>
 <div id="adminGlobalCard" class="form-card admin-card hidden"><h3>Admin Tools • Global Pokémon</h3><div class="admin-note">Add or edit challenge-wide Pokémon data. Changes here appear for everyone.</div><label>Existing global entry</label><select id="globalEditSelect" onchange="loadGlobalEditor(this.value)"><option value="">Create new entry</option></select><label>Name</label><input id="globalName"><div class="field-grid"><div><label>National Dex Number</label><input id="globalDex" inputmode="numeric"></div><div><label>Region</label><select id="globalRegion"></select></div></div><label>Form / Variant</label><input id="globalForm"><div class="field-grid"><div><label>Type 1</label><input id="globalType1"></div><div><label>Type 2</label><input id="globalType2"></div></div><label>Global Reading Prompt</label><textarea id="globalPrompt"></textarea><label>Pokédex Fact</label><textarea id="globalFact"></textarea><label>Image URL</label><input id="globalImage"><label>Or upload an image</label><input type="file" accept="image/*" id="globalImageUpload"><label><input id="globalBonus" type="checkbox" style="width:auto;margin-right:8px">Bonus / special Pokémon</label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGlobalPokemon()">Save for Everyone</button><button id="globalDeleteBtn" class="danger hidden" style="width:100%;margin-top:8px" onclick="deleteGlobalPokemon()">Delete Global Entry</button></div>
 </section>
-<section id="detailPage" class="page"><div id="adminDetailEditBar" class="admin-image-edit-bar hidden"><button id="adminDetailEditBtn" class="secondary" onclick="toggleAdminDetailEditMode()">Edit Pokémon Details</button><span id="adminDetailEditStatus" class="muted">Admin only • edit the global prompt and Rotom fact</span></div><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
+<section id="detailPage" class="page"><div id="adminDetailEditBar" class="admin-image-edit-bar hidden"><button id="adminDetailEditBtn" class="secondary" onclick="toggleAdminDetailEditMode()">Edit Pokémon Details</button><span id="adminDetailEditStatus" class="muted">Pokédex Editors • edit the global prompt and Rotom fact</span></div><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
 </main>
 <nav id="bottomNav" class="bottom-nav hidden"><button class="nav-btn active" data-page="home" onclick="goPage('home')"><span class="nav-icon">🏠</span>Home</button><button class="nav-btn" data-page="dex" onclick="goPage('dex')"><span class="nav-icon">◉</span>Pokédex</button><button class="nav-btn" data-page="safari" onclick="goPage('safari')"><span class="nav-icon">🌿</span>Safari</button><button class="nav-btn" data-page="gyms" onclick="goPage('gyms')"><span class="nav-icon">◇</span>Gyms</button><button class="nav-btn" data-page="stats" onclick="goPage('stats')"><span class="nav-icon">▥</span>Team Stats</button><button class="nav-btn" data-page="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span>Settings</button></nav>
 
@@ -1573,7 +1573,7 @@ const TEAM_THEMES={
   "poke-dolls":["#faeaf3","#fff8fc","#efd7e5","#38212e","#856578","#d96aa7","#7e3a63","#dfbdd1"]
 };
 const DEFAULT_GENRES=["Horror","Thriller","Science Fiction","Fantasy","Mystery","Romance","Contemporary","Historical Fiction","Nonfiction","Graphic Novel / Manga"];
-let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,lastSavedAt=null,bookSaving=false,isAdmin=false,adminImageEditMode=false,adminDetailEditMode=false,factions=[],currentFactionId=null,teamChangeUnlocked=false,adminMembers=[];
+let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,lastSavedAt=null,bookSaving=false,isAdmin=false,canEditPokemonDetails=false,adminImageEditMode=false,adminDetailEditMode=false,factions=[],currentFactionId=null,teamChangeUnlocked=false,adminMembers=[];
 const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 const title=s=>s.replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
 function region(n){n=+n;if(n<=151)return"Kanto";if(n<=251)return"Johto";if(n<=386)return"Hoenn";if(n<=493)return"Sinnoh";if(n<=649)return"Unova";if(n<=721)return"Kalos";if(n<=809)return"Alola";if(n<=905)return"Galar";if(n<=1025)return"Paldea";return"Special"}
@@ -1868,16 +1868,20 @@ async function viewAdminUserCard(userId){
 function closeAdminUserCard(){document.getElementById("adminUserCardModal")?.classList.add("hidden")}
 
 async function loadAdminStatus(){
-  if(!user||publicMode){isAdmin=false;return}
-  const{data,error}=await sb.rpc("is_app_admin");
-  isAdmin=!error&&data===true;
+  if(!user||publicMode){isAdmin=false;canEditPokemonDetails=false;return}
+  const[adminResult,editorResult]=await Promise.all([
+    sb.rpc("is_app_admin"),
+    sb.rpc("can_edit_pokemon_details")
+  ]);
+  isAdmin=!adminResult.error&&adminResult.data===true;
+  canEditPokemonDetails=isAdmin||(!editorResult.error&&editorResult.data===true);
   adminGlobalCard?.classList.toggle("hidden",!isAdmin);
   adminGymAssetsCard?.classList.toggle("hidden",!isAdmin);
   adminTeamLeadersCard?.classList.toggle("hidden",!isAdmin);
   adminMembersCard?.classList.toggle("hidden",!isAdmin);
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
   adminImageEditBar?.classList.toggle("hidden",!isAdmin);
-  adminDetailEditBar?.classList.toggle("hidden",!isAdmin);
+  adminDetailEditBar?.classList.toggle("hidden",!canEditPokemonDetails);
   refreshDisplayNameEditor();
   refreshUsernameEditor();
   if(isAdmin)await loadAdminMembers();
@@ -2448,9 +2452,9 @@ function dexDetailNavHtml(id){
 
 function adminPokemonQuickEditHtml(p){
   const slug=catalogSlugForPokemon(p);
-  if(!isAdmin||!adminDetailEditMode||publicMode||p.custom||!slug)return "";
+  if(!canEditPokemonDetails||!adminDetailEditMode||publicMode||p.custom||!slug)return "";
   return `<div class="admin-pokemon-inline-edit">
-    <div class="muted"><strong>Admin Edit Mode</strong> • changes save for everyone</div>
+    <div class="muted"><strong>Pokédex Editor Mode</strong> • changes save for everyone</div>
     <label for="quickGlobalPrompt">Reading Prompt</label>
     <textarea id="quickGlobalPrompt" placeholder="Add the global reading prompt…">${esc(p.prompt||"")}</textarea>
     <label for="quickGlobalFact">Rotom Fact</label>
@@ -2459,21 +2463,21 @@ function adminPokemonQuickEditHtml(p){
   </div>`;
 }
 function toggleAdminDetailEditMode(){
-  if(!isAdmin)return toast("Admin access required.");
+  if(!canEditPokemonDetails)return toast("Pokédex Editor access required.");
   adminDetailEditMode=!adminDetailEditMode;
   if(adminDetailEditBtn){adminDetailEditBtn.textContent=adminDetailEditMode?"Done Editing":"Edit Pokémon Details";adminDetailEditBtn.className=adminDetailEditMode?"primary":"secondary"}
-  if(adminDetailEditStatus)adminDetailEditStatus.textContent=adminDetailEditMode?"Prompt and Rotom fact editing is active":"Admin only • edit the global prompt and Rotom fact";
+  if(adminDetailEditStatus)adminDetailEditStatus.textContent=adminDetailEditMode?"Prompt and Rotom fact editing is active":"Pokédex Editors • edit the global prompt and Rotom fact";
   if(currentPokemonId)openPokemon(currentPokemonId,true);
 }
 async function savePokemonQuickEdit(){
-  if(!isAdmin||publicMode)return toast("Admin access required.");
+  if(!canEditPokemonDetails||publicMode)return toast("Pokédex Editor access required.");
   const p=all().find(x=>x.id===currentPokemonId),slug=catalogSlugForPokemon(p);
   if(!p||!slug)return toast("This Pokémon is not connected to the global catalog.");
   const prompt=document.getElementById("quickGlobalPrompt")?.value.trim()||"";
   const fact=document.getElementById("quickGlobalFact")?.value.trim()||"";
   const btn=document.getElementById("quickGlobalSaveBtn");
   if(btn){btn.disabled=true;btn.textContent="Saving…"}
-  const{error}=await sb.from("pokemon_catalog").update({reading_prompt:prompt||null,dex_fact:fact||null,updated_at:new Date().toISOString()}).eq("slug",slug);
+  const{error}=await sb.rpc("update_pokemon_prompt_fact",{p_slug:slug,p_reading_prompt:prompt||null,p_dex_fact:fact||null});
   if(error){console.error(error);if(btn){btn.disabled=false;btn.textContent="Save Global Prompt + Fact"}toast(error.message||"Could not save global Pokémon details.");return}
   p.prompt=prompt;p.fact=fact;
   [globalChallengeData,...[globalPokemon]].flat().filter(x=>x?.slug===slug).forEach(x=>{x.reading_prompt=prompt;x.dex_fact=fact;x.prompt=prompt;x.fact=fact});
