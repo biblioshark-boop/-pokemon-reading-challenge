@@ -2764,8 +2764,14 @@ async function loadGyms(){
 function fillGymRegions(){
   const s=document.getElementById("gymRegionFilter");if(!s)return;
   const v=s.value||"all";
-  s.innerHTML='<option value="all">All Regions</option>';
-  [...new Set(gymsData.map(g=>g.region).filter(Boolean))].forEach(r=>s.add(new Option(r,r)));
+  const totalEarned=gymsData.filter(g=>gymIsCleared(g.id)).length;
+  s.innerHTML="";
+  s.add(new Option(`All Regions — ${totalEarned}/${gymsData.length}`,"all"));
+  [...new Set(gymsData.map(g=>g.region).filter(Boolean))].forEach(r=>{
+    const regional=gymsData.filter(g=>g.region===r);
+    const earned=regional.filter(g=>gymIsCleared(g.id)).length;
+    s.add(new Option(`${r} — ${earned}/${regional.length}`,r));
+  });
   s.value=[...s.options].some(o=>o.value===v)?v:"all";
 }
 function gymCatalogRow(m){
@@ -2975,6 +2981,7 @@ async function syncGymCompletion(gymId){
 function renderGyms(){
   const box=document.getElementById("gymList");if(!box)return;
   if(!gymsData.length){box.innerHTML='<div class="gym-empty">Gym challenges are being added.</div>';return}
+  fillGymRegions();
   const region=document.getElementById("gymRegionFilter")?.value||"all";
   const list=gymsData.filter(g=>region==="all"||g.region===region);
   box.innerHTML=list.map(g=>{
