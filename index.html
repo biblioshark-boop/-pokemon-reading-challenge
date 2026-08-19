@@ -229,9 +229,9 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .faction-card{position:relative;overflow:hidden;isolation:isolate}.faction-card::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(255,255,255,.86),rgba(255,255,255,.70)),var(--faction-image,linear-gradient(120deg,color-mix(in srgb,var(--faction-a,var(--surface2)) 16%,white),color-mix(in srgb,var(--faction-b,var(--surface2)) 10%,white)));background-size:cover;background-position:center;opacity:.94}.faction-card>*{position:relative}
 .faction-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
 .faction-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.faction-card-name{font-weight:900;font-size:17px}
+.faction-card-name{font-weight:950;font-size:20px;color:#111827;text-shadow:0 1px 0 rgba(255,255,255,.75)}
 .faction-card-badge{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
-.faction-card-desc{font-size:13px;line-height:1.4;color:var(--muted);margin-top:6px}
+.faction-card-desc{font-size:15px;line-height:1.45;color:#263244;font-weight:700;margin-top:6px;text-shadow:0 1px 0 rgba(255,255,255,.72)}
 .faction-current{margin-top:10px;padding:11px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-size:13px}
 .team-view-mode{margin:0 0 14px;padding:12px 16px;border:2px solid #f4c430;border-radius:16px;background:#17120a;color:#fff;font-weight:850;letter-spacing:.02em}.team-view-mode strong{color:#ffe36e}
 
@@ -340,10 +340,10 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .team-leader-mini{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);text-align:left}
 .team-leader-mini img{width:56px;height:56px;object-fit:contain;border-radius:14px;background:var(--surface2);padding:4px}
 .team-leader-mini .team-leader-placeholder{width:56px;height:56px;border-radius:14px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:var(--muted)}
-.team-leader-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:900}
-.team-leader-character{font-weight:950;font-size:14px;margin-top:1px}
-.team-leader-user{font-size:12px;color:var(--muted);margin-top:2px}
-.team-leader-open{font-size:12px;color:var(--muted);margin-top:8px;text-align:left}
+.team-leader-kicker{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#374151;font-weight:950}
+.team-leader-character{font-weight:950;font-size:16px;color:#111827;margin-top:1px}
+.team-leader-user{font-size:14px;font-weight:700;color:#374151;margin-top:2px}
+.team-leader-open{font-size:14px;font-weight:750;color:#374151;margin-top:8px;text-align:left}
 .team-admin-preview{margin-top:12px;min-height:130px;border:1px dashed var(--line);border-radius:16px;background:var(--surface2);display:flex;align-items:center;justify-content:center;padding:10px;text-align:center;color:var(--muted);overflow:hidden}
 .team-admin-preview img{max-width:100%;max-height:150px;object-fit:contain}
 </style>
@@ -362,17 +362,17 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .trainer-card{height:auto!important;min-height:0!important}
 .trainer-card-grid{min-height:0!important}
 .trainer-card-left{align-self:start;display:flex!important;flex-direction:column;align-items:stretch;min-height:0!important}
-#trainerCardPokemonTeam{grid-column:1;width:100%;max-width:180px;margin:8px 0 0!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
-#trainerCardPokemonTeam:empty{display:none!important;margin:0!important}
-.trainer-card.no-pokemon-team #trainerCardPokemonTeam{display:none!important}
-.trainer-card.no-pokemon-team .trainer-card-left{padding-bottom:0!important}
+#trainerCardPokemonTeam{grid-column:1;width:166px!important;max-width:166px!important;height:109px!important;max-height:109px!important;margin:8px auto 0!important;display:grid!important;grid-template-columns:repeat(3,52px)!important;grid-template-rows:repeat(2,52px)!important;grid-auto-flow:row!important;grid-auto-rows:52px!important;align-content:start!important;justify-content:center!important;gap:5px!important;overflow:hidden!important;flex:none!important}
+#trainerCardPokemonTeam:empty{display:grid!important;margin:8px auto 0!important}
+.trainer-card.no-pokemon-team #trainerCardPokemonTeam{display:grid!important}
+#trainerCardPokemonTeam .trainer-team-mon{box-sizing:border-box!important;width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;max-width:52px!important;max-height:52px!important;aspect-ratio:1/1!important;margin:0!important;padding:0!important}
 .trainer-card-meta-grid>div{background:rgba(0,0,0,.64)!important;border-color:rgba(255,255,255,.82)!important}
 .trainer-avatar-wrap{background:rgba(255,255,255,.38)!important;border-color:rgba(255,255,255,.86)!important}
 .trainer-team-mon{background:rgba(255,255,255,.48)!important;border-color:rgba(255,255,255,.92)!important}
 .faction-card{background-image:linear-gradient(90deg,rgba(0,0,0,.12),rgba(0,0,0,.48)),var(--faction-image)!important;background-size:cover!important;background-position:center!important}
 @media(max-width:520px){
-  #trainerCardPokemonTeam{max-width:105px;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
-  .trainer-card.no-pokemon-team{padding-bottom:16px!important}
+  #trainerCardPokemonTeam{width:99px!important;max-width:99px!important;height:65px!important;max-height:65px!important;grid-template-columns:repeat(3,31px)!important;grid-template-rows:repeat(2,31px)!important;grid-auto-rows:31px!important;gap:3px!important}
+  #trainerCardPokemonTeam .trainer-team-mon{width:31px!important;height:31px!important;min-width:31px!important;min-height:31px!important;max-width:31px!important;max-height:31px!important;border-radius:7px!important}
   .back-to-top{right:12px;bottom:82px;padding:9px 12px}
 }
 </style>
@@ -2353,7 +2353,7 @@ function renderTrainerCardPokemonTeam(){
   const box=document.getElementById("trainerCardPokemonTeam");
   if(!box)return;
   const mons=trainerTeamPokemon();
-  document.getElementById("trainerCard")?.classList.toggle("no-pokemon-team",mons.length===0);
+  document.getElementById("trainerCard")?.classList.remove("no-pokemon-team");
   box.innerHTML=Array.from({length:6},(_,i)=>{
     const p=mons[i];
     if(!p)return '<div class="trainer-team-mon empty" aria-hidden="true">+</div>';
@@ -2546,8 +2546,10 @@ function drawImageCover(ctx,img,x,y,w,h){const scale=Math.max(w/img.width,h/img.
 function drawImageContain(ctx,img,x,y,w,h){const scale=Math.min(w/img.width,h/img.height),dw=img.width*scale,dh=img.height*scale;ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh)}
 async function downloadTrainerCardWithPokemon(){
   if(publicMode||!trainerCardFaction())return toast("Join a team to create a Trainer Card.");
-  const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=1200,H=700;
-  canvas.width=W;canvas.height=H;
+  const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=1200,H=700,EXPORT_SCALE=2;
+  canvas.width=W*EXPORT_SCALE;canvas.height=H*EXPORT_SCALE;
+  ctx.scale(EXPORT_SCALE,EXPORT_SCALE);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   const colors=trainerCardColors(),banner=await loadCanvasImage(trainerCardBannerUrl()),avatar=await loadCanvasImage(trainerCardAvatarUrl());
   const mons=trainerTeamPokemon(),monImages=await Promise.all(mons.map(p=>loadCanvasImage(p.image||image(p.dex||0))));
   const grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,colors[0]);grad.addColorStop(1,colors[1]);
