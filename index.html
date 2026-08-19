@@ -1644,7 +1644,7 @@ const TEAM_THEMES={
   "team-yell":["#f4edf2","#fff9fc","#e7d8e2","#241c22","#756673","#cf3e8e","#171217","#d1bcc9"]
 };
 const DEFAULT_GENRES=["Horror","Thriller","Science Fiction","Fantasy","Mystery","Romance","Contemporary","Historical Fiction","Nonfiction","Graphic Novel / Manga"];
-let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,lastSavedAt=null,bookSaving=false,isAdmin=false,canEditPokemonDetails=false,adminImageEditMode=false,adminDetailEditMode=false,factions=[],currentFactionId=null,teamChangeUnlocked=false,adminMembers=[];
+let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,lastSavedAt=null,bookSaving=false,isAdmin=false,canEditPokemonDetails=false,adminImageEditMode=false,adminDetailEditMode=false,factions=[],currentFactionId=null,competitionFactionId=null,teamChangeUnlocked=false,adminMembers=[];
 const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 const title=s=>s.replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
 function region(n){n=+n;if(n<=151)return"Kanto";if(n<=251)return"Johto";if(n<=386)return"Hoenn";if(n<=493)return"Sinnoh";if(n<=649)return"Unova";if(n<=721)return"Kalos";if(n<=809)return"Alola";if(n<=905)return"Galar";if(n<=1025)return"Paldea";return"Special"}
@@ -3321,7 +3321,7 @@ async function loadTeamLeaderboard(){
     return;
   }
   box.innerHTML=rows.map((r,i)=>{
-    const current=String(r.faction_id)===String(currentFactionId);
+    const current=String(r.faction_id)===String(competitionFactionId||currentFactionId);
     const leaderCharacter=String(r.leader_character||"").trim()||"Leader TBD";
     const leaderUser=String(r.leader_username||"").trim();
     return `<div class="team-rank-row ${current?"current-team":""}" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div class="team-rank-main"><div class="team-rank-name-line"><div class="team-rank-name">${esc(r.name)}</div>${i===0?'<span class="team-rank-crown">👑</span>':""}</div><div class="team-rank-leader">Team Leader: <strong>${esc(leaderCharacter)}</strong>${leaderUser?` • @${esc(leaderUser)}`:" • unassigned"}</div></div><div class="team-rank-score">${Number(r.total_caught||0).toLocaleString()}<span>caught</span></div></div>`;
@@ -3338,7 +3338,7 @@ async function loadTeamGymLeaderboard(){
   const rows=Array.isArray(data)?data:[];
   if(!rows.length){box.innerHTML='<div class="muted">No competition teams are available yet.</div>';return}
   box.innerHTML=rows.map((r,i)=>{
-    const current=String(r.faction_id)===String(currentFactionId);
+    const current=String(r.faction_id)===String(competitionFactionId||currentFactionId);
     const leaderCharacter=String(r.leader_character||"").trim()||"Leader TBD";
     const leaderUser=String(r.leader_username||"").trim();
     return `<div class="team-rank-row ${current?"current-team":""}" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div class="team-rank-main"><div class="team-rank-name-line"><div class="team-rank-name">${esc(r.name)}</div>${i===0?'<span class="team-rank-crown">👑</span>':""}</div><div class="team-rank-leader">Team Leader: <strong>${esc(leaderCharacter)}</strong>${leaderUser?` • @${esc(leaderUser)}`:" • unassigned"}</div></div><div class="team-rank-score">${Number(r.total_gyms_completed||0).toLocaleString()}<span>gyms completed</span></div></div>`;
@@ -3570,6 +3570,7 @@ async function saveAdminMemberTeam(){
   if(error){console.error(error);toast(error.message||"Could not update team.");return}
   await loadAdminMembers();
   if(String(id)===String(user?.id)){
+    competitionFactionId=factionId||null;
     currentFactionId=factionId||null;
     renderFactions();applyTeamTheme();renderTrainerCard();refreshTrainerSettings();
   }
@@ -3726,7 +3727,7 @@ function renderFactions(){
     return;
   }
 
-  const hasTeam=!!currentFactionId;
+  const hasTeam=!!competitionFactionId;
 
   list.innerHTML=factions.map(f=>{
     const selected=String(f.id)===String(currentFactionId);
@@ -3738,7 +3739,11 @@ function renderFactions(){
   const picked=factions.find(f=>String(f.id)===String(currentFactionId));
   if(cur){
     if(picked){
-      cur.innerHTML=`Current team: <strong>${esc(factionName(picked))}</strong><div class="muted" style="margin-top:5px">${isAdmin?"Admin account — team switching is enabled.":"Your team choice is locked."}</div>`;
+      const permanent=factions.find(f=>String(f.id)===String(competitionFactionId));
+      const previewing=isAdmin&&permanent&&String(permanent.id)!==String(picked.id);
+      cur.innerHTML=previewing
+        ?`Admin preview: <strong>${esc(factionName(picked))}</strong><div class="muted" style="margin-top:5px">Your permanent competition team remains <strong>${esc(factionName(permanent))}</strong>. Previewing never moves your stats or membership.</div>`
+        :`Current team: <strong>${esc(factionName(picked))}</strong><div class="muted" style="margin-top:5px">${isAdmin?"Permanent competition team. Choose another team to preview it without changing membership or totals.":"Your team choice is locked."}</div>`;
       cur.classList.remove("hidden");
     }else{
       cur.classList.add("hidden");
@@ -3753,7 +3758,10 @@ async function loadFactions(){
   ]);
   if(fErr){console.error(fErr);factions=[];renderFactions();return}
   factions=allFactions||[];
-  if(!uErr&&userFaction)currentFactionId=userFaction.faction_id;
+  if(!uErr&&userFaction){
+    competitionFactionId=userFaction.faction_id;
+    currentFactionId=userFaction.faction_id;
+  }
   renderFactions();
   refreshTeamLeaderEditor();
   if(document.getElementById("adminUsernameMemberSelect")?.value)loadAdminUsernameEditor(document.getElementById("adminUsernameMemberSelect").value);
@@ -3774,6 +3782,13 @@ async function chooseFaction(id){
   renderFactions();
   applyTeamTheme();
 
+  if(isAdmin){
+    refreshTrainerSettings();
+    renderTrainerCard();
+    toast(String(id)===String(competitionFactionId)?`Returned to ${factionName(f)}.`:`Previewing ${factionName(f)} — your competition team is unchanged.`);
+    return;
+  }
+
   const{error}=await sb
     .from("user_factions")
     .upsert(
@@ -3790,6 +3805,7 @@ async function chooseFaction(id){
     return;
   }
 
+  competitionFactionId=id;
   renderFactions();
   refreshTrainerSettings();
   renderTrainerCard();
