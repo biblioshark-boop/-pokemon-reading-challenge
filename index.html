@@ -1043,6 +1043,14 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 .admin-pokemon-inline-edit label{display:block;margin-top:10px;font-weight:900;font-size:12px}.admin-pokemon-inline-edit textarea{min-height:76px;resize:vertical}.admin-pokemon-inline-edit button{width:100%;margin-top:10px}
 </style>
 
+<style id="teamStatsGymProgress20260819">
+.my-gym-stats-card{padding:18px;border-radius:22px;background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.gym-stats-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.gym-stats-metric{min-width:0;padding:13px 11px;border-radius:16px;background:var(--surface2);border:1px solid var(--line)}
+.gym-stats-metric span{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.gym-stats-metric strong{display:block;margin-top:4px;font-size:20px;white-space:nowrap}
+.gym-stats-regions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.gym-stats-region{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;background:var(--surface2);font-weight:800}.gym-stats-region span:last-child{color:var(--muted);white-space:nowrap}
+@media(max-width:520px){.gym-stats-metrics{grid-template-columns:1fr 1fr}.gym-stats-metric:last-child{grid-column:1/-1}.gym-stats-regions{grid-template-columns:1fr}}
+</style>
+
 
 <style id="recoveryAdminTeamLeaderGold20260818">
 .auth-recovery-panel{
@@ -1410,6 +1418,9 @@ body:has(#gymsPage.active) main{
 
   <h3 class="section-title">Recent Team Catches</h3>
   <div id="teamRecentCatches" class="team-recent-catches"><div class="muted">Loading recent catches…</div></div>
+
+  <h3 id="myGymStatsTitle" class="section-title">Gym Battles</h3>
+  <div id="myGymStatsCard" class="my-gym-stats-card"><div class="muted">Loading your gym progress…</div></div>
 
   <h3 class="section-title">Team Rankings</h3>
   <div class="team-leader-note">Teams automatically move up and down the rankings as their caught totals change. Poké Dolls are not included in the competition.</div>
@@ -3049,7 +3060,29 @@ function renderBadgeCase(){
 function renderStats(){
   loadMyTeamStats();
   loadTeamRecentCatches();
+  renderMyGymStats();
   loadTeamLeaderboard();
+}
+function renderMyGymStats(){
+  const card=document.getElementById("myGymStatsCard"),title=document.getElementById("myGymStatsTitle");
+  if(!card||!title)return;
+  if(publicMode){title.classList.add("hidden");card.classList.add("hidden");return}
+  title.classList.remove("hidden");card.classList.remove("hidden");
+  if(!gymsData.length){card.innerHTML='<div class="muted">Gym challenges are being added.</div>';return}
+  const battlesWon=Object.values(gymMemberProgress).filter(x=>x?.completed).length;
+  const gymsCleared=gymsData.filter(g=>gymIsCleared(g.id)).length;
+  const percent=gymsData.length?gymsCleared/gymsData.length*100:0;
+  const pctText=percent<1&&gymsCleared?percent.toFixed(1)+"%":Math.round(percent)+"%";
+  const regions=[...new Set(gymsData.map(g=>g.region).filter(Boolean))];
+  const regionHtml=regions.map(region=>{
+    const list=gymsData.filter(g=>g.region===region),earned=list.filter(g=>gymIsCleared(g.id)).length;
+    return `<div class="gym-stats-region"><span>${esc(region)}</span><span>${earned} / ${list.length} completed</span></div>`;
+  }).join("");
+  card.innerHTML=`<div class="gym-stats-metrics">
+    <div class="gym-stats-metric"><span>Battles Won</span><strong>${battlesWon}</strong></div>
+    <div class="gym-stats-metric"><span>Gyms Completed</span><strong>${gymsCleared} / ${gymsData.length}</strong></div>
+    <div class="gym-stats-metric"><span>Gym Completion</span><strong>${pctText}</strong></div>
+  </div><div class="gym-stats-regions">${regionHtml}</div>`;
 }
 function statsLeaderHtml(row){
   const character=String(row?.leader_character||"").trim();
