@@ -262,6 +262,14 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .safari-prompt{text-align:left;margin-top:12px;padding:14px;border-radius:18px;background:var(--surface2);border:1px solid var(--line)}
 .safari-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .admin-tools-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.admin-collapse-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.admin-collapse-controls button{flex:1;min-width:130px}
+.admin-collapsible>.admin-tools-title{cursor:pointer;margin:0}
+.admin-collapsible>.admin-tools-title h3{margin:0}
+.admin-collapse-toggle{width:auto;min-width:44px;padding:8px 12px;font-size:12px;white-space:nowrap}
+.admin-collapse-body{padding-top:12px}
+.admin-collapsible.collapsed .admin-collapse-body{display:none}
+@media(max-width:600px){.admin-collapse-controls{display:grid;grid-template-columns:1fr 1fr}.admin-collapse-controls button{min-width:0}.admin-collapse-toggle{padding:8px 10px}}
 
 .team-leaderboard{display:grid;gap:10px;margin-bottom:20px}
 .team-rank-row{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:12px;padding:13px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
@@ -1867,6 +1875,58 @@ async function viewAdminUserCard(userId){
 }
 function closeAdminUserCard(){document.getElementById("adminUserCardModal")?.classList.add("hidden")}
 
+const ADMIN_SECTION_IDS=["adminMembersCard","adminTeamLeadersCard","adminGymAssetsCard","adminGlobalCard"];
+function setupAdminSettingsCollapsibles(){
+  const status=document.getElementById("adminStatusCard");
+  if(status&&!status.querySelector(".admin-collapse-controls")){
+    const controls=document.createElement("div");
+    controls.className="admin-collapse-controls";
+    controls.innerHTML='<button type="button" class="secondary" onclick="setAllAdminSections(false)">Expand All</button><button type="button" class="secondary" onclick="setAllAdminSections(true)">Collapse All</button>';
+    status.appendChild(controls);
+  }
+  ADMIN_SECTION_IDS.forEach(id=>{
+    const card=document.getElementById(id);
+    if(!card||card.dataset.collapseReady==="true")return;
+    card.dataset.collapseReady="true";
+    card.classList.add("admin-collapsible","collapsed");
+    let head=card.firstElementChild;
+    if(!head)return;
+    if(!head.classList.contains("admin-tools-title")){
+      const title=head;
+      head=document.createElement("div");
+      head.className="admin-tools-title";
+      card.insertBefore(head,title);
+      head.appendChild(title);
+    }
+    const body=document.createElement("div");
+    body.className="admin-collapse-body";
+    while(head.nextSibling)body.appendChild(head.nextSibling);
+    card.appendChild(body);
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="secondary admin-collapse-toggle";
+    button.setAttribute("aria-expanded","false");
+    button.textContent="Expand ▼";
+    button.onclick=event=>{event.stopPropagation();toggleAdminSection(id)};
+    head.appendChild(button);
+    head.onclick=event=>{if(!event.target.closest("button"))toggleAdminSection(id)};
+  });
+}
+function setAdminSectionCollapsed(card,collapsed){
+  if(!card)return;
+  card.classList.toggle("collapsed",collapsed);
+  const button=card.querySelector(":scope > .admin-tools-title .admin-collapse-toggle");
+  if(button){button.setAttribute("aria-expanded",String(!collapsed));button.textContent=collapsed?"Expand ▼":"Collapse ▲"}
+}
+function toggleAdminSection(id){
+  const card=document.getElementById(id);
+  setAdminSectionCollapsed(card,!card?.classList.contains("collapsed"));
+}
+function setAllAdminSections(collapsed){
+  setupAdminSettingsCollapsibles();
+  ADMIN_SECTION_IDS.forEach(id=>setAdminSectionCollapsed(document.getElementById(id),collapsed));
+}
+
 async function loadAdminStatus(){
   if(!user||publicMode){isAdmin=false;canEditPokemonDetails=false;return}
   const[adminResult,editorResult]=await Promise.all([
@@ -1882,6 +1942,7 @@ async function loadAdminStatus(){
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
   adminImageEditBar?.classList.toggle("hidden",!isAdmin);
   adminDetailEditBar?.classList.toggle("hidden",!canEditPokemonDetails);
+  if(isAdmin)setupAdminSettingsCollapsibles();
   refreshDisplayNameEditor();
   refreshUsernameEditor();
   if(isAdmin)await loadAdminMembers();
