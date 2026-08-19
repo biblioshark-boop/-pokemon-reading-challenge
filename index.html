@@ -1039,8 +1039,8 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 </style>
 
 <style id="adminPokemonQuickEdit20260819">
-.admin-pokemon-quick-edit{border:2px solid color-mix(in srgb,var(--accent) 55%,var(--line));background:color-mix(in srgb,var(--surface) 92%,var(--accent) 8%)}
-.admin-pokemon-quick-edit h3{margin:0 0 4px}.admin-pokemon-quick-edit label{display:block;margin-top:12px;font-weight:900;font-size:12px}.admin-pokemon-quick-edit textarea{min-height:88px;resize:vertical}.admin-pokemon-quick-edit .admin-tools-title{margin-bottom:4px}
+.admin-pokemon-inline-edit{margin-top:14px;padding:14px;border:2px dashed var(--accent);border-radius:18px;background:color-mix(in srgb,var(--surface) 92%,var(--accent) 8%)}
+.admin-pokemon-inline-edit label{display:block;margin-top:10px;font-weight:900;font-size:12px}.admin-pokemon-inline-edit textarea{min-height:76px;resize:vertical}.admin-pokemon-inline-edit button{width:100%;margin-top:10px}
 </style>
 
 
@@ -1507,7 +1507,7 @@ body:has(#gymsPage.active) main{
 </div>
 <div id="adminGlobalCard" class="form-card admin-card hidden"><h3>Admin Tools • Global Pokémon</h3><div class="admin-note">Add or edit challenge-wide Pokémon data. Changes here appear for everyone.</div><label>Existing global entry</label><select id="globalEditSelect" onchange="loadGlobalEditor(this.value)"><option value="">Create new entry</option></select><label>Name</label><input id="globalName"><div class="field-grid"><div><label>National Dex Number</label><input id="globalDex" inputmode="numeric"></div><div><label>Region</label><select id="globalRegion"></select></div></div><label>Form / Variant</label><input id="globalForm"><div class="field-grid"><div><label>Type 1</label><input id="globalType1"></div><div><label>Type 2</label><input id="globalType2"></div></div><label>Global Reading Prompt</label><textarea id="globalPrompt"></textarea><label>Pokédex Fact</label><textarea id="globalFact"></textarea><label>Image URL</label><input id="globalImage"><label>Or upload an image</label><input type="file" accept="image/*" id="globalImageUpload"><label><input id="globalBonus" type="checkbox" style="width:auto;margin-right:8px">Bonus / special Pokémon</label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGlobalPokemon()">Save for Everyone</button><button id="globalDeleteBtn" class="danger hidden" style="width:100%;margin-top:8px" onclick="deleteGlobalPokemon()">Delete Global Entry</button></div>
 </section>
-<section id="detailPage" class="page"><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
+<section id="detailPage" class="page"><div id="adminDetailEditBar" class="admin-image-edit-bar hidden"><button id="adminDetailEditBtn" class="secondary" onclick="toggleAdminDetailEditMode()">Edit Pokémon Details</button><span id="adminDetailEditStatus" class="muted">Admin only • edit the global prompt and Rotom fact</span></div><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
 </main>
 <nav id="bottomNav" class="bottom-nav hidden"><button class="nav-btn active" data-page="home" onclick="goPage('home')"><span class="nav-icon">🏠</span>Home</button><button class="nav-btn" data-page="dex" onclick="goPage('dex')"><span class="nav-icon">◉</span>Pokédex</button><button class="nav-btn" data-page="safari" onclick="goPage('safari')"><span class="nav-icon">🌿</span>Safari</button><button class="nav-btn" data-page="gyms" onclick="goPage('gyms')"><span class="nav-icon">◇</span>Gyms</button><button class="nav-btn" data-page="stats" onclick="goPage('stats')"><span class="nav-icon">▥</span>Team Stats</button><button class="nav-btn" data-page="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span>Settings</button></nav>
 
@@ -1555,7 +1555,7 @@ const TEAM_THEMES={
   "poke-dolls":["#faeaf3","#fff8fc","#efd7e5","#38212e","#856578","#d96aa7","#7e3a63","#dfbdd1"]
 };
 const DEFAULT_GENRES=["Horror","Thriller","Science Fiction","Fantasy","Mystery","Romance","Contemporary","Historical Fiction","Nonfiction","Graphic Novel / Manga"];
-let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,lastSavedAt=null,bookSaving=false,isAdmin=false,adminImageEditMode=false,factions=[],currentFactionId=null,teamChangeUnlocked=false,adminMembers=[];
+let user=null,profile=null,pokemonData=[],globalPokemon=[],globalChallengeData=[],challengeData={},customPokemon=[],genres=[...DEFAULT_GENRES],isPublic=false,currentPokemonId=null,authMode="login",publicMode=false,saveTimer=null,lastSavedAt=null,bookSaving=false,isAdmin=false,adminImageEditMode=false,adminDetailEditMode=false,factions=[],currentFactionId=null,teamChangeUnlocked=false,adminMembers=[];
 const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 const title=s=>s.replaceAll("-"," ").replace(/\b\w/g,c=>c.toUpperCase());
 function region(n){n=+n;if(n<=151)return"Kanto";if(n<=251)return"Johto";if(n<=386)return"Hoenn";if(n<=493)return"Sinnoh";if(n<=649)return"Unova";if(n<=721)return"Kalos";if(n<=809)return"Alola";if(n<=905)return"Galar";if(n<=1025)return"Paldea";return"Special"}
@@ -1859,6 +1859,7 @@ async function loadAdminStatus(){
   adminMembersCard?.classList.toggle("hidden",!isAdmin);
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
   adminImageEditBar?.classList.toggle("hidden",!isAdmin);
+  adminDetailEditBar?.classList.toggle("hidden",!isAdmin);
   refreshDisplayNameEditor();
   refreshUsernameEditor();
   if(isAdmin)await loadAdminMembers();
@@ -2402,16 +2403,22 @@ function dexDetailNavHtml(id){
 
 function adminPokemonQuickEditHtml(p){
   const slug=catalogSlugForPokemon(p);
-  if(!isAdmin||publicMode||p.custom||!slug)return "";
-  return `<div class="form-card admin-pokemon-quick-edit">
-    <div class="admin-tools-title"><h3>Quick Edit Pokémon</h3><span class="global-badge">Admin Only</span></div>
-    <div class="muted">These changes update this Pokémon for everyone.</div>
+  if(!isAdmin||!adminDetailEditMode||publicMode||p.custom||!slug)return "";
+  return `<div class="admin-pokemon-inline-edit">
+    <div class="muted"><strong>Admin Edit Mode</strong> • changes save for everyone</div>
     <label for="quickGlobalPrompt">Reading Prompt</label>
     <textarea id="quickGlobalPrompt" placeholder="Add the global reading prompt…">${esc(p.prompt||"")}</textarea>
     <label for="quickGlobalFact">Rotom Fact</label>
     <textarea id="quickGlobalFact" placeholder="Add the global Rotom fact…">${esc(p.fact||"")}</textarea>
     <button id="quickGlobalSaveBtn" class="primary" style="width:100%;margin-top:12px" onclick="savePokemonQuickEdit()">Save Global Prompt + Fact</button>
   </div>`;
+}
+function toggleAdminDetailEditMode(){
+  if(!isAdmin)return toast("Admin access required.");
+  adminDetailEditMode=!adminDetailEditMode;
+  if(adminDetailEditBtn){adminDetailEditBtn.textContent=adminDetailEditMode?"Done Editing":"Edit Pokémon Details";adminDetailEditBtn.className=adminDetailEditMode?"primary":"secondary"}
+  if(adminDetailEditStatus)adminDetailEditStatus.textContent=adminDetailEditMode?"Prompt and Rotom fact editing is active":"Admin only • edit the global prompt and Rotom fact";
+  if(currentPokemonId)openPokemon(currentPokemonId,true);
 }
 async function savePokemonQuickEdit(){
   if(!isAdmin||publicMode)return toast("Admin access required.");
@@ -2443,7 +2450,8 @@ function openPokemon(id,fromHistory=false){
   const booksBlock=`<div class="form-card"><h3>Books Read</h3><div id="bookList"></div>${publicMode?"":`<button class="primary" style="width:100%;margin-top:12px" onclick="bookModal()">+ Add Book</button>`}</div>`;
   const caughtBlock=publicMode?"":`<div class="form-card"><h3>Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" style="width:100%;margin-top:12px" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button><button class="secondary" style="width:100%;margin-top:10px" onclick="openNextUncaught()">Next Uncaught →</button>${p.custom?`<button class="danger" style="width:100%;margin-top:10px" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" style="width:100%;margin-top:10px" onclick="goPage('settings');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}');setTimeout(()=>adminGlobalCard?.scrollIntoView({behavior:'smooth'}),50)">Edit Global Entry</button>`:""}</div>`;
 
-  detailContent.innerHTML=`${dexDetailNavHtml(p.id)}<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div><div id="rotomFactSlot">${rotomFactHtml(p.fact||`Bzzzt! Rotom is scanning for a cute or curious bit of lore about ${p.name}…`)}</div>${promptBlock}</div>${adminPokemonQuickEditHtml(p)}${booksBlock}${caughtBlock}`;
+  const adminEditBlock=adminPokemonQuickEditHtml(p);
+  detailContent.innerHTML=`${dexDetailNavHtml(p.id)}<div class="form-card"><div class="detail-top ${e.caught?"caught":""}">${media}<h2>${esc(p.name)}</h2><div class="detail-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${types?`<div class="type-row">${types}</div>`:""}<div class="dex-panel-label">Pokédex Entry</div>${p.global?`<span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span>`:""}</div>${adminEditBlock||`<div id="rotomFactSlot">${rotomFactHtml(p.fact||`Bzzzt! Rotom is scanning for a cute or curious bit of lore about ${p.name}…`)}</div>${promptBlock}`}</div>${booksBlock}${caughtBlock}`;
   renderBooks();
   if(!p.fact)loadRotomFactForPokemon(p);
   if(!fromHistory){
