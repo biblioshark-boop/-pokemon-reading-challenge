@@ -2364,8 +2364,13 @@ function openNextUncaught(){
 function dexDetailNavHtml(id){
   const info=dexNeighborInfo(id);
   if(!info)return "";
-  const prevLabel=info.prev?`${info.prev.name}${info.prev.form?` • ${info.prev.form}`:""}`:"Previous";
-  const nextLabel=info.next?`${info.next.name}${info.next.form?` • ${info.next.form}`:""}`:"Next";
+  const navLabel=p=>{
+    if(!p)return "";
+    const number=p.dex?`#${String(p.dex).padStart(4,"0")} `:"";
+    return `${number}${p.name}${p.form?` • ${p.form}`:""}`;
+  };
+  const prevLabel=info.prev?navLabel(info.prev):"Previous";
+  const nextLabel=info.next?navLabel(info.next):"Next";
   return `<div class="dex-detail-nav" aria-label="Pokédex navigation">
     <button class="secondary dex-prev" type="button" onclick="openDexNeighbor(-1)">← ${esc(prevLabel)}</button>
     <div class="dex-position">${info.index+1} / ${info.total}</div>
