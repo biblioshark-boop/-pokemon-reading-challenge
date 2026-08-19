@@ -269,6 +269,10 @@ main{max-width:900px;margin:auto;padding:18px 14px 30px}.page{display:none}.page
 .admin-collapse-toggle{width:auto;min-width:44px;padding:8px 12px;font-size:12px;white-space:nowrap}
 .admin-collapse-body{padding-top:12px}
 .admin-collapsible.collapsed .admin-collapse-body{display:none}
+.admin-delete-modal{position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:18px}
+.admin-delete-modal.hidden{display:none!important}
+.admin-delete-dialog{width:min(560px,100%);max-height:90vh;overflow:auto;background:var(--surface);color:var(--text);border:3px solid #b91c1c;border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+.admin-delete-dialog h3{margin:0 0 8px;color:#b91c1c}.admin-delete-warning{padding:12px;border-radius:14px;background:rgba(185,28,28,.1);border:1px solid rgba(185,28,28,.3);margin:12px 0}.admin-delete-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.admin-delete-dialog input{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 @media(max-width:600px){.admin-collapse-controls{display:grid;grid-template-columns:1fr 1fr}.admin-collapse-controls button{min-width:0}.admin-collapse-toggle{padding:8px 10px}}
 
 .team-leaderboard{display:grid;gap:10px;margin-bottom:20px}
@@ -1877,11 +1881,15 @@ function closeAdminUserCard(){document.getElementById("adminUserCardModal")?.cla
 
 const ADMIN_SECTION_IDS=["settingsProfileCard","settingsTeamCard","adminMembersCard","adminTeamLeadersCard","adminGymAssetsCard","adminGlobalCard"];
 function setupAdminSettingsCollapsibles(){
+  let profileCard=null;
   document.querySelectorAll("#settingsPage > .form-card").forEach(card=>{
     const title=card.querySelector(":scope > h3")?.textContent?.trim();
-    if(title==="Profile & Trainer Card")card.id="settingsProfileCard";
+    if(title==="Profile & Trainer Card"){card.id="settingsProfileCard";profileCard=card}
     if(title==="Choose Your Team")card.id="settingsTeamCard";
   });
+  const logoutButton=[...document.querySelectorAll("#settingsPage button")].find(button=>button.textContent.trim()==="Log Out");
+  const logoutRow=logoutButton?.closest(".setting-row");
+  if(profileCard&&logoutRow&&logoutRow.nextElementSibling!==profileCard)logoutRow.after(profileCard);
   const status=document.getElementById("adminStatusCard");
   if(status&&!status.querySelector(".admin-collapse-controls")){
     const controls=document.createElement("div");
@@ -3357,8 +3365,85 @@ function renderAdminMembers(){
     const username=m.username?`@${m.username}`:"No username yet";
     const display=m.display_name&&m.display_name!==m.username?m.display_name:"";
     const email=m.email||"";
-    return `<div class="admin-member-row"><div class="admin-member-main" role="button" tabindex="0" onclick="adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')" onkeydown="if(event.key==='Enter'){adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')}"><div class="admin-member-name">${esc(name)}</div><div class="admin-member-meta">${esc([display,username,email].filter(Boolean).join(" • "))}</div><div class="admin-member-actions"><button type="button" class="secondary" onclick="event.stopPropagation();viewAdminUserCard('${esc(m.user_id)}')">View User Card</button></div></div><div class="admin-member-team">${esc(m.faction_name||"No team")}</div></div>`;
+    const deleteButton=String(m.user_id)===String(user?.id)?"":`<button type="button" class="danger" onclick="event.stopPropagation();openAdminDeleteMember('${esc(m.user_id)}')">Delete Member</button>`;
+    return `<div class="admin-member-row"><div class="admin-member-main" role="button" tabindex="0" onclick="adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')" onkeydown="if(event.key==='Enter'){adminUsernameMemberSelect.value='${esc(m.user_id)}';loadAdminUsernameEditor('${esc(m.user_id)}')}"><div class="admin-member-name">${esc(name)}</div><div class="admin-member-meta">${esc([display,username,email].filter(Boolean).join(" • "))}</div><div class="admin-member-actions"><button type="button" class="secondary" onclick="event.stopPropagation();viewAdminUserCard('${esc(m.user_id)}')">View User Card</button>${deleteButton}</div></div><div class="admin-member-team">${esc(m.faction_name||"No team")}</div></div>`;
   }).join("");
+}
+
+function ensureAdminDeleteModal(){
+  let modal=document.getElementById("adminDeleteMemberModal");
+  if(modal)return modal;
+  modal=document.createElement("div");
+  modal.id="adminDeleteMemberModal";
+  modal.className="admin-delete-modal hidden";
+  modal.setAttribute("role","dialog");
+  modal.setAttribute("aria-modal","true");
+  modal.setAttribute("aria-labelledby","adminDeleteMemberTitle");
+  modal.innerHTML=`<div class="admin-delete-dialog">
+    <h3 id="adminDeleteMemberTitle">Permanently Delete Member</h3>
+    <div>Member: <strong id="adminDeleteMemberName"></strong></div>
+    <div id="adminDeleteMemberMeta" class="muted"></div>
+    <div class="admin-delete-warning"><strong>This cannot be undone.</strong><br>This permanently deletes the account, Trainer Card, caught Pokémon, books, cloud saves and history, team membership, gym progress, friendships, and any special editor access.</div>
+    <label for="adminDeleteMemberConfirm">Type <strong id="adminDeleteMemberPhrase"></strong> to confirm:</label>
+    <input id="adminDeleteMemberConfirm" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="admin-delete-actions"><button type="button" class="secondary" onclick="closeAdminDeleteMember()">Cancel</button><button id="adminDeleteMemberFinalBtn" type="button" class="danger" onclick="confirmAdminDeleteMember()" disabled>Delete Permanently</button></div>
+  </div>`;
+  modal.onclick=event=>{if(event.target===modal)closeAdminDeleteMember()};
+  document.body.appendChild(modal);
+  modal.querySelector("#adminDeleteMemberConfirm").addEventListener("input",event=>{
+    const phrase=modal.dataset.confirmation||"";
+    modal.querySelector("#adminDeleteMemberFinalBtn").disabled=event.target.value!==phrase;
+  });
+  return modal;
+}
+function openAdminDeleteMember(id){
+  if(!isAdmin)return toast("Admin access required.");
+  const member=adminMembers.find(item=>String(item.user_id)===String(id));
+  if(!member)return toast("Member could not be found.");
+  if(String(member.user_id)===String(user?.id))return toast("You cannot delete your own administrator account.");
+  const modal=ensureAdminDeleteModal();
+  const label=memberBestName(member);
+  const phrase=`DELETE ${label}`;
+  modal.dataset.targetUserId=String(member.user_id);
+  modal.dataset.confirmation=phrase;
+  modal.querySelector("#adminDeleteMemberName").textContent=label;
+  modal.querySelector("#adminDeleteMemberMeta").textContent=[member.email,member.faction_name].filter(Boolean).join(" • ");
+  modal.querySelector("#adminDeleteMemberPhrase").textContent=phrase;
+  const input=modal.querySelector("#adminDeleteMemberConfirm");
+  input.value="";
+  const button=modal.querySelector("#adminDeleteMemberFinalBtn");
+  button.disabled=true;
+  button.textContent="Delete Permanently";
+  modal.classList.remove("hidden");
+  setTimeout(()=>input.focus(),50);
+}
+function closeAdminDeleteMember(){
+  document.getElementById("adminDeleteMemberModal")?.classList.add("hidden");
+}
+async function confirmAdminDeleteMember(){
+  const modal=document.getElementById("adminDeleteMemberModal");
+  if(!modal||!isAdmin)return toast("Admin access required.");
+  const targetUserId=modal.dataset.targetUserId||"";
+  const input=modal.querySelector("#adminDeleteMemberConfirm");
+  const phrase=modal.dataset.confirmation||"";
+  if(!targetUserId||input.value!==phrase)return toast("Type the exact confirmation phrase first.");
+  const button=modal.querySelector("#adminDeleteMemberFinalBtn");
+  button.disabled=true;
+  button.textContent="Deleting…";
+  const{data,error}=await sb.rpc("admin_delete_member",{target_user_id:targetUserId,confirmation_text:input.value});
+  if(error){
+    console.error(error);
+    button.disabled=false;
+    button.textContent="Delete Permanently";
+    return toast(error.message||"The member could not be deleted.");
+  }
+  closeAdminDeleteMember();
+  if(document.getElementById("adminUsernameMemberSelect")?.value===targetUserId){
+    adminUsernameMemberSelect.value="";
+    adminUsernameEdit.value="";
+  }
+  await loadAdminMembers();
+  toast(`${data?.label||"Member"} was permanently deleted.`);
 }
 
 function refreshAdminUsernameMemberSelect(){
