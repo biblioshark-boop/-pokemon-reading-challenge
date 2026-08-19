@@ -1406,6 +1406,14 @@ body.gyms-active main{
 }
 </style>
 
+<style id="backToTopStyles20260819">
+.back-to-top{position:fixed;z-index:45;right:18px;bottom:calc(82px + env(safe-area-inset-bottom));width:52px;height:52px;padding:0;border:2px solid rgba(255,255,255,.72);border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-size:30px;font-weight:1000;line-height:1;box-shadow:0 8px 24px rgba(0,0,0,.3);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(14px);transition:opacity .2s ease,transform .2s ease,visibility .2s ease}
+.back-to-top.is-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0)}
+.back-to-top:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.back-to-top:focus-visible{outline:4px solid rgba(255,255,255,.8);outline-offset:3px}
+@media(max-width:520px){.back-to-top{right:13px;bottom:calc(80px + env(safe-area-inset-bottom));width:46px;height:46px;font-size:26px}}
+@media(prefers-reduced-motion:reduce){.back-to-top{transition:none}}
+</style>
 </head>
 <body>
 <div id="publicBanner" class="public-banner hidden">Public Reading Frenzy challenge view</div>
@@ -1595,6 +1603,7 @@ body.gyms-active main{
 </section>
 <section id="detailPage" class="page"><div id="adminDetailEditBar" class="admin-image-edit-bar hidden"><button id="adminDetailEditBtn" class="secondary" onclick="toggleAdminDetailEditMode()">Edit Pokémon Details</button><span id="adminDetailEditStatus" class="muted">Pokédex Editors • edit the global prompt and Rotom fact</span></div><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section>
 </main>
+<button id="backToTopBtn" class="back-to-top" type="button" onclick="backToTop()" aria-label="Back to top" title="Back to top">↑</button>
 <nav id="bottomNav" class="bottom-nav hidden"><button class="nav-btn active" data-page="home" onclick="goPage('home')"><span class="nav-icon">🏠</span>Home</button><button class="nav-btn" data-page="dex" onclick="goPage('dex')"><span class="nav-icon">◉</span>Pokédex</button><button class="nav-btn" data-page="safari" onclick="goPage('safari')"><span class="nav-icon">🌿</span>Safari</button><button class="nav-btn" data-page="gyms" onclick="goPage('gyms')"><span class="nav-icon">◇</span>Gyms</button><button class="nav-btn" data-page="stats" onclick="goPage('stats')"><span class="nav-icon">▥</span>Team Stats</button><button class="nav-btn" data-page="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span>Settings</button></nav>
 
 <div class="modal defeat-modal" id="gymDefeatModal" onclick="if(event.target.id==='gymDefeatModal')closeGymDefeatModal()">
@@ -3833,6 +3842,14 @@ function rememberPage(n){
   if(!allowed.includes(parent))return;
   try{localStorage.setItem(LAST_PAGE_KEY,parent)}catch{}
 }
+function updateBackToTopButton(){
+  const button=document.getElementById("backToTopBtn");
+  if(button)button.classList.toggle("is-visible",window.scrollY>500);
+}
+function backToTop(){
+  window.scrollTo({top:0,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+}
+window.addEventListener("scroll",updateBackToTopButton,{passive:true});
 function goPage(n,historyMode="push"){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(n+"Page")?.classList.add("active");
