@@ -1875,8 +1875,13 @@ async function viewAdminUserCard(userId){
 }
 function closeAdminUserCard(){document.getElementById("adminUserCardModal")?.classList.add("hidden")}
 
-const ADMIN_SECTION_IDS=["adminMembersCard","adminTeamLeadersCard","adminGymAssetsCard","adminGlobalCard"];
+const ADMIN_SECTION_IDS=["settingsProfileCard","settingsTeamCard","adminMembersCard","adminTeamLeadersCard","adminGymAssetsCard","adminGlobalCard"];
 function setupAdminSettingsCollapsibles(){
+  document.querySelectorAll("#settingsPage > .form-card").forEach(card=>{
+    const title=card.querySelector(":scope > h3")?.textContent?.trim();
+    if(title==="Profile & Trainer Card")card.id="settingsProfileCard";
+    if(title==="Choose Your Team")card.id="settingsTeamCard";
+  });
   const status=document.getElementById("adminStatusCard");
   if(status&&!status.querySelector(".admin-collapse-controls")){
     const controls=document.createElement("div");
@@ -1942,7 +1947,7 @@ async function loadAdminStatus(){
   adminStatusCard?.classList.toggle("hidden",!isAdmin);
   adminImageEditBar?.classList.toggle("hidden",!isAdmin);
   adminDetailEditBar?.classList.toggle("hidden",!canEditPokemonDetails);
-  if(isAdmin)setupAdminSettingsCollapsibles();
+  setupAdminSettingsCollapsibles();
   refreshDisplayNameEditor();
   refreshUsernameEditor();
   if(isAdmin)await loadAdminMembers();
