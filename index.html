@@ -1544,7 +1544,9 @@ body.gyms-active main{
   </select>
 
   <label>Pokémon Character</label>
-  <input id="teamLeaderCharacter" placeholder="Example: Giovanni">
+  <select id="teamLeaderCharacter" onchange="pickTeamLeaderCharacter(this.value)">
+    <option value="">Select a leader character</option>
+  </select>
 
   <label>Reader Username</label>
   <input id="teamLeaderUsername" placeholder="Leave blank while the leader spot is open">
@@ -3635,9 +3637,29 @@ function refreshTeamLeaderEditor(){
   refreshTeamLeaderMemberSelect();
   if(current)loadTeamLeaderEditor(current);
 }
+function teamLeaderCharacterOptions(f){
+  const options=[
+    {character:(f?.primary_leader_character||"").trim(),image:(f?.primary_leader_image_url||"").trim()},
+    {character:(f?.alternate_leader_character||"").trim(),image:(f?.alternate_leader_image_url||"").trim()}
+  ];
+  const current=(f?.leader_character||"").trim();
+  if(current&&!options.some(o=>o.character.toLowerCase()===current.toLowerCase())){
+    options.unshift({character:current,image:(f?.leader_image_url||"").trim()});
+  }
+  return options.filter((o,i,a)=>o.character&&a.findIndex(x=>x.character.toLowerCase()===o.character.toLowerCase())===i);
+}
+function pickTeamLeaderCharacter(character){
+  const f=factions.find(x=>String(x.id)===String(teamLeaderSelect?.value||""));
+  const choice=teamLeaderCharacterOptions(f).find(o=>o.character===character);
+  if(choice?.image)teamLeaderImage.value=choice.image;
+  renderTeamLeaderPreview();
+}
 function loadTeamLeaderEditor(id){
   const f=factions.find(x=>String(x.id)===String(id));
-  teamLeaderCharacter.value=f?.leader_character||"";
+  const characterOptions=teamLeaderCharacterOptions(f);
+  teamLeaderCharacter.innerHTML='<option value="">Select a leader character</option>';
+  characterOptions.forEach(o=>teamLeaderCharacter.add(new Option(o.character,o.character)));
+  teamLeaderCharacter.value=f?.leader_character||characterOptions[0]?.character||"";
   teamLeaderUsername.value=f?.leader_username||"";
   teamLeaderImage.value=f?.leader_image_url||"";
   teamLeaderImageUpload.value="";
@@ -3878,7 +3900,7 @@ document.getElementById("gymLeaderImage")?.addEventListener("input",renderGymAss
 document.getElementById("gymBadgeImage")?.addEventListener("input",renderGymAssetPreviews);
 
 
-document.getElementById("teamLeaderCharacter")?.addEventListener("input",renderTeamLeaderPreview);
+document.getElementById("teamLeaderCharacter")?.addEventListener("change",renderTeamLeaderPreview);
 document.getElementById("teamLeaderUsername")?.addEventListener("input",renderTeamLeaderPreview);
 document.getElementById("teamLeaderImage")?.addEventListener("input",renderTeamLeaderPreview);
 
