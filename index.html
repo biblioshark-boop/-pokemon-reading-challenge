@@ -1043,14 +1043,6 @@ body.trainer-theme-violet .trainer-card{--tc1:#4b2b7d;--tc2:#9a69d1}
 .admin-pokemon-inline-edit label{display:block;margin-top:10px;font-weight:900;font-size:12px}.admin-pokemon-inline-edit textarea{min-height:76px;resize:vertical}.admin-pokemon-inline-edit button{width:100%;margin-top:10px}
 </style>
 
-<style id="teamStatsGymProgress20260819">
-.my-gym-stats-card{padding:18px;border-radius:22px;background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 24px rgba(0,0,0,.08)}
-.gym-stats-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.gym-stats-metric{min-width:0;padding:13px 11px;border-radius:16px;background:var(--surface2);border:1px solid var(--line)}
-.gym-stats-metric span{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.gym-stats-metric strong{display:block;margin-top:4px;font-size:20px;white-space:nowrap}
-.gym-stats-regions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.gym-stats-region{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;background:var(--surface2);font-weight:800}.gym-stats-region span:last-child{color:var(--muted);white-space:nowrap}
-@media(max-width:520px){.gym-stats-metrics{grid-template-columns:1fr 1fr}.gym-stats-metric:last-child{grid-column:1/-1}.gym-stats-regions{grid-template-columns:1fr}}
-</style>
-
 
 <style id="recoveryAdminTeamLeaderGold20260818">
 .auth-recovery-panel{
@@ -1419,12 +1411,13 @@ body:has(#gymsPage.active) main{
   <h3 class="section-title">Recent Team Catches</h3>
   <div id="teamRecentCatches" class="team-recent-catches"><div class="muted">Loading recent catches…</div></div>
 
-  <h3 id="myGymStatsTitle" class="section-title">Gym Battles</h3>
-  <div id="myGymStatsCard" class="my-gym-stats-card"><div class="muted">Loading your gym progress…</div></div>
-
   <h3 class="section-title">Team Rankings</h3>
   <div class="team-leader-note">Teams automatically move up and down the rankings as their caught totals change. Poké Dolls are not included in the competition.</div>
   <div id="teamLeaderboard" class="team-leaderboard"><div class="muted">Loading team totals…</div></div>
+
+  <h3 class="section-title">Gym Rankings</h3>
+  <div class="team-leader-note">Teams are ranked by the total number of gyms completed by their members. Poké Dolls are not included in the competition.</div>
+  <div id="teamGymLeaderboard" class="team-leaderboard"><div class="muted">Loading team gym totals…</div></div>
 </section>
 <section id="settingsPage" class="page"><div id="adminStatusCard" class="form-card admin-card hidden"><div class="admin-tools-title"><strong>Site Administrator</strong><span class="global-badge">Admin Tools</span></div><div class="muted">Global Pokémon, gym images, badges, and team leader display tools are available below only for administrators.</div></div><div class="form-card"><h3>Profile & Trainer Card</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><label>Display name</label><input id="displayName" maxlength="50" aria-describedby="displayNameLockNote"><div id="displayNameLockNote" class="username-lock-note">Loading display name status…</div><label>Username</label><input id="username" aria-describedby="usernameLockNote"><div id="usernameLockNote" class="username-lock-note">Loading username status…</div><button id="saveProfileBtn" class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div></div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div><div class="setting-row"><button class="danger" style="width:100%" onclick="signOut()">Log Out</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div class="team-choice-note">Please choose one team and that will be your choice. If you have any reason for wanting to leave or switch your team, please reach out to Travis or your Team Leader. Admin accounts can make team corrections when needed.</div><div id="factionCurrent" class="faction-current hidden"></div><div id="factionList" class="faction-grid"><div class="muted">Loading teams…</div></div></div>
 
@@ -3060,29 +3053,8 @@ function renderBadgeCase(){
 function renderStats(){
   loadMyTeamStats();
   loadTeamRecentCatches();
-  renderMyGymStats();
   loadTeamLeaderboard();
-}
-function renderMyGymStats(){
-  const card=document.getElementById("myGymStatsCard"),title=document.getElementById("myGymStatsTitle");
-  if(!card||!title)return;
-  if(publicMode){title.classList.add("hidden");card.classList.add("hidden");return}
-  title.classList.remove("hidden");card.classList.remove("hidden");
-  if(!gymsData.length){card.innerHTML='<div class="muted">Gym challenges are being added.</div>';return}
-  const battlesWon=Object.values(gymMemberProgress).filter(x=>x?.completed).length;
-  const gymsCleared=gymsData.filter(g=>gymIsCleared(g.id)).length;
-  const percent=gymsData.length?gymsCleared/gymsData.length*100:0;
-  const pctText=percent<1&&gymsCleared?percent.toFixed(1)+"%":Math.round(percent)+"%";
-  const regions=[...new Set(gymsData.map(g=>g.region).filter(Boolean))];
-  const regionHtml=regions.map(region=>{
-    const list=gymsData.filter(g=>g.region===region),earned=list.filter(g=>gymIsCleared(g.id)).length;
-    return `<div class="gym-stats-region"><span>${esc(region)}</span><span>${earned} / ${list.length} completed</span></div>`;
-  }).join("");
-  card.innerHTML=`<div class="gym-stats-metrics">
-    <div class="gym-stats-metric"><span>Battles Won</span><strong>${battlesWon}</strong></div>
-    <div class="gym-stats-metric"><span>Gyms Completed</span><strong>${gymsCleared} / ${gymsData.length}</strong></div>
-    <div class="gym-stats-metric"><span>Gym Completion</span><strong>${pctText}</strong></div>
-  </div><div class="gym-stats-regions">${regionHtml}</div>`;
+  loadTeamGymLeaderboard();
 }
 function statsLeaderHtml(row){
   const character=String(row?.leader_character||"").trim();
@@ -3164,7 +3136,24 @@ async function loadTeamLeaderboard(){
     const current=String(r.faction_id)===String(currentFactionId);
     const leaderCharacter=String(r.leader_character||"").trim()||"Leader TBD";
     const leaderUser=String(r.leader_username||"").trim();
-    return `<div class="team-rank-row ${current?"current-team":""}" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div class="team-rank-main"><div class="team-rank-name-line"><div class="team-rank-name">${esc(r.name)}</div>${i===0?'<span class="team-rank-crown">👑</span>':""}</div><div class="team-rank-leader">Leader: <strong>${esc(leaderCharacter)}</strong>${leaderUser?` • @${esc(leaderUser)}`:" • unassigned"}</div></div><div class="team-rank-score">${Number(r.total_caught||0).toLocaleString()}<span>caught</span></div></div>`;
+    return `<div class="team-rank-row ${current?"current-team":""}" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div class="team-rank-main"><div class="team-rank-name-line"><div class="team-rank-name">${esc(r.name)}</div>${i===0?'<span class="team-rank-crown">👑</span>':""}</div><div class="team-rank-leader">Team Leader: <strong>${esc(leaderCharacter)}</strong>${leaderUser?` • @${esc(leaderUser)}`:" • unassigned"}</div></div><div class="team-rank-score">${Number(r.total_caught||0).toLocaleString()}<span>caught</span></div></div>`;
+  }).join("");
+}
+
+async function loadTeamGymLeaderboard(){
+  const box=document.getElementById("teamGymLeaderboard");
+  if(!box)return;
+  if(publicMode||!user){box.innerHTML='<div class="muted">Sign in to see team gym rankings.</div>';return}
+  box.innerHTML='<div class="muted">Loading team gym totals…</div>';
+  const{data,error}=await sb.rpc("get_faction_gym_leaderboard");
+  if(error){console.error(error);box.innerHTML='<div class="muted">Team gym totals are unavailable right now.</div>';return}
+  const rows=Array.isArray(data)?data:[];
+  if(!rows.length){box.innerHTML='<div class="muted">No competition teams are available yet.</div>';return}
+  box.innerHTML=rows.map((r,i)=>{
+    const current=String(r.faction_id)===String(currentFactionId);
+    const leaderCharacter=String(r.leader_character||"").trim()||"Leader TBD";
+    const leaderUser=String(r.leader_username||"").trim();
+    return `<div class="team-rank-row ${current?"current-team":""}" style="border-left:5px solid ${esc(r.primary_color||"#888")}"><div class="team-rank-num">${i+1}</div><div class="team-rank-main"><div class="team-rank-name-line"><div class="team-rank-name">${esc(r.name)}</div>${i===0?'<span class="team-rank-crown">👑</span>':""}</div><div class="team-rank-leader">Team Leader: <strong>${esc(leaderCharacter)}</strong>${leaderUser?` • @${esc(leaderUser)}`:" • unassigned"}</div></div><div class="team-rank-score">${Number(r.total_gyms_completed||0).toLocaleString()}<span>gyms completed</span></div></div>`;
   }).join("");
 }
 
