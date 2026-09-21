@@ -33,6 +33,30 @@ function addSharedAuthShell(response) {
                 location.replace('/');
               }
 
+
+              function applyHubAccountUi() {
+                document.querySelectorAll('button,a').forEach((node) => {
+                  const label = (node.textContent || '').trim().replace(/\\s+/g, ' ').toLowerCase();
+                  if (label === 'logout' || label === 'log out' || label === 'sign out') {
+                    node.style.display = 'none';
+                    node.setAttribute('aria-hidden', 'true');
+                  }
+                });
+
+                if (!document.getElementById('rf-hub-contact-faq-note')) {
+                  const faqCandidates = Array.from(document.querySelectorAll('[id*="faq" i],[class*="faq" i]'));
+                  const faqHost = faqCandidates.find((node) => /discord/i.test(node.textContent || '')) || faqCandidates[0];
+                  if (faqHost) {
+                    const note = document.createElement('p');
+                    note.id = 'rf-hub-contact-faq-note';
+                    note.textContent = 'If you need help, have a question, or need to report an issue, you can also use the Contact button/form located at the bottom of The Reading Frenzy main hub page.';
+                    note.style.marginTop = '12px';
+                    note.style.lineHeight = '1.55';
+                    faqHost.appendChild(note);
+                  }
+                }
+              }
+
               function loadSupabase() {
                 return new Promise((resolve, reject) => {
                   if (window.supabase?.createClient) return resolve(window.supabase);
@@ -67,6 +91,10 @@ function addSharedAuthShell(response) {
                     returnToHub();
                     return;
                   }
+
+                  applyHubAccountUi();
+                  const hubUiObserver = new MutationObserver(applyHubAccountUi);
+                  hubUiObserver.observe(document.body, { childList: true, subtree: true });
 
                   client.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_OUT' || !session) returnToHub();
