@@ -56,17 +56,35 @@ function addSharedAuthShell(response) {
                   }
                 });
 
-                if (!document.getElementById('rf-hub-contact-faq-note')) {
-                  const faqCandidates = Array.from(document.querySelectorAll('[id*="faq" i],[class*="faq" i]'));
-                  const faqHost = faqCandidates.find((node) => /discord/i.test(node.textContent || '')) || faqCandidates[0];
-                  if (faqHost) {
-                    const note = document.createElement('p');
-                    note.id = 'rf-hub-contact-faq-note';
-                    note.textContent = 'If you need help, have a question, or need to report an issue, you can also use the Contact button/form located at the bottom of The Reading Frenzy main hub page.';
-                    note.style.marginTop = '12px';
-                    note.style.lineHeight = '1.55';
-                    faqHost.appendChild(note);
-                  }
+                document.getElementById('rf-hub-contact-faq-note')?.remove();
+
+                const removeQuestions = [
+                  'i found a bug or need help. what should i do?',
+                  'where can i send suggestions?',
+                  'how do i request a team change?'
+                ];
+
+                document.querySelectorAll('summary,button,h3,h4,strong').forEach((node) => {
+                  const label = (node.textContent || '').trim().replace(/\\s+/g, ' ').toLowerCase();
+                  if (!removeQuestions.includes(label)) return;
+                  const block = node.closest('details,.faq-item,.faq-entry,.accordion-item,li') || node.parentElement;
+                  if (block) block.remove();
+                });
+
+                const discordLink = Array.from(document.querySelectorAll('a,button')).find((node) =>
+                  /join the reading frenzy discord/i.test((node.textContent || '').trim())
+                );
+
+                if (discordLink && !document.getElementById('rf-hub-contact-faq-note')) {
+                  const note = document.createElement('div');
+                  note.id = 'rf-hub-contact-faq-note';
+                  note.textContent = 'If you need help, have a question, or need to report an issue, you can also use the Contact button/form located at the bottom of The Reading Frenzy main hub page.';
+                  note.style.marginTop = '12px';
+                  note.style.padding = '12px 14px';
+                  note.style.borderRadius = '12px';
+                  note.style.background = 'rgba(255,255,255,.55)';
+                  note.style.lineHeight = '1.55';
+                  discordLink.insertAdjacentElement('afterend', note);
                 }
               }
 
