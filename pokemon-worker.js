@@ -35,10 +35,23 @@ function addSharedAuthShell(response) {
 
 
               function applyHubAccountUi() {
-                document.querySelectorAll('button,a').forEach((node) => {
-                  const label = (node.textContent || '').trim().replace(/\\s+/g, ' ').toLowerCase();
-                  if (label === 'logout' || label === 'log out' || label === 'sign out') {
-                    node.style.display = 'none';
+                document.querySelectorAll('button,a,[role="button"],input[type="button"],input[type="submit"]').forEach((node) => {
+                  const text = [
+                    node.textContent || '',
+                    node.getAttribute('aria-label') || '',
+                    node.getAttribute('title') || '',
+                    node.id || '',
+                    node.className || '',
+                    node.getAttribute('name') || '',
+                    node.getAttribute('value') || ''
+                  ].join(' ').replace(/\\s+/g, ' ').toLowerCase();
+
+                  if (
+                    text.includes('logout') ||
+                    text.includes('log out') ||
+                    text.includes('sign out')
+                  ) {
+                    node.style.setProperty('display', 'none', 'important');
                     node.setAttribute('aria-hidden', 'true');
                   }
                 });
