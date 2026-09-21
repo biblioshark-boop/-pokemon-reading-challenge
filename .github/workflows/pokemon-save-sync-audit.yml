@@ -1,0 +1,85 @@
+name: Pokemon Save Sync Audit
+
+on:
+  push:
+    branches:
+      - audit/pokemon-save-sync-map
+    paths-ignore:
+      - pokemon-save-sync-audit-report.json
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout audit branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Scan Pokémon save sync code
+        shell: python
+        run: |
+          import json, re, pathlib
+
+          path = pathlib.Path("index.html")
+          text = path.read_text(encoding="utf-8", errors="replace")
+
+          needles = [
+              r"challenge_saves",
+              r"pokemon-reading-challenge",
+              r"from\(['\"]challenge_saves['\"]\)",
+              r"upsert\s*\(",
+              r"updated_at",
+              r"auth\.getSession",
+              r"onAuthStateChange",
+              r"localStorage",
+              r"saveState",
+              r"loadState",
+              r"sync",
+              r"hydrate",
+              r"restore"
+          ]
+
+          def contexts(pattern, radius=700, limit=120):
+              out=[]
+              for m in re.finditer(pattern, text, re.I):
+                  out.append({
+                      "match":m.group(0)[:250],
+                      "index":m.start(),
+                      "snippet":text[max(0,m.start()-radius):min(len(text),m.end()+radius)]
+                  })
+                  if len(out)>=limit:
+                      break
+              return out
+
+          report = {
+              "source_file":"index.html",
+              "source_size_bytes":path.stat().st_size,
+              "challenge_save_contexts":contexts(r"challenge_saves", limit=120),
+              "pokemon_key_contexts":contexts(r"pokemon-reading-challenge", limit=80),
+              "upsert_contexts":contexts(r"\.upsert\s*\(", limit=80),
+              "updated_at_contexts":contexts(r"updated_at", limit=120),
+              "auth_contexts":contexts(r"auth\.(?:getSession|onAuthStateChange)", limit=80),
+              "local_storage_contexts":contexts(r"localStorage\.(?:getItem|setItem|removeItem)\s*\(", limit=100),
+              "relevant_functions":contexts(r"(?:async\s+)?function\s+[A-Za-z_$][\w$]*(?:save|load|sync|hydrate|restore|state)[\w$]*\s*\([^)]*\)", limit=160)
+          }
+
+          pathlib.Path("pokemon-save-sync-audit-report.json").write_text(
+              json.dumps(report, indent=2, ensure_ascii=False),
+              encoding="utf-8"
+          )
+
+      - name: Commit audit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokemon-save-sync-audit-report.json
+          if git diff --cached --quiet; then
+            echo "No report changes"
+          else
+            git commit -m "Audit Pokémon save sync"
+            git push
+          fi
