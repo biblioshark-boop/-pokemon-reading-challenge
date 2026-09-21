@@ -56,8 +56,6 @@ function addSharedAuthShell(response) {
                   }
                 });
 
-                document.getElementById('rf-hub-contact-faq-note')?.remove();
-
                 const removeQuestions = [
                   'i found a bug or need help. what should i do?',
                   'where can i send suggestions?',
