@@ -27,6 +27,19 @@ function addSharedAuthShell(response) {
                     backdrop-filter:blur(8px)">
             ← Back to The Reading Frenzy
           </a>
+          <style>
+            @media (max-width: 700px) {
+              #rf-back-to-hub{
+                top:auto !important;
+                right:12px !important;
+                bottom:84px !important;
+                padding:9px 12px !important;
+                font-size:12px !important;
+                max-width:calc(100vw - 24px);
+                white-space:nowrap;
+              }
+            }
+          </style>
           <script>
             (() => {
               const SUPABASE_URL = "https://yamjfaacvewvrinxytep.supabase.co";
