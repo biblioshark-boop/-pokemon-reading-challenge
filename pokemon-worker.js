@@ -16,30 +16,29 @@ function addSharedAuthShell(response) {
     .on("body", {
       element(el) {
         el.append(`
-          <a id="rf-back-to-hub"
-             href="https://thereadingfrenzy.com/"
-             style="position:fixed;top:22px;right:18px;z-index:2147483647;
-                    display:inline-flex;align-items:center;gap:8px;
-                    padding:10px 14px;border-radius:999px;
-                    background:rgba(34,47,41,.94);color:#fff;
-                    font:700 13px/1.2 Arial,sans-serif;text-decoration:none;
-                    box-shadow:0 8px 24px rgba(0,0,0,.18);
-                    backdrop-filter:blur(8px)">
-            ← Back to The Reading Frenzy
-          </a>
-          <style>
-            @media (max-width: 700px) {
-              #rf-back-to-hub{
-                top:auto !important;
-                right:12px !important;
-                bottom:84px !important;
-                padding:9px 12px !important;
-                font-size:12px !important;
-                max-width:calc(100vw - 24px);
-                white-space:nowrap;
+          <div id="rf-hub-topbar"
+               style="width:100%;box-sizing:border-box;
+                      display:flex;justify-content:flex-end;align-items:center;
+                      padding:8px 14px;background:#1f2f29;
+                      border-bottom:1px solid rgba(255,255,255,.10)">
+            <a id="rf-back-to-hub"
+               href="https://thereadingfrenzy.com/"
+               style="display:inline-flex;align-items:center;gap:8px;
+                      padding:8px 12px;border-radius:999px;
+                      background:rgba(255,255,255,.10);color:#fff;
+                      font:700 13px/1.2 Arial,sans-serif;text-decoration:none;
+                      border:1px solid rgba(255,255,255,.16)">
+              ← Back to The Reading Frenzy
+            </a>
+          </div>
+          <script>
+            (() => {
+              const hubBar = document.getElementById('rf-hub-topbar');
+              if (hubBar && document.body.firstChild !== hubBar) {
+                document.body.prepend(hubBar);
               }
-            }
-          </style>
+            })();
+          <\/script>
           <script>
             (() => {
               const SUPABASE_URL = "https://yamjfaacvewvrinxytep.supabase.co";
