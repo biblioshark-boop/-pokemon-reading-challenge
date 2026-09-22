@@ -99,7 +99,7 @@ function addSharedAuthShell(response) {
 
               const safety = setTimeout(() => {
                 console.warn('Shared-auth check timed out.');
-                reveal();
+                returnToHub();
               }, 6000);
 
               loadSupabase()
@@ -135,7 +135,7 @@ function addSharedAuthShell(response) {
                 .catch((error) => {
                   console.warn('Could not initialize shared auth', error);
                   clearTimeout(safety);
-                  reveal();
+                  returnToHub();
                 });
             })();
           <\/script>
