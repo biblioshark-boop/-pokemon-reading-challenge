@@ -16,6 +16,17 @@ function addSharedAuthShell(response) {
     .on("body", {
       element(el) {
         el.append(`
+          <a id="rf-back-to-hub"
+             href="https://thereadingfrenzy.com/"
+             style="position:fixed;top:22px;right:18px;z-index:2147483647;
+                    display:inline-flex;align-items:center;gap:8px;
+                    padding:10px 14px;border-radius:999px;
+                    background:rgba(34,47,41,.94);color:#fff;
+                    font:700 13px/1.2 Arial,sans-serif;text-decoration:none;
+                    box-shadow:0 8px 24px rgba(0,0,0,.18);
+                    backdrop-filter:blur(8px)">
+            ← Back to The Reading Frenzy
+          </a>
           <script>
             (() => {
               const SUPABASE_URL = "https://yamjfaacvewvrinxytep.supabase.co";
