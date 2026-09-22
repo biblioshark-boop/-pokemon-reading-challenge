@@ -123,6 +123,23 @@ function addSharedAuthShell(response) {
                     }
                   });
 
+                  const RF_AUTH_CUTOVER_COOKIE = 'rf_auth_cutover_2026_09_21_v1';
+                  const hasCutoverCookie = document.cookie.split(';').some(
+                    part => part.trim() === RF_AUTH_CUTOVER_COOKIE + '=1'
+                  );
+
+                  if (!hasCutoverCookie) {
+                    try {
+                      await client.auth.signOut({ scope: 'local' });
+                    } catch (err) {
+                      console.warn('Pokémon local auth cutover cleanup failed', err);
+                    }
+                    document.cookie = RF_AUTH_CUTOVER_COOKIE + '=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
+                    clearTimeout(safety);
+                    returnToHub();
+                    return;
+                  }
+
                   const { data, error } = await client.auth.getSession();
                   if (error) console.warn('Shared session check failed', error);
 
