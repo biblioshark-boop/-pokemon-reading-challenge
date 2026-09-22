@@ -16,6 +16,28 @@ function addSharedAuthShell(response) {
     .on("body", {
       element(el) {
         el.append(`
+          <style id="rf-pokemon-hub-topbar-visibility">
+            #rf-hub-topbar{
+              position:relative !important;
+              display:flex !important;
+              visibility:visible !important;
+              opacity:1 !important;
+              width:100% !important;
+              min-height:46px !important;
+              height:auto !important;
+              box-sizing:border-box !important;
+              z-index:2147483647 !important;
+            }
+            #rf-back-to-hub{
+              display:inline-flex !important;
+              visibility:visible !important;
+              opacity:1 !important;
+              color:#fff !important;
+              background:rgba(255,255,255,.10) !important;
+              text-decoration:none !important;
+              font:700 13px/1.2 Arial,sans-serif !important;
+            }
+          </style>
           <div id="rf-hub-topbar"
                style="width:100%;box-sizing:border-box;
                       display:flex;justify-content:flex-end;align-items:center;
