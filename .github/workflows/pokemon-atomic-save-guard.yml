@@ -1,0 +1,153 @@
+name: Validate Pokémon Atomic Save Guard
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - fix/pokemon-atomic-save-guard
+    paths:
+      - .github/scripts/patch_pokemon_atomic_save.py
+      - .github/workflows/pokemon-atomic-save-guard.yml
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply targeted patch
+        run: python .github/scripts/patch_pokemon_atomic_save.py
+
+      - name: Validate inline scripts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, subprocess, tempfile, sys
+
+          text = Path("index.html").read_text(encoding="utf-8")
+          scripts = list(re.finditer(r"<script\b[^>]*>(.*?)</script>", text, re.I | re.S))
+          if not scripts:
+              raise SystemExit("No scripts found")
+          for i,m in enumerate(scripts,1):
+              code = m.group(1)
+              if not code.strip():
+                  continue
+              with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8", delete=False) as f:
+                  f.write(code)
+                  name=f.name
+              r=subprocess.run(["node","--check",name],capture_output=True,text=True)
+              if r.returncode:
+                  print("SCRIPT",i)
+                  print(r.stderr)
+                  sys.exit(r.returncode)
+          print("All inline scripts pass node --check")
+          PY
+
+      - name: Verify guard wiring
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text=Path("index.html").read_text(encoding="utf-8")
+          required=[
+            'select("data,is_public,updated_at")',
+            'sb.rpc("save_challenge_if_fresh"',
+            'p_expected_updated_at:challengeSaveUpdatedAt',
+            'rf-pokemon-conflict-draft-v1',
+            'challengeSavePromise=challengeSavePromise.then(saveNowAtomic,saveNowAtomic)'
+          ]
+          for x in required:
+              if x not in text:
+                  raise SystemExit("Missing "+x)
+          if 'sb.from("challenge_saves").upsert({user_id:user.id,challenge_key:CHALLENGE_KEY' in text:
+              raise SystemExit("Old unguarded challenge save upsert still present")
+          print("Guard wiring present")
+          PY
+
+      - name: Test save and stale conflict behavior
+        run: |
+          cat > /tmp/test-pokemon-save.js <<'JS'
+          let challengeSaveUpdatedAt='2026-09-21T20:00:00Z';
+          let rpcResponses=[
+            [{save_status:'saved',server_updated_at:'2026-09-21T20:01:00Z'}],
+            [{save_status:'conflict',server_updated_at:'2026-09-21T20:02:00Z',server_data:{challengeData:{newer:true}}}]
+          ];
+          let calls=[];
+          const sb={rpc:async(name,args)=>{calls.push({name,args}); return {data:rpcResponses.shift(),error:null}}};
+          let conflictDraft=null;
+          const localStorage={setItem:(k,v)=>{if(k==='rf-pokemon-conflict-draft-v1')conflictDraft=JSON.parse(v)}};
+          let lastSavedAt=0;
+          const cloud=()=>{},toast=()=>{},consoleWarn=console.warn;
+          let publicMode=false,user={id:'u1'},isPublic=false;
+          let challengeData={a:1},customPokemon=[],genres=[],achievementClaims=[],safariShinyRollState={},hauntedSafariShinyRollState={},gymCurrentlyChallenging={};
+          function publicData(){return {}}
+          function normalizeWorkflowFlags(){}
+          function isAdminTestMode(){return false}
+          function lastSavedLabel(){return 'Saved'}
+          async function saveNowAtomic(){
+            if(publicMode||!user)return;
+            normalizeWorkflowFlags();
+            const payload={challengeData,customPokemon,genres,achievementClaims,safariShinyRollState,hauntedSafariShinyRollState,gymCurrentlyChallenging};
+            const{data,error}=await sb.rpc("save_challenge_if_fresh",{
+              p_challenge_key:"pokemon-reading-challenge",
+              p_data:payload,p_public_data:publicData(),p_is_public:isPublic,
+              p_expected_updated_at:challengeSaveUpdatedAt
+            });
+            if(error)throw error;
+            const result=Array.isArray(data)?data[0]:data;
+            if(result?.save_status==="saved"||result?.save_status==="inserted"){
+              challengeSaveUpdatedAt=result.server_updated_at||challengeSaveUpdatedAt;
+              lastSavedAt=Date.now();
+              return "saved";
+            }
+            if(result?.save_status==="conflict"||result?.save_status==="conflict_missing"){
+              localStorage.setItem("rf-pokemon-conflict-draft-v1",JSON.stringify({
+                expectedUpdatedAt:challengeSaveUpdatedAt,
+                localData:payload,
+                serverUpdatedAt:result?.server_updated_at||null,
+                serverData:result?.server_data||null
+              }));
+              return "conflict";
+            }
+          }
+          (async()=>{
+            const a=await saveNowAtomic();
+            if(a!=='saved')throw new Error('first save failed');
+            if(challengeSaveUpdatedAt!=='2026-09-21T20:01:00Z')throw new Error('timestamp did not advance');
+            challengeData={a:2};
+            const b=await saveNowAtomic();
+            if(b!=='conflict')throw new Error('stale save not blocked');
+            if(!conflictDraft)throw new Error('conflict draft not preserved');
+            if(calls[1].args.p_expected_updated_at!=='2026-09-21T20:01:00Z')throw new Error('wrong freshness token');
+            console.log('PASS: normal save advanced token and stale save was blocked');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node /tmp/test-pokemon-save.js
+
+      - name: Verify document framing unchanged
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, subprocess
+          patched=Path("index.html").read_text(encoding="utf-8")
+          original=subprocess.check_output(["git","show","HEAD:index.html"],text=True,encoding="utf-8")
+          checks=[
+            ("doctype",patched.lower().count("<!doctype html>"),original.lower().count("<!doctype html>")),
+            ("html",len(re.findall(r"<html\b",patched,re.I)),len(re.findall(r"<html\b",original,re.I))),
+            ("body",len(re.findall(r"<body\b",patched,re.I)),len(re.findall(r"<body\b",original,re.I))),
+            ("script opens",len(re.findall(r"<script\b",patched,re.I)),len(re.findall(r"<script\b",original,re.I))),
+            ("script closes",patched.lower().count("</script>"),original.lower().count("</script>"))
+          ]
+          for label,a,b in checks:
+              if a!=b: raise SystemExit(f"{label} changed: {a} vs {b}")
+          print("Document framing unchanged")
+          PY
+
+      - name: Commit validated patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Protect Pokémon saves from stale browser overwrites" || exit 0
+          git push
