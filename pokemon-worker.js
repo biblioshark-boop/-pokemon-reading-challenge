@@ -123,12 +123,23 @@ function addSharedAuthShell(response) {
                     }
                   });
 
-                  const RF_AUTH_CUTOVER_COOKIE = 'rf_auth_cutover_2026_09_21_v1';
+                  const RF_AUTH_CUTOVER_COOKIE = 'rf_auth_cutover_2026_09_21_v2';
                   const hasCutoverCookie = document.cookie.split(';').some(
                     part => part.trim() === RF_AUTH_CUTOVER_COOKIE + '=1'
                   );
 
                   if (!hasCutoverCookie) {
+                    const prefix = 'sb-yamjfaacvewvrinxytep-auth-token';
+                    for (const storage of [window.localStorage, window.sessionStorage]) {
+                      try {
+                        for (let i = storage.length - 1; i >= 0; i--) {
+                          const key = storage.key(i);
+                          if (key && key.startsWith(prefix)) storage.removeItem(key);
+                        }
+                      } catch (err) {
+                        console.warn('Pokémon auth storage cleanup failed', err);
+                      }
+                    }
                     try {
                       await client.auth.signOut({ scope: 'local' });
                     } catch (err) {
