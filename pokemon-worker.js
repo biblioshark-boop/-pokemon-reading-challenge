@@ -1,3 +1,4 @@
+// RF_WORKER_PATCH: Global admin controls + shared maintenance — 2026-09-25
 // RF_WORKER_PATCH: Remove Pokémon Public Sharing UI — 2026-09-25
 const SUPABASE_URL = "https://yamjfaacvewvrinxytep.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1NoVsY53V4CBFMg_i09Lcg_DCf8w_Lb";
@@ -109,8 +110,49 @@ function addSharedAuthShell(response) {
                 });
               }
 
+              function removeLocalAdminControls() {
+                const localAdminPattern = /(?:site version|check live version|maintenance mode|test mode)/i;
+                document.querySelectorAll('h2,h3,h4,summary,strong,label,button,a,div,section,article').forEach((node) => {
+                  const text=(node.textContent||'').trim().replace(/\\s+/g,' ');
+                  if(!localAdminPattern.test(text))return;
+                  const block=node.closest?.(
+                    'details,.settings-card,.setting-card,.admin-card,.admin-tool,.card,.panel,.section,article,li'
+                  )||node;
+                  if(block?.id==='rf-hub-topbar'||block?.id==='rf-global-maintenance-banner')return;
+                  block.style.setProperty('display','none','important');
+                  block.setAttribute?.('aria-hidden','true');
+                });
+              }
+
+              function ensureGlobalMaintenanceBanner() {
+                let banner=document.getElementById('rf-global-maintenance-banner');
+                if(!banner){
+                  banner=document.createElement('div');
+                  banner.id='rf-global-maintenance-banner';
+                  banner.style.cssText='display:none;position:sticky;top:0;z-index:2147483646;padding:11px 16px;background:#fff3cd;color:#6b4f00;border-bottom:1px solid #e8ca72;text-align:center;font:800 13px/1.35 Arial,sans-serif';
+                  document.body.prepend(banner);
+                }
+                return banner;
+              }
+
+              async function refreshGlobalMaintenance(client) {
+                const banner=ensureGlobalMaintenanceBanner();
+                try{
+                  const {data,error}=await client.rpc('get_rf_site_maintenance');
+                  if(error)throw error;
+                  const row=Array.isArray(data)?data[0]:data;
+                  const enabled=!!row?.enabled;
+                  banner.textContent=row?.message||'Site maintenance is currently in progress. Some features may be temporarily unavailable.';
+                  banner.style.display=enabled?'block':'none';
+                }catch(err){
+                  console.warn('Pokémon maintenance status unavailable',err);
+                  banner.style.display='none';
+                }
+              }
+
               function applyHubAccountUi() {
                 removePokemonPublicSharingUi();
+                removeLocalAdminControls();
 
                 document.querySelectorAll('button,a,[role="button"],input[type="button"],input[type="submit"]').forEach((node) => {
                   const text = [
@@ -227,6 +269,8 @@ function addSharedAuthShell(response) {
                   }
 
                   applyHubAccountUi();
+                  await refreshGlobalMaintenance(client);
+                  setInterval(()=>refreshGlobalMaintenance(client),30000);
                   const hubUiObserver = new MutationObserver(applyHubAccountUi);
                   hubUiObserver.observe(document.body, { childList: true, subtree: true });
 
