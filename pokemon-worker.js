@@ -1,3 +1,4 @@
+// RF_WORKER_PATCH: Restore Pokémon settings; narrow local admin-control hiding — 2026-09-25
 // RF_WORKER_PATCH: Global admin controls + shared maintenance — 2026-09-25
 // RF_WORKER_PATCH: Remove Pokémon Public Sharing UI — 2026-09-25
 const SUPABASE_URL = "https://yamjfaacvewvrinxytep.supabase.co";
@@ -111,16 +112,43 @@ function addSharedAuthShell(response) {
               }
 
               function removeLocalAdminControls() {
-                const localAdminPattern = /(?:site version|check live version|maintenance mode|test mode)/i;
-                document.querySelectorAll('h2,h3,h4,summary,strong,label,button,a,div,section,article').forEach((node) => {
-                  const text=(node.textContent||'').trim().replace(/\\s+/g,' ');
-                  if(!localAdminPattern.test(text))return;
-                  const block=node.closest?.(
-                    'details,.settings-card,.setting-card,.admin-card,.admin-tool,.card,.panel,.section,article,li'
-                  )||node;
-                  if(block?.id==='rf-hub-topbar'||block?.id==='rf-global-maintenance-banner')return;
-                  block.style.setProperty('display','none','important');
-                  block.setAttribute?.('aria-hidden','true');
+                const exactLabels = new Set([
+                  'site version',
+                  'admin tools • site version',
+                  'maintenance mode',
+                  'admin tools • maintenance mode',
+                  'test mode',
+                  'admin tools • test mode'
+                ]);
+                const actionPattern = /^(?:check live version now|refresh live version|turn maintenance (?:on|off)|refresh maintenance(?: status)?|turn test mode (?:on|off)|refresh test mode(?: status)?)$/i;
+
+                document.querySelectorAll('button,input[type="button"],input[type="submit"],summary,h2,h3,h4,strong,label').forEach((node) => {
+                  const text=[
+                    node.textContent||'',
+                    node.getAttribute?.('aria-label')||'',
+                    node.getAttribute?.('title')||'',
+                    node.getAttribute?.('value')||''
+                  ].join(' ').trim().replace(/\\s+/g,' ');
+                  const normalized=text.toLowerCase();
+
+                  if(actionPattern.test(text)){
+                    node.style.setProperty('display','none','important');
+                    node.setAttribute?.('aria-hidden','true');
+                    return;
+                  }
+
+                  if(exactLabels.has(normalized)){
+                    if(node.tagName==='SUMMARY'){
+                      const details=node.closest('details');
+                      if(details){
+                        details.style.setProperty('display','none','important');
+                        details.setAttribute('aria-hidden','true');
+                        return;
+                      }
+                    }
+                    node.style.setProperty('display','none','important');
+                    node.setAttribute?.('aria-hidden','true');
+                  }
                 });
               }
 
