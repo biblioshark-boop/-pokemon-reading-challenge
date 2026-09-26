@@ -182,7 +182,7 @@ function addSharedAuthShell(response) {
               function rfLockedAchievementProgressText(title) {
                 const safeCount=(fn)=>{try{return Math.max(0,Number(fn())||0)}catch{return 0}};
                 const clamp=(value,total)=>Math.max(0,Math.min(total,Number(value)||0));
-                const simple=(value,total)=>`${clamp(value,total)} / ${total}`;
+                const simple=(value,total)=>String(clamp(value,total))+' / '+String(total);
 
                 const milestoneTargets={
                   'First Catch':1,
