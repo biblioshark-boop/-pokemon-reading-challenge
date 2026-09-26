@@ -1,3 +1,4 @@
+// RF_WORKER_PATCH: Shared username management moved to Hub — 2026-09-26
 // RF_WORKER_PATCH: Locked achievement progress — 2026-09-25
 // RF_WORKER_PATCH: Restore Pokémon settings; narrow local admin-control hiding — 2026-09-25
 // RF_WORKER_PATCH: Global admin controls + shared maintenance — 2026-09-25
@@ -109,6 +110,44 @@ function addSharedAuthShell(response) {
                     block.style.setProperty('display', 'none', 'important');
                     block.setAttribute?.('aria-hidden', 'true');
                   }
+                });
+              }
+
+              function removePokemonUsernameEditingUi() {
+                const usernameAttrPattern=/(?:^|[-_ ])(?:user[-_ ]?name|username)(?:$|[-_ ])/i;
+                const usernameActionPattern=/^(?:save|set|change|update|edit|choose)\s+(?:my\s+)?@?username$/i;
+
+                document.querySelectorAll('input,textarea,button,[role="button"]').forEach((node)=>{
+                  const attrs=[
+                    node.id||'',
+                    node.className||'',
+                    node.getAttribute?.('name')||'',
+                    node.getAttribute?.('aria-label')||'',
+                    node.getAttribute?.('title')||'',
+                    node.getAttribute?.('placeholder')||''
+                  ].join(' ');
+                  const text=(node.textContent||node.getAttribute?.('value')||'').trim().replace(/\s+/g,' ');
+
+                  const isUsernameInput=(node.tagName==='INPUT'||node.tagName==='TEXTAREA')&&usernameAttrPattern.test(attrs);
+                  const isUsernameAction=usernameActionPattern.test(text)||usernameAttrPattern.test(attrs)&&node.tagName==='BUTTON';
+                  if(!isUsernameInput&&!isUsernameAction)return;
+
+                  const block=node.closest?.(
+                    '.settings-row,.setting-row,.profile-setting,.account-setting,.settings-card,.setting-card,.card,.panel,li'
+                  )||node;
+                  block.style.setProperty('display','none','important');
+                  block.setAttribute?.('aria-hidden','true');
+                });
+
+                document.querySelectorAll('label').forEach((label)=>{
+                  const text=(label.textContent||'').trim().replace(/\s+/g,' ');
+                  const target=label.getAttribute('for')||'';
+                  if(!/^@?username$/i.test(text)&&!usernameAttrPattern.test(target))return;
+                  const block=label.closest?.(
+                    '.settings-row,.setting-row,.profile-setting,.account-setting,.settings-card,.setting-card,.card,.panel,li'
+                  )||label;
+                  block.style.setProperty('display','none','important');
+                  block.setAttribute?.('aria-hidden','true');
                 });
               }
 
@@ -276,6 +315,7 @@ function addSharedAuthShell(response) {
 
               function applyHubAccountUi() {
                 removePokemonPublicSharingUi();
+                removePokemonUsernameEditingUi();
                 removeLocalAdminControls();
                 applyLockedAchievementProgress();
 
