@@ -1,3 +1,4 @@
+// RF_WORKER_PATCH: Locked achievement progress — 2026-09-25
 // RF_WORKER_PATCH: Restore Pokémon settings; narrow local admin-control hiding — 2026-09-25
 // RF_WORKER_PATCH: Global admin controls + shared maintenance — 2026-09-25
 // RF_WORKER_PATCH: Remove Pokémon Public Sharing UI — 2026-09-25
@@ -178,9 +179,105 @@ function addSharedAuthShell(response) {
                 }
               }
 
+              function rfLockedAchievementProgressText(title) {
+                const safeCount=(fn)=>{try{return Math.max(0,Number(fn())||0)}catch{return 0}};
+                const clamp=(value,total)=>Math.max(0,Math.min(total,Number(value)||0));
+                const simple=(value,total)=>`${clamp(value,total)} / ${total}`;
+
+                const milestoneTargets={
+                  'First Catch':1,
+                  'Poke Collector':10,
+                  'Growing Collection':25,
+                  'Pokedex Builder':50,
+                  'Century Club':100
+                };
+                if(Object.prototype.hasOwnProperty.call(milestoneTargets,title) &&
+                   typeof achievementCaughtCount==='function'){
+                  const total=milestoneTargets[title];
+                  return simple(safeCount(()=>achievementCaughtCount()),total);
+                }
+
+                const typeMatch=String(title||'').match(/^(Normal|Water|Grass|Flying|Bug|Poison|Fire|Electric|Fighting|Ground|Rock|Psychic|Dark|Ice|Ghost|Steel|Fairy|Dragon) Collector$/);
+                if(typeMatch && typeof achievementCaughtPrimaryTypeCount==='function'){
+                  return simple(safeCount(()=>achievementCaughtPrimaryTypeCount(typeMatch[1])),10);
+                }
+
+                if(title==='Safari Specialist' && typeof achievementSafariCaughtCount==='function'){
+                  return simple(safeCount(()=>achievementSafariCaughtCount()),20);
+                }
+
+                const shinyTargets={
+                  'Shiny Start':1,
+                  'Shiny Hunter':3,
+                  'Shiny Collector':5,
+                  'Shiny Specialist':10
+                };
+                if(Object.prototype.hasOwnProperty.call(shinyTargets,title) &&
+                   typeof achievementShinyCaughtCount==='function'){
+                  const total=shinyTargets[title];
+                  return simple(safeCount(()=>achievementShinyCaughtCount()),total);
+                }
+
+                const gymTargets={
+                  'First Badge':1,
+                  'Gym Challenger':3,
+                  'Gym Veteran':8,
+                  'Badge Collector':16
+                };
+                if(Object.prototype.hasOwnProperty.call(gymTargets,title) &&
+                   typeof achievementGymClearedCount==='function'){
+                  const total=gymTargets[title];
+                  return simple(safeCount(()=>achievementGymClearedCount()),total);
+                }
+
+                if(title==='League Ready' &&
+                   typeof achievementGymClearedCount==='function' &&
+                   typeof gymsData!=='undefined' &&
+                   Array.isArray(gymsData) &&
+                   gymsData.length){
+                  return simple(safeCount(()=>achievementGymClearedCount()),gymsData.length);
+                }
+
+                return '';
+              }
+
+              function applyLockedAchievementProgress() {
+                document.querySelectorAll('.achievement-card:not(.is-claimed)').forEach((card) => {
+                  const lockcopy=card.querySelector('.achievement-card-lockcopy');
+                  if(!lockcopy)return;
+
+                  const title=String(
+                    card.dataset?.achievementTitle ||
+                    lockcopy.querySelector('strong')?.textContent ||
+                    ''
+                  ).trim();
+                  if(!title)return;
+
+                  // Trainer Team cards already have their own exact roster progress.
+                  if(/team Pokémon caught/i.test(lockcopy.textContent||''))return;
+
+                  const progress=rfLockedAchievementProgressText(title);
+                  let node=lockcopy.querySelector('.rf-locked-achievement-progress');
+
+                  if(!progress){
+                    node?.remove();
+                    return;
+                  }
+
+                  if(!node){
+                    node=document.createElement('span');
+                    node.className='rf-locked-achievement-progress';
+                    node.style.cssText='display:block;margin-top:6px;font-weight:900;font-size:12px;line-height:1.2;color:#fff';
+                    lockcopy.appendChild(node);
+                  }
+                  if(node.textContent!==progress)node.textContent=progress;
+                });
+              }
+
               function applyHubAccountUi() {
                 removePokemonPublicSharingUi();
                 removeLocalAdminControls();
+                applyLockedAchievementProgress();
 
                 document.querySelectorAll('button,a,[role="button"],input[type="button"],input[type="submit"]').forEach((node) => {
                   const text = [
