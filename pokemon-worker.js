@@ -1,3 +1,4 @@
+// RF_WORKER_PATCH: Remove Pokémon Public Sharing UI — 2026-09-25
 const SUPABASE_URL = "https://yamjfaacvewvrinxytep.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1NoVsY53V4CBFMg_i09Lcg_DCf8w_Lb";
 
@@ -79,7 +80,38 @@ function addSharedAuthShell(response) {
               }
 
 
+              function removePokemonPublicSharingUi() {
+                const shareTextPattern = /(?:public sharing|make (?:my |this )?(?:challenge|profile) public|share (?:my |this )?(?:challenge|profile)|public (?:challenge|profile|page)|copy public link|share link)/i;
+                const shareAttrPattern = /(?:public[-_ ]?share|share[-_ ]?public|public[-_ ]?sharing)/i;
+
+                document.querySelectorAll('button,a,label,summary,h2,h3,h4,strong,p,span,div,input,[role="button"]').forEach((node) => {
+                  const text = (node.textContent || '').trim().replace(/\\s+/g, ' ');
+                  const attrs = [
+                    node.id || '',
+                    node.className || '',
+                    node.getAttribute?.('name') || '',
+                    node.getAttribute?.('aria-label') || '',
+                    node.getAttribute?.('title') || '',
+                    node.getAttribute?.('value') || ''
+                  ].join(' ');
+
+                  if (!shareTextPattern.test(text) && !shareAttrPattern.test(attrs)) return;
+
+                  const block =
+                    node.closest?.(
+                      'details,.settings-card,.setting-card,.settings-row,.setting-row,.profile-setting,.sharing-setting,.card,.panel,.section,li'
+                    ) || node;
+
+                  if (block && block.id !== 'rf-hub-topbar') {
+                    block.style.setProperty('display', 'none', 'important');
+                    block.setAttribute?.('aria-hidden', 'true');
+                  }
+                });
+              }
+
               function applyHubAccountUi() {
+                removePokemonPublicSharingUi();
+
                 document.querySelectorAll('button,a,[role="button"],input[type="button"],input[type="submit"]').forEach((node) => {
                   const text = [
                     node.textContent || '',
