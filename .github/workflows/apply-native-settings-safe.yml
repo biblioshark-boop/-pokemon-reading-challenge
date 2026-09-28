@@ -1,0 +1,187 @@
+name: Apply safe Pokemon native settings patch
+
+on:
+  push:
+    branches:
+      - patch-pokemon-native-settings-state-safe
+    paths-ignore:
+      - index.html
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-pokemon-native-settings-state-safe
+      - name: Patch native Settings code only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+
+          pattern = re.compile(
+              r"function initSettingsSections\(\)\{.*?\nfunction updateBackToTop\(\)\{",
+              re.S,
+          )
+          matches = list(pattern.finditer(text))
+          if len(matches) != 1:
+              raise SystemExit(f"Expected exactly one native Settings function block, found {len(matches)}")
+
+          replacement = r'''const RF_SETTINGS_STATE_PREFIX="rf_pokemon_settings_state_v1:";
+const RF_HUB_MANAGED_SETTINGS_IDS=["adminBuildStatusCard","adminMaintenanceCard","adminTestModeCard"];
+function rfSettingsCardKey(card,index){
+const heading=card.querySelector(":scope > h3, :scope > .admin-tools-title");
+const label=(heading?.textContent||"").trim().replace(/\s+/g," ").toLowerCase();
+const stable=(card.id||label||("section-"+index)).replace(/[^a-z0-9_-]+/g,"-").replace(/^-+|-+$/g,"");
+return RF_SETTINGS_STATE_PREFIX+(stable||("section-"+index));
+}
+function rfIsHubManagedSettingsCard(card){
+return !!card?.id&&RF_HUB_MANAGED_SETTINGS_IDS.includes(card.id);
+}
+function rfSaveSettingsCardState(card,index){
+if(!card||rfIsHubManagedSettingsCard(card))return;
+try{localStorage.setItem(rfSettingsCardKey(card,index),card.classList.contains("settings-collapsed")?"collapsed":"expanded")}catch{}
+}
+function rfRestoreSettingsCardState(card,index,heading){
+if(card.dataset.rfSettingsStateRestored==="1")return;
+card.dataset.rfSettingsStateRestored="1";
+let saved=null;
+try{saved=localStorage.getItem(rfSettingsCardKey(card,index))}catch{}
+if(saved==="collapsed"){
+card.classList.add("settings-collapsed");
+heading.setAttribute("aria-expanded","false");
+}else if(saved==="expanded"){
+card.classList.remove("settings-collapsed");
+heading.setAttribute("aria-expanded","true");
+}
+}
+function rfLockHubManagedSettingsCard(card){
+if(!card)return;
+const heading=card.querySelector(":scope > h3, :scope > .admin-tools-title");
+card.classList.add("settings-collapsible","settings-collapsed");
+card.dataset.rfHubManagedSettings="1";
+if(heading){
+heading.classList.add("settings-section-heading");
+heading.dataset.collapseReady="1";
+heading.setAttribute("aria-expanded","false");
+heading.setAttribute("aria-disabled","true");
+heading.removeAttribute("role");
+heading.tabIndex=-1;
+heading.style.cursor="default";
+}
+card.querySelectorAll("button,input,select,textarea,a,[role=\"button\"]").forEach(control=>{
+try{control.disabled=true}catch{}
+control.setAttribute?.("aria-disabled","true");
+if(control.tagName==="A"){
+control.setAttribute("tabindex","-1");
+control.style.pointerEvents="none";
+}
+});
+}
+function rfMoveHubManagedSettingsCardsToBottom(){
+const root=document.getElementById("settingsPage");
+if(!root)return;
+RF_HUB_MANAGED_SETTINGS_IDS.forEach(id=>{
+const card=document.getElementById(id);
+if(card&&card.parentElement===root){
+rfLockHubManagedSettingsCard(card);
+root.appendChild(card);
+}
+});
+}
+function initSettingsSections(){
+const cards=Array.from(document.querySelectorAll("#settingsPage > .form-card"));
+cards.forEach((card,index)=>{
+const heading=card.querySelector(":scope > h3, :scope > .admin-tools-title");
+if(!heading)return;
+if(rfIsHubManagedSettingsCard(card)){
+rfLockHubManagedSettingsCard(card);
+return;
+}
+card.classList.add("settings-collapsible");
+if(!heading.dataset.collapseReady){
+heading.dataset.collapseReady="1";
+heading.classList.add("settings-section-heading");
+heading.tabIndex=0;
+heading.setAttribute("role","button");
+heading.setAttribute("aria-expanded",String(!card.classList.contains("settings-collapsed")));
+const toggle=()=>{
+const collapsed=card.classList.toggle("settings-collapsed");
+heading.setAttribute("aria-expanded",String(!collapsed));
+rfSaveSettingsCardState(card,index);
+};
+heading.addEventListener("click",toggle);
+heading.addEventListener("keydown",e=>{
+if(e.key==="Enter"||e.key===" "){
+e.preventDefault();
+toggle();
+}
+});
+}
+rfRestoreSettingsCardState(card,index,heading);
+});
+rfMoveHubManagedSettingsCardsToBottom();
+}
+function setAllSettingsCollapsed(collapsed){
+initSettingsSections();
+const cards=Array.from(document.querySelectorAll("#settingsPage > .form-card"));
+cards.forEach((card,index)=>{
+const heading=card.querySelector(":scope > .settings-section-heading, :scope > h3, :scope > .admin-tools-title");
+if(!heading)return;
+if(rfIsHubManagedSettingsCard(card)){
+rfLockHubManagedSettingsCard(card);
+return;
+}
+card.classList.toggle("settings-collapsed",collapsed);
+heading.setAttribute("aria-expanded",String(!collapsed));
+rfSaveSettingsCardState(card,index);
+});
+rfMoveHubManagedSettingsCardsToBottom();
+}
+function updateBackToTop(){'''
+
+          patched, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit("Native Settings replacement failed")
+
+          required = [
+              'RF_SETTINGS_STATE_PREFIX="rf_pokemon_settings_state_v1:"',
+              '"adminBuildStatusCard","adminMaintenanceCard","adminTestModeCard"',
+              'rfMoveHubManagedSettingsCardsToBottom()',
+              'localStorage.setItem(rfSettingsCardKey',
+          ]
+          for needle in required:
+              if needle not in patched:
+                  raise SystemExit(f"Validation marker missing: {needle}")
+
+          path.write_text(patched, encoding="utf-8")
+          print("Native Settings block patched successfully.")
+          PY
+      - name: Validate Cloudflare build preparation
+        run: |
+          python cloudflare_prepare.py
+          test -f dist/index.html
+          python - <<'PY'
+          from pathlib import Path
+          text=Path("index.html").read_text(encoding="utf-8")
+          assert text.count('RF_SETTINGS_STATE_PREFIX="rf_pokemon_settings_state_v1:"') == 1
+          assert text.count('function initSettingsSections(){') == 1
+          assert text.count('function setAllSettingsCollapsed(collapsed){') == 1
+          print("Validation passed.")
+          PY
+      - name: Commit only native index patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 1
+          git commit -m "Persist native Pokemon settings state safely"
+          git push origin HEAD:patch-pokemon-native-settings-state-safe
