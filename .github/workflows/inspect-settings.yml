@@ -1,0 +1,55 @@
+name: Inspect Pokemon Settings Source
+
+on:
+  push:
+    branches:
+      - inspect-pokemon-settings-source
+    paths-ignore:
+      - settings-inspection.txt
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: inspect-pokemon-settings-source
+      - name: Extract settings excerpts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8", errors="replace")
+          terms=[
+              "Maintenance Mode","Test Mode","Site Version","Check Live Version",
+              "settings","Settings","collapse","expanded","open","accordion","details","summary"
+          ]
+          out=[]
+          seen=[]
+          for term in terms:
+              start=0
+              count=0
+              while count<20:
+                  i=s.find(term,start)
+                  if i<0: break
+                  a=max(0,i-1800); b=min(len(s),i+4200)
+                  key=(a,b)
+                  if key not in seen:
+                      seen.append(key)
+                      out.append(f"\n\n===== TERM {term!r} AT {i} =====\n"+s[a:b])
+                  start=i+len(term)
+                  count+=1
+          Path("settings-inspection.txt").write_text("".join(out),encoding="utf-8")
+          print("wrote",len(out),"excerpts")
+          PY
+      - name: Commit inspection output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add settings-inspection.txt
+          git commit -m "Temporary Pokemon settings source inspection" || exit 0
+          git push origin HEAD:inspect-pokemon-settings-source
