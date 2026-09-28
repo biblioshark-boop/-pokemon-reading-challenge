@@ -1,4 +1,3 @@
-// RF_WORKER_PATCH: Native Pokémon Settings persistence + inactive legacy controls — 2026-09-28
 // RF_WORKER_PATCH: Inactive moved admin panels + reliable settings persistence — 2026-09-28
 // RF_WORKER_PATCH: Pokémon settings collapse persistence + moved admin panels — 2026-09-28
 // RF_WORKER_PATCH: Shared username management moved to Hub — 2026-09-26
@@ -154,82 +153,46 @@ function addSharedAuthShell(response) {
                 });
               }
 
-              const RF_POKEMON_SETTINGS_STATE_PREFIX='rf_pokemon_native_settings_v1:';
-              const RF_POKEMON_LEGACY_ADMIN_IDS=[
-                'adminBuildStatusCard',
-                'adminMaintenanceCard',
-                'adminTestModeCard'
-              ];
+              const RF_POKEMON_SETTINGS_STATE_PREFIX='rf_pokemon_settings_open_v2:';
 
               function rfPokemonSettingsRoot(){
-                return document.getElementById('settingsPage');
+                return document.querySelector(
+                  '#settingsPage,#settings-page,[data-page="settings"],.settings-page,.settings-view'
+                );
               }
 
-              function rfPokemonSettingsCardKey(card,index){
-                const heading=card.querySelector(':scope > .settings-section-heading, :scope > h3, :scope > .admin-tools-title');
-                const label=(heading?.textContent||'').trim().replace(/\\s+/g,' ').toLowerCase();
-                const stable=(card.id||label||('section-'+index))
+              function rfPokemonSettingsDetailsKey(details,index){
+                const summary=details.querySelector(':scope > summary');
+                const label=(summary?.textContent||'').trim().replace(/\\s+/g,' ').toLowerCase();
+                const stable=(details.id||details.getAttribute('data-settings-key')||label||('section-'+index))
                   .replace(/[^a-z0-9_-]+/g,'-')
                   .replace(/^-+|-+$/g,'');
                 return RF_POKEMON_SETTINGS_STATE_PREFIX+(stable||('section-'+index));
               }
 
-              function rfIsLegacyPokemonAdminCard(card){
-                return !!card?.id && RF_POKEMON_LEGACY_ADMIN_IDS.includes(card.id);
+              function rfPokemonMovedAdminDetails(){
+                const labels=[
+                  /^(?:site version|admin tools • site version|check live patch|check live version|live patch)$/i,
+                  /^(?:maintenance mode|admin tools • maintenance mode)$/i,
+                  /^(?:test mode|admin tools • test mode)$/i
+                ];
+                const found=[];
+                document.querySelectorAll('details').forEach((details)=>{
+                  const summary=details.querySelector(':scope > summary');
+                  const text=(summary?.textContent||'').trim().replace(/\\s+/g,' ');
+                  if(labels.some((pattern)=>pattern.test(text)))found.push(details);
+                });
+                return found;
               }
 
-              function rfSavePokemonSettingsCardState(card,index){
-                if(!card||rfIsLegacyPokemonAdminCard(card))return;
-                const key=rfPokemonSettingsCardKey(card,index);
-                try{localStorage.setItem(key,card.classList.contains('settings-collapsed')?'0':'1')}catch{}
-              }
+              function rfLockMovedAdminDetails(details){
+                details.open=false;
+                details.dataset.rfMovedHubAdminControl='1';
+                details.dataset.rfSettingsPersistenceIgnore='1';
+                details.style.removeProperty('display');
+                details.removeAttribute('aria-hidden');
 
-              function rfRestorePokemonSettingsCardState(card,index){
-                if(!card||rfIsLegacyPokemonAdminCard(card)||card.dataset.rfNativeSettingsRestored==='1')return;
-                card.dataset.rfNativeSettingsRestored='1';
-                const heading=card.querySelector(':scope > .settings-section-heading, :scope > h3, :scope > .admin-tools-title');
-                if(!heading)return;
-                const key=rfPokemonSettingsCardKey(card,index);
-                let saved=null;
-                try{saved=localStorage.getItem(key)}catch{}
-                if(saved==='0'){
-                  card.classList.add('settings-collapsed');
-                  heading.setAttribute('aria-expanded','false');
-                }else if(saved==='1'){
-                  card.classList.remove('settings-collapsed');
-                  heading.setAttribute('aria-expanded','true');
-                }
-              }
-
-              function rfLockLegacyPokemonAdminCard(card){
-                if(!card)return;
-                const heading=card.querySelector(':scope > .settings-section-heading, :scope > h3, :scope > .admin-tools-title');
-                card.classList.add('settings-collapsible','settings-collapsed');
-                card.dataset.rfLegacyHubManaged='1';
-
-                if(heading){
-                  heading.classList.add('settings-section-heading');
-                  heading.setAttribute('aria-expanded','false');
-                  heading.setAttribute('aria-disabled','true');
-                  heading.setAttribute('title','Managed from The Reading Frenzy Main Hub');
-                  heading.tabIndex=0;
-                  if(heading.dataset.rfLegacyLockBound!=='1'){
-                    heading.dataset.rfLegacyLockBound='1';
-                    const lock=(event)=>{
-                      event.preventDefault();
-                      event.stopImmediatePropagation();
-                      card.classList.add('settings-collapsed');
-                      heading.setAttribute('aria-expanded','false');
-                    };
-                    heading.addEventListener('click',lock,true);
-                    heading.addEventListener('keydown',(event)=>{
-                      if(event.key==='Enter'||event.key===' ')lock(event);
-                    },true);
-                  }
-                }
-
-                card.querySelectorAll('button,input,select,textarea,a,[role="button"]').forEach((control)=>{
-                  if(control===heading)return;
+                details.querySelectorAll('button,input,select,textarea,a,[role="button"]').forEach((control)=>{
                   if(control.tagName==='A'){
                     control.setAttribute('aria-disabled','true');
                     control.setAttribute('tabindex','-1');
@@ -239,74 +202,82 @@ function addSharedAuthShell(response) {
                     control.setAttribute?.('aria-disabled','true');
                   }
                 });
+
+                const summary=details.querySelector(':scope > summary');
+                if(summary){
+                  summary.style.removeProperty('display');
+                  summary.removeAttribute('aria-hidden');
+                  summary.setAttribute('aria-disabled','true');
+                  summary.setAttribute('title','Managed from the Main Hub');
+                  if(summary.dataset.rfMovedAdminLocked!=='1'){
+                    summary.dataset.rfMovedAdminLocked='1';
+                    summary.addEventListener('click',(event)=>{
+                      event.preventDefault();
+                      details.open=false;
+                    });
+                    summary.addEventListener('keydown',(event)=>{
+                      if(event.key==='Enter'||event.key===' '){
+                        event.preventDefault();
+                        details.open=false;
+                      }
+                    });
+                  }
+                }
+
+                if(!details.querySelector(':scope > .rf-moved-admin-note')){
+                  const note=document.createElement('div');
+                  note.className='rf-moved-admin-note';
+                  note.textContent='Managed from The Reading Frenzy Main Hub.';
+                  note.style.cssText='display:none';
+                  details.appendChild(note);
+                }
               }
 
-              function rfMoveLegacyPokemonAdminCardsToBottom(){
+              function arrangeLocalAdminControls() {
                 const root=rfPokemonSettingsRoot();
                 if(!root)return;
-                RF_POKEMON_LEGACY_ADMIN_IDS.forEach((id)=>{
-                  const card=document.getElementById(id);
-                  if(card&&card.parentElement===root)root.appendChild(card);
+
+                const moved=rfPokemonMovedAdminDetails();
+                moved.forEach(rfLockMovedAdminDetails);
+
+                // Keep these inactive controls together at the very bottom of their Settings container.
+                const parents=new Map();
+                moved.forEach((details)=>{
+                  if(details.parentElement){
+                    const list=parents.get(details.parentElement)||[];
+                    list.push(details);
+                    parents.set(details.parentElement,list);
+                  }
+                });
+                parents.forEach((list,parent)=>{
+                  const alreadyAtBottom=list.every((details,index)=>{
+                    const expected=parent.children[parent.children.length-list.length+index];
+                    return expected===details;
+                  });
+                  if(!alreadyAtBottom)list.forEach((details)=>parent.appendChild(details));
                 });
               }
 
-              function rfBindPokemonSettingsPersistence(){
+              function persistPokemonSettingsAccordions(){
                 const root=rfPokemonSettingsRoot();
                 if(!root)return;
 
-                if(typeof window.initSettingsSections==='function'){
-                  try{window.initSettingsSections()}catch(err){console.warn('Pokémon native settings init failed',err)}
-                }
+                const detailsList=Array.from(root.querySelectorAll('details'));
+                detailsList.forEach((details,index)=>{
+                  if(details.dataset.rfSettingsPersistenceIgnore==='1')return;
+                  if(details.dataset.rfSettingsPersistenceBound==='1')return;
 
-                const cards=Array.from(root.querySelectorAll(':scope > .form-card'));
-                cards.forEach((card,index)=>{
-                  if(rfIsLegacyPokemonAdminCard(card)){
-                    rfLockLegacyPokemonAdminCard(card);
-                    return;
-                  }
+                  const key=rfPokemonSettingsDetailsKey(details,index);
+                  let saved=null;
+                  try{saved=localStorage.getItem(key)}catch{}
+                  if(saved==='1')details.open=true;
+                  if(saved==='0')details.open=false;
 
-                  rfRestorePokemonSettingsCardState(card,index);
-                  const heading=card.querySelector(':scope > .settings-section-heading, :scope > h3, :scope > .admin-tools-title');
-                  if(!heading||heading.dataset.rfNativePersistenceBound==='1')return;
-                  heading.dataset.rfNativePersistenceBound='1';
-
-                  const save=()=>{
-                    requestAnimationFrame(()=>rfSavePokemonSettingsCardState(card,index));
-                  };
-                  heading.addEventListener('click',save);
-                  heading.addEventListener('keydown',(event)=>{
-                    if(event.key==='Enter'||event.key===' ')save();
+                  details.dataset.rfSettingsPersistenceBound='1';
+                  details.addEventListener('toggle',()=>{
+                    try{localStorage.setItem(key,details.open?'1':'0')}catch{}
                   });
                 });
-
-                rfMoveLegacyPokemonAdminCardsToBottom();
-              }
-
-              function rfInstallPokemonSettingsPolicy(){
-                const root=rfPokemonSettingsRoot();
-                if(!root)return;
-
-                rfBindPokemonSettingsPersistence();
-
-                if(typeof window.setAllSettingsCollapsed==='function' && !window.setAllSettingsCollapsed.rfWrapped){
-                  const nativeSetAll=window.setAllSettingsCollapsed;
-                  const wrapped=(collapsed)=>{
-                    try{nativeSetAll(collapsed)}catch(err){console.warn('Pokémon native collapse-all failed',err)}
-                    const cards=Array.from(root.querySelectorAll(':scope > .form-card'));
-                    cards.forEach((card,index)=>{
-                      const heading=card.querySelector(':scope > .settings-section-heading, :scope > h3, :scope > .admin-tools-title');
-                      if(rfIsLegacyPokemonAdminCard(card)){
-                        rfLockLegacyPokemonAdminCard(card);
-                        return;
-                      }
-                      if(heading)heading.setAttribute('aria-expanded',String(!collapsed));
-                      rfSavePokemonSettingsCardState(card,index);
-                    });
-                    rfMoveLegacyPokemonAdminCardsToBottom();
-                  };
-                  wrapped.rfWrapped=true;
-                  window.setAllSettingsCollapsed=wrapped;
-                }
               }
 
               function ensureGlobalMaintenanceBanner() {
@@ -433,7 +404,8 @@ function addSharedAuthShell(response) {
               function applyHubAccountUi() {
                 removePokemonPublicSharingUi();
                 removePokemonUsernameEditingUi();
-                rfInstallPokemonSettingsPolicy();
+                arrangeLocalAdminControls();
+                persistPokemonSettingsAccordions();
                 applyLockedAchievementProgress();
 
                 document.querySelectorAll('button,a,[role="button"],input[type="button"],input[type="submit"]').forEach((node) => {
@@ -551,8 +523,6 @@ function addSharedAuthShell(response) {
                   }
 
                   applyHubAccountUi();
-                  document.addEventListener('DOMContentLoaded',rfInstallPokemonSettingsPolicy,{once:true});
-                  setTimeout(rfInstallPokemonSettingsPolicy,0);
                   await refreshGlobalMaintenance(client);
                   setInterval(()=>refreshGlobalMaintenance(client),30000);
                   const hubUiObserver = new MutationObserver(applyHubAccountUi);
