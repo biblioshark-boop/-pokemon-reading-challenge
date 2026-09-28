@@ -125,7 +125,7 @@ rfMoveHubManagedSettingsCardsToBottom();
 }
 function updateBackToTop(){'''
 
-patched, count = pattern.subn(replacement, text, count=1)
+patched, count = pattern.subn(lambda _m: replacement, text, count=1)
 if count != 1:
     raise SystemExit("Native Settings replacement failed")
 
