@@ -1,5 +1,3 @@
-// RF_WORKER_PATCH: Inactive moved admin panels + reliable settings persistence — 2026-09-28
-// RF_WORKER_PATCH: Pokémon settings collapse persistence + moved admin panels — 2026-09-28
 // RF_WORKER_PATCH: Shared username management moved to Hub — 2026-09-26
 // RF_WORKER_PATCH: Locked achievement progress — 2026-09-25
 // RF_WORKER_PATCH: Restore Pokémon settings; narrow local admin-control hiding — 2026-09-25
@@ -153,130 +151,44 @@ function addSharedAuthShell(response) {
                 });
               }
 
-              const RF_POKEMON_SETTINGS_STATE_PREFIX='rf_pokemon_settings_open_v2:';
+              function removeLocalAdminControls() {
+                const exactLabels = new Set([
+                  'site version',
+                  'admin tools • site version',
+                  'maintenance mode',
+                  'admin tools • maintenance mode',
+                  'test mode',
+                  'admin tools • test mode'
+                ]);
+                const actionPattern = /^(?:check live version now|refresh live version|turn maintenance (?:on|off)|refresh maintenance(?: status)?|turn test mode (?:on|off)|refresh test mode(?: status)?)$/i;
 
-              function rfPokemonSettingsRoot(){
-                return document.querySelector(
-                  '#settingsPage,#settings-page,[data-page="settings"],.settings-page,.settings-view'
-                );
-              }
+                document.querySelectorAll('button,input[type="button"],input[type="submit"],summary,h2,h3,h4,strong,label').forEach((node) => {
+                  const text=[
+                    node.textContent||'',
+                    node.getAttribute?.('aria-label')||'',
+                    node.getAttribute?.('title')||'',
+                    node.getAttribute?.('value')||''
+                  ].join(' ').trim().replace(/\\s+/g,' ');
+                  const normalized=text.toLowerCase();
 
-              function rfPokemonSettingsDetailsKey(details,index){
-                const summary=details.querySelector(':scope > summary');
-                const label=(summary?.textContent||'').trim().replace(/\\s+/g,' ').toLowerCase();
-                const stable=(details.id||details.getAttribute('data-settings-key')||label||('section-'+index))
-                  .replace(/[^a-z0-9_-]+/g,'-')
-                  .replace(/^-+|-+$/g,'');
-                return RF_POKEMON_SETTINGS_STATE_PREFIX+(stable||('section-'+index));
-              }
-
-              function rfPokemonMovedAdminDetails(){
-                const labels=[
-                  /^(?:site version|admin tools • site version|check live patch|check live version|live patch)$/i,
-                  /^(?:maintenance mode|admin tools • maintenance mode)$/i,
-                  /^(?:test mode|admin tools • test mode)$/i
-                ];
-                const found=[];
-                document.querySelectorAll('details').forEach((details)=>{
-                  const summary=details.querySelector(':scope > summary');
-                  const text=(summary?.textContent||'').trim().replace(/\\s+/g,' ');
-                  if(labels.some((pattern)=>pattern.test(text)))found.push(details);
-                });
-                return found;
-              }
-
-              function rfLockMovedAdminDetails(details){
-                details.open=false;
-                details.dataset.rfMovedHubAdminControl='1';
-                details.dataset.rfSettingsPersistenceIgnore='1';
-                details.style.removeProperty('display');
-                details.removeAttribute('aria-hidden');
-
-                details.querySelectorAll('button,input,select,textarea,a,[role="button"]').forEach((control)=>{
-                  if(control.tagName==='A'){
-                    control.setAttribute('aria-disabled','true');
-                    control.setAttribute('tabindex','-1');
-                    control.style.pointerEvents='none';
-                  }else{
-                    try{control.disabled=true}catch{}
-                    control.setAttribute?.('aria-disabled','true');
+                  if(actionPattern.test(text)){
+                    node.style.setProperty('display','none','important');
+                    node.setAttribute?.('aria-hidden','true');
+                    return;
                   }
-                });
 
-                const summary=details.querySelector(':scope > summary');
-                if(summary){
-                  summary.style.removeProperty('display');
-                  summary.removeAttribute('aria-hidden');
-                  summary.setAttribute('aria-disabled','true');
-                  summary.setAttribute('title','Managed from the Main Hub');
-                  if(summary.dataset.rfMovedAdminLocked!=='1'){
-                    summary.dataset.rfMovedAdminLocked='1';
-                    summary.addEventListener('click',(event)=>{
-                      event.preventDefault();
-                      details.open=false;
-                    });
-                    summary.addEventListener('keydown',(event)=>{
-                      if(event.key==='Enter'||event.key===' '){
-                        event.preventDefault();
-                        details.open=false;
+                  if(exactLabels.has(normalized)){
+                    if(node.tagName==='SUMMARY'){
+                      const details=node.closest('details');
+                      if(details){
+                        details.style.setProperty('display','none','important');
+                        details.setAttribute('aria-hidden','true');
+                        return;
                       }
-                    });
+                    }
+                    node.style.setProperty('display','none','important');
+                    node.setAttribute?.('aria-hidden','true');
                   }
-                }
-
-                if(!details.querySelector(':scope > .rf-moved-admin-note')){
-                  const note=document.createElement('div');
-                  note.className='rf-moved-admin-note';
-                  note.textContent='Managed from The Reading Frenzy Main Hub.';
-                  note.style.cssText='display:none';
-                  details.appendChild(note);
-                }
-              }
-
-              function arrangeLocalAdminControls() {
-                const root=rfPokemonSettingsRoot();
-                if(!root)return;
-
-                const moved=rfPokemonMovedAdminDetails();
-                moved.forEach(rfLockMovedAdminDetails);
-
-                // Keep these inactive controls together at the very bottom of their Settings container.
-                const parents=new Map();
-                moved.forEach((details)=>{
-                  if(details.parentElement){
-                    const list=parents.get(details.parentElement)||[];
-                    list.push(details);
-                    parents.set(details.parentElement,list);
-                  }
-                });
-                parents.forEach((list,parent)=>{
-                  const alreadyAtBottom=list.every((details,index)=>{
-                    const expected=parent.children[parent.children.length-list.length+index];
-                    return expected===details;
-                  });
-                  if(!alreadyAtBottom)list.forEach((details)=>parent.appendChild(details));
-                });
-              }
-
-              function persistPokemonSettingsAccordions(){
-                const root=rfPokemonSettingsRoot();
-                if(!root)return;
-
-                const detailsList=Array.from(root.querySelectorAll('details'));
-                detailsList.forEach((details,index)=>{
-                  if(details.dataset.rfSettingsPersistenceIgnore==='1')return;
-                  if(details.dataset.rfSettingsPersistenceBound==='1')return;
-
-                  const key=rfPokemonSettingsDetailsKey(details,index);
-                  let saved=null;
-                  try{saved=localStorage.getItem(key)}catch{}
-                  if(saved==='1')details.open=true;
-                  if(saved==='0')details.open=false;
-
-                  details.dataset.rfSettingsPersistenceBound='1';
-                  details.addEventListener('toggle',()=>{
-                    try{localStorage.setItem(key,details.open?'1':'0')}catch{}
-                  });
                 });
               }
 
@@ -404,8 +316,7 @@ function addSharedAuthShell(response) {
               function applyHubAccountUi() {
                 removePokemonPublicSharingUi();
                 removePokemonUsernameEditingUi();
-                arrangeLocalAdminControls();
-                persistPokemonSettingsAccordions();
+                removeLocalAdminControls();
                 applyLockedAchievementProgress();
 
                 document.querySelectorAll('button,a,[role="button"],input[type="button"],input[type="submit"]').forEach((node) => {
