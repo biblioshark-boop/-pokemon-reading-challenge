@@ -1,0 +1,33 @@
+
+===== logTeamCatchForPokemon =====
+async function logTeamCatchForPokemon(p,e,bookTitleOverride=""){
+if(!user||publicMode||isAdminTestMode()||!p||!joinedFactionId)return;
+const books=Array.isArray(e?.books)?e.books:[];
+const latest=books.length?books[books.length-1]:null;
+const bookTitle=bookTitleOverride||latest?.title||"";
+const{error}=await sb.rpc("log_team_catch",{
+p_pokemon_key:String(p.id||p.slug||p.dex||p.name),
+p_pokemon_name:String(p.name||"Pokémon"),
+p_pokemon_form:String(p.form||""),
+p_book_title:String(bookTitle||"")
+});
+if(error)console.warn("Team catch activity was not logged",error);
+}
+
+===== syncMyTeamBonusForPokemon =====
+async function syncMyTeamBonusForPokemon(p,isCaught){
+ if(publicMode||!user||isAdminTestMode()||!p)return false;
+ const slug=catalogSlugForPokemon(p);
+ if(!slug)return false;
+ try{
+   if(isCaught){
+     const{data,error}=await sb.rpc("award_my_team_bonus",{p_pokemon_key:String(p.id),p_catalog_slug:slug});
+     if(error){console.error(error);return false}
+     return !!data;
+   }else{
+     const{error}=await sb.rpc("remove_my_team_bonus",{p_pokemon_key:String(p.id)});
+     if(error)console.error(error);
+     return false;
+   }
+ }catch(err){console.error(err);return false}
+}
