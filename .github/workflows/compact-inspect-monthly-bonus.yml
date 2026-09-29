@@ -1,0 +1,45 @@
+name: Compact inspect monthly bonus
+
+on:
+  push:
+    branches:
+      - inspect-pokemon-monthly-bonus
+    paths-ignore:
+      - monthly-bonus-compact.txt
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: inspect-pokemon-monthly-bonus
+      - name: Extract compact snippets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8", errors="replace")
+          out=[]
+          def grab(label, needle, before=1400, after=3800, maxhits=4):
+              start=0
+              for _ in range(maxhits):
+                  i=s.find(needle,start)
+                  if i<0: break
+                  out.append(f"\n===== {label} @ {i} =====\n"+s[max(0,i-before):min(len(s),i+after)])
+                  start=i+len(needle)
+          for term in ["caughtDates","Monthly Bonus","monthly bonus","adminMonthlyBonus","catchDate","caughtDate","logGym","saveGym","gym","caughtBooks"]:
+              grab(term,term)
+          Path("monthly-bonus-compact.txt").write_text("".join(out)[:60000],encoding="utf-8")
+          PY
+      - name: Commit compact output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add monthly-bonus-compact.txt
+          git commit -m "Compact monthly bonus inspection output" || exit 0
+          git push origin HEAD:inspect-pokemon-monthly-bonus
