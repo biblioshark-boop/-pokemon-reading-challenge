@@ -5,6 +5,7 @@ on:
     branches:
       - inspect-pokemon-monthly-bonus
     paths-ignore:
+      - monthly-bonus-compact.txt
       - monthly-bonus-inspection.txt
 
 permissions:
@@ -18,39 +19,66 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: inspect-pokemon-monthly-bonus
-      - name: Extract relevant excerpts
+      - name: Extract compact relevant excerpts
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           s=Path("index.html").read_text(encoding="utf-8", errors="replace")
-          terms=[
-              "caughtDates","monthly bonus","Monthly Bonus","adminMonthlyBonus",
-              "loadAdminMonthlyBonus","renderAdminMonthlyBonus","monthlyBonus",
-              "gym","Gym","caughtBooks","catchDate","date caught","caughtDate",
-              "logGym","saveGym","gym catch","team catch","bonus multiplier"
-          ]
           out=[]
-          seen=[]
+
+          def add(label, start, end):
+              out.append(f"\n===== {label} =====\n"+s[start:end])
+
+          # Exact useful terms; only first few matches, small windows.
+          terms=[
+            "caughtDates",
+            "Monthly Bonus",
+            "monthly bonus",
+            "adminMonthlyBonus",
+            "loadAdminMonthlyBonus",
+            "saveAdminMonthlyBonus",
+            "catchDate",
+            "caughtDate",
+            "logGym",
+            "saveGym",
+            "Gym Battle",
+            "gym",
+            "caughtBooks"
+          ]
+          seen=set()
           for term in terms:
               start=0
-              count=0
-              while count<30:
+              hits=0
+              while hits<5:
                   i=s.find(term,start)
                   if i<0: break
-                  a=max(0,i-2500); b=min(len(s),i+7000)
+                  a=max(0,i-1200); b=min(len(s),i+2600)
                   key=(a,b)
                   if key not in seen:
-                      seen.append(key)
-                      out.append(f"\n\n===== TERM {term!r} AT {i} =====\n"+s[a:b])
-                  start=i+len(term)
-                  count+=1
-          Path("monthly-bonus-inspection.txt").write_text("".join(out),encoding="utf-8")
-          print("wrote",len(out),"excerpts")
+                      seen.add(key); add(f"{term} @ {i}",a,b)
+                  start=i+len(term); hits+=1
+
+          # Try to capture whole function bodies by name if present.
+          for name in [
+            "loadAdminMonthlyBonusPeriods","loadAdminMonthlyBonusEditor",
+            "saveAdminMonthlyBonusPeriod","renderAdminMonthlyBonus",
+            "getActiveMonthlyBonus","getMonthlyBonus",
+            "logGym","saveGym","completeGym","recordGym",
+            "saveCatch","catchPokemon","logCatch","openPokemon"
+          ]:
+              m=re.search(rf"(?:async\s+)?function\s+{re.escape(name)}\s*\(",s)
+              if m:
+                  a=m.start(); b=min(len(s),a+9000)
+                  add(f"FUNCTION {name}",a,b)
+
+          Path("monthly-bonus-compact.txt").write_text("".join(out)[:90000],encoding="utf-8")
+          print("compact chars",min(len("".join(out)),90000))
           PY
-      - name: Commit inspection output
+      - name: Commit compact output
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add monthly-bonus-inspection.txt
-          git commit -m "Temporary monthly bonus inspection" || exit 0
+          git add monthly-bonus-compact.txt
+          git commit -m "Compact monthly bonus inspection" || exit 0
           git push origin HEAD:inspect-pokemon-monthly-bonus
