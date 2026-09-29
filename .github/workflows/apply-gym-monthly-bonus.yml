@@ -1,0 +1,44 @@
+name: Apply Gym monthly bonus sync
+
+on:
+  push:
+    branches:
+      - patch-pokemon-gym-monthly-bonus-sync
+    paths-ignore:
+      - index.html
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-pokemon-gym-monthly-bonus-sync
+
+      - name: Patch Gym monthly bonus sync
+        run: python patch_gym_monthly_bonus.py
+
+      - name: Validate Cloudflare build
+        run: |
+          python cloudflare_prepare.py
+          test -f dist/index.html
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          needle="await logTeamCatchForPokemon(p,e,title);\nawait syncMonthlyBonusForPokemon(p,true);\nconst gymBonus=await syncMyTeamBonusForPokemon(p,true);"
+          assert s.count(needle)==1
+          print("Validation passed.")
+          PY
+
+      - name: Commit native index patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Sync monthly bonus for Gym Pokédex catches"
+          git push origin HEAD:patch-pokemon-gym-monthly-bonus-sync
