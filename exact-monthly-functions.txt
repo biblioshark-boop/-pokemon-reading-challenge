@@ -1,0 +1,67 @@
+
+===== initializeMonthlyBonusEligibility =====
+async function initializeMonthlyBonusEligibility(){
+  if(!user||publicMode||isAdminTestMode()||!monthlyBonusPokemon.length)return;
+  const caughtKeys=[];
+  monthlyBonusPokemon.forEach(row=>{
+    const p=monthlyBonusPokemonFromRow(row);
+    if(p&&challengeData?.[p.id]?.caught)caughtKeys.push(String(p.id));
+  });
+  try{
+    const{error}=await sb.rpc("initialize_monthly_bonus_user",{p_caught_keys:caughtKeys});
+    if(error)console.warn("Monthly bonus eligibility initialization failed",error);
+  }catch(err){console.warn("Monthly bonus eligibility initialization failed",err)}
+}
+===== saveGymNewEntry =====
+async function saveGymNewEntry(){
+if(!currentGymDefeat)return;
+const title=gymBookTitle.value.trim();
+if(!title)return toast("Enter a book title.");
+const author=gymBookAuthor.value.trim();
+const cover=gymBookCover.value.trim();
+const p=currentGymPokemon();
+const useForDex=!!document.getElementById("gymUseForDex")?.checked&&!!p&&!caught(p);
+if(useForDex){
+ const probe={books:[{title,author}]};
+ const missingChar=missingUnownSpecialTitleCharacter(p,probe);
+ if(missingChar){toast(`To catch ${p?.form||p?.rawForm||p?.name||"this Unown"}, the book title must contain ${missingChar}.`);return}
+ const conflict=duplicateCaughtBookConflict(p,probe);
+ if(conflict){toast(`That reading is already being used for ${conflict.name||"another Pokémon"}. Re-read it to use it again. Unown are the exception and may reuse a reading already used elsewhere.`);return}
+}
+const gymId=currentGymDefeat.gymId;
+const memberId=currentGymDefeat.memberId;
+const saved=await saveGymMemberCompletion(gymId,memberId,{
+completion_source:useForDex?"new_entry_pokedex":"new_entry",
+book_title:title,
+book_author:author||null,
+book_cover_url:cover||null
+},{keepModalOpen:useForDex});
+if(!saved)return;
+if(useForDex){
+const e=entry(p.id);
+if(!Array.isArray(e.books))e.books=[];
+e.books.push({title,author,cover});
+e.caught=true;
+await saveNow();
+await logTeamCatchForPokemon(p,e,title);
+const gymBonus=await syncMyTeamBonusForPokemon(p,true);
+closeGymDefeatModal();
+renderHome();
+renderDex();
+renderGyms();
+renderBadgeCase();
+toast(gymBonus?`${p.name}${p.form?` (${p.form})`:""} added to your Pokédex with a Team Pokémon bonus!`:`${p.name}${p.form?` (${p.form})`:""} added to your Pokédex!`);
+}
+}
+===== useExistingGymCatch =====
+async function useExistingGymCatch(){
+if(!currentGymDefeat)return;
+const p=currentGymPokemon();
+if(!p||!caught(p)){
+toast("That Pokémon is not caught in your Pokédex yet.");
+return;
+}
+await saveGymMemberCompletion(currentGymDefeat.gymId,currentGymDefeat.memberId,{
+completion_source:"existing",book_title:null,book_author:null,book_cover_url:null
+});
+}
