@@ -1,0 +1,54 @@
+name: Exact inspect monthly bonus functions
+
+on:
+  push:
+    branches:
+      - inspect-pokemon-monthly-bonus
+    paths-ignore:
+      - exact-monthly-functions.txt
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: inspect-pokemon-monthly-bonus
+      - name: Extract exact functions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8", errors="replace")
+          names=[
+            "initializeMonthlyBonusEligibility",
+            "saveGymNewEntry",
+            "useExistingGymCatch",
+            "saveDetail",
+            "savePokemon",
+            "recordMonthlyBonusCatch"
+          ]
+          out=[]
+          for name in names:
+            m=re.search(rf"(?:async\s+)?function\s+{re.escape(name)}\s*\(",s)
+            if not m:
+              continue
+            start=m.start()
+            # Capture until next top-level function declaration, capped small.
+            n=re.search(r"\n(?:async\s+)?function\s+[A-Za-z0-9_$]+\s*\(",s[m.end():])
+            end=(m.end()+n.start()) if n else min(len(s),start+12000)
+            end=min(end,start+12000)
+            out.append(f"\n===== {name} =====\n"+s[start:end])
+          Path("exact-monthly-functions.txt").write_text("".join(out),encoding="utf-8")
+          PY
+      - name: Commit exact output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add exact-monthly-functions.txt
+          git commit -m "Exact monthly bonus functions inspection" || exit 0
+          git push origin HEAD:inspect-pokemon-monthly-bonus
