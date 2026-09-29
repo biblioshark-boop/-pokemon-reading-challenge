@@ -1,0 +1,337 @@
+
+===== Monthly Bonus @ 2477332 =====
+ite Gym Badges</div><div class="trainer-special-badge-editor-help">Choose up to six Gym badges you have earned. They appear in the six favorite-badge slots on your Trainer Card.</div><details class="trainer-badge-details"><summary><span>Your Earned Gym Badges</span><span id="trainerGymBadgeSelectedCount">0 / 6 displayed</span></summary><div class="trainer-gym-badge-search-wrap"><input id="trainerGymBadgeSearch" class="trainer-gym-badge-search" type="search" placeholder="Search Gym badges..." autocomplete="off" oninput="renderTrainerGymBadgeEditor()"></div><div id="trainerGymBadgeOptions" class="trainer-badge-options trainer-gym-badge-options"></div></details><button class="secondary" type="button" onclick="closeTrainerCardEditor()">Done</button></div></div></div><div id="homeLatestUpdate" class="home-latest-update hidden"><div class="home-latest-update-top"><span class="home-latest-update-badge">LATEST UPDATE</span><span id="homeLatestUpdateDate" class="home-latest-update-date"></span></div><div id="homeLatestUpdateTitle" class="home-latest-update-title"></div><div id="homeLatestUpdateBody" class="home-latest-update-body"></div><button class="secondary" type="button" onclick="openRecentUpdates()">View Recent Updates</button></div><div id="homeMonthlyBonus" class="home-monthly-bonus">
+  <div class="home-monthly-bonus-head">
+    <div>
+      <div class="home-monthly-bonus-kicker">Monthly Bonus</div>
+      <div id="homeMonthlyBonusTitle" class="home-monthly-bonus-title">Pokémon of the Month</div>
+      <div id="homeMonthlyBonusDates" class="home-monthly-bonus-dates"></div>
+    </div>
+    <div class="home-monthly-bonus-pill">⭐ BONUS POINTS</div>
+  </div>
+  <div id="homeMonthlyBonusGrid" class="home-monthly-bonus-grid"></div>
+</div><h3 class="section-title">Regions</h3><div id="regionGrid" class="region-grid"></div></section><section id="dexPage" class="page"><div id="adminImageEditBar" class="admin-image-edit-bar hidden"><button id="adminImageEditBtn" class="secondary" onclick="toggleAdminImageEditMode()">Edit Pokédex Images</button><span id="adminImageEditStatus" class="muted">Admin only • changes save for everyone</span></div><div class="toolbar"><input class="search" id="searchInput" placeholder="Search Pokémon, forms, Dex #, prompts, or your books..." oninput="scheduleDexRender()"><div class="dex-filter-menu"><button id="dexFilterToggle" class="secondary dex-filter-toggle" type="button" onclick="toggleDexFilterMenu(event)">☰ Filters <span id="dexFilterSummary">All</span><span aria-hidden="true">▾</span></button><div id="dexFilterPanel" class="dex-filter-panel hidden" onclick="event.stopPropagation()"><div class="dex-filter-section"><strong>Regions</strong><div id="dexRegionChecks" class="dex-filter-check-grid"></div><div class="dex-filter-hint">Leave all unchecked to show every region.</div></div><div class="dex-filter-section"><strong>Status</strong><div class="dex-filter-check-grid"><label><input type="checkbox" data-dex-status value="caught" onchange="onDexStatusCheck(this)"> Caught</label><label><input type="checkbox" data-dex-status value="uncaught" onchange="onDexStatusCheck(this)"> Uncaught</label><label><input type="checkbox" data-dex-status value="wishlist" onchange="onDexStatusCheck(this)"> <span id="dexWishlistFilterLabel">Wishlist Only</span></label><label><input type="checkbox" data-dex-status value="catching" onchange="onDexStatusCheck(this)"> <span id="dexCatchingFilterLabel">Currently Catching</span></label><label><input type="checkbox" data-dex-status value="monthlybonus" onchange="onDexStatusCheck(this)"> ⭐ Monthly Bonus Pokémon</label><label><input type="checkbox" data-dex-status value="savedshiny" onchange="onDexStatusCheck(this)"> Saved Shiny</label><label><input type="checkbox" data-dex-status value="shinycatch" onchange="onDexStatusCheck(this)"> Shiny Caught</label></div><div class="dex-filter-hint">Multiple checked statuses are combined.</div></div><div class="dex-filter-section"><strong>Order</strong><div class="dex-filter-check-grid dex-order-grid"><label><input type="radio" name="dexOrderChoice" value="dex" checked onchange="onDexSortChange(this.value)"> Dex Order</label><label><input type="radio" name="dexOrderChoice" value="az" onchange="onDexSortChange(this.value)"> A–Z</label><label><input type="radio" name="dexOrderChoice" value="za" onchange="onDexSortChange(this.value)"> Z–A</label><label><input type="radio" name="dexOrderChoice" value="uncaught" onchange="onDexSortChange(this.value)"> Uncaught First</label><label><input type="radio" name="dexOrderChoice" value="caught" onchange="onDexSortChange(this.value)"> Caught First</label></div></div><button class="secondary dex-filter-clear" type="button" onclick="clearDexFilters()">Clear Filters</button></div><select id="regionFilter" class="hidden" aria-hidden="true" tabindex="-1"><option value="all">All Regions</option></select><select id="statusFilter" class="hidden" aria-hidden="true" tabindex="-1"><option value="all">All Statuses</option></select><select id="sortFilter" class="hidden" aria-hidden="true" tabindex="-1"><option value="dex">Dex Order</option><option value="az">A–Z</option><option value="za">Z–A</option><option 
+===== Monthly Bonus @ 2479522 =====
+lass="search" id="searchInput" placeholder="Search Pokémon, forms, Dex #, prompts, or your books..." oninput="scheduleDexRender()"><div class="dex-filter-menu"><button id="dexFilterToggle" class="secondary dex-filter-toggle" type="button" onclick="toggleDexFilterMenu(event)">☰ Filters <span id="dexFilterSummary">All</span><span aria-hidden="true">▾</span></button><div id="dexFilterPanel" class="dex-filter-panel hidden" onclick="event.stopPropagation()"><div class="dex-filter-section"><strong>Regions</strong><div id="dexRegionChecks" class="dex-filter-check-grid"></div><div class="dex-filter-hint">Leave all unchecked to show every region.</div></div><div class="dex-filter-section"><strong>Status</strong><div class="dex-filter-check-grid"><label><input type="checkbox" data-dex-status value="caught" onchange="onDexStatusCheck(this)"> Caught</label><label><input type="checkbox" data-dex-status value="uncaught" onchange="onDexStatusCheck(this)"> Uncaught</label><label><input type="checkbox" data-dex-status value="wishlist" onchange="onDexStatusCheck(this)"> <span id="dexWishlistFilterLabel">Wishlist Only</span></label><label><input type="checkbox" data-dex-status value="catching" onchange="onDexStatusCheck(this)"> <span id="dexCatchingFilterLabel">Currently Catching</span></label><label><input type="checkbox" data-dex-status value="monthlybonus" onchange="onDexStatusCheck(this)"> ⭐ Monthly Bonus Pokémon</label><label><input type="checkbox" data-dex-status value="savedshiny" onchange="onDexStatusCheck(this)"> Saved Shiny</label><label><input type="checkbox" data-dex-status value="shinycatch" onchange="onDexStatusCheck(this)"> Shiny Caught</label></div><div class="dex-filter-hint">Multiple checked statuses are combined.</div></div><div class="dex-filter-section"><strong>Order</strong><div class="dex-filter-check-grid dex-order-grid"><label><input type="radio" name="dexOrderChoice" value="dex" checked onchange="onDexSortChange(this.value)"> Dex Order</label><label><input type="radio" name="dexOrderChoice" value="az" onchange="onDexSortChange(this.value)"> A–Z</label><label><input type="radio" name="dexOrderChoice" value="za" onchange="onDexSortChange(this.value)"> Z–A</label><label><input type="radio" name="dexOrderChoice" value="uncaught" onchange="onDexSortChange(this.value)"> Uncaught First</label><label><input type="radio" name="dexOrderChoice" value="caught" onchange="onDexSortChange(this.value)"> Caught First</label></div></div><button class="secondary dex-filter-clear" type="button" onclick="clearDexFilters()">Clear Filters</button></div><select id="regionFilter" class="hidden" aria-hidden="true" tabindex="-1"><option value="all">All Regions</option></select><select id="statusFilter" class="hidden" aria-hidden="true" tabindex="-1"><option value="all">All Statuses</option></select><select id="sortFilter" class="hidden" aria-hidden="true" tabindex="-1"><option value="dex">Dex Order</option><option value="az">A–Z</option><option value="za">Z–A</option><option value="uncaught">Uncaught First</option><option value="caught">Caught First</option></select></div><div id="dexAchievementFilters" class="dex-achievement-filter-wrap hidden"><span class="dex-achievement-filter-label">Achievement Filters</span><div class="dex-achievement-filter-controls"><select id="typeFilter" onchange="renderDexPreserveScroll()"><option value="all">All Types</option><option>Normal</option><option>Water</option><option>Grass</option><option>Flying</option><option>Bug</option><option>Poison</option><option>Fire</option><option>Electric</option><option>Fighting</option><option>Ground</option><option>Rock</option><option>Psychic</option><option>Dark</option><option>Ice</option><option>Ghost</option><option>Steel</option><option>Fairy</option><option>Dragon</option></select><select id="achievementTagFilter" onchange="renderDexPreserveScroll()"><option value="all">All Achievement Tags</option><optgroup label="Collections"><option value="collection:legendary">Legendary</option><option value="collection:mythical">Mythical</option><option value="collection:pseudo">Pseudo-Legendary</option><option value="collection:starter">Starter</option><option value="collection:baby">Baby Pokémon</option><option value="collection:fossil">Fossil Pokémon</option><option value="collection:eeveelution">Eeveelution</option><option value="dynamic:safari">Safari Encounter</option></optgroup><optgroup id="achievementTeamFilterGroup" label="Team Bonus Tags"></optgroup><optgroup label="Trainer Teams"><option value="trainer:ash">Ash's Team</option><option value="trainer:misty">Misty's Team</option><option value="trainer:jessie">Jessie's Team</option><option value="trainer:james">James' Team</option><option value="trainer:brock">Brock's Team</option><option value="trainer:may">May's Team</option><option value="trainer:dawn">Dawn's Team</option><option value="trainer:iris">Iris' Team</option><option value="trainer:cilan">Cilan's Team</option><option value="trainer:clemont">Clemont's Team</option><option value="trainer:lana">Lana's Team</option><option value="trainer:sophocles">Sophocles' Team</option><option value="trainer:mallow">Mallow's Team</option><option value="tr
+===== Monthly Bonus @ 2529035 =====
+adminMaintenanceMessage" maxlength="240" placeholder="Site maintenance is currently in progress. Some features may be temporarily unavailable."></textarea><div class="muted" style="margin-top:6px">Optional • maximum 240 characters. You can change the message before turning maintenance mode on.</div><div class="admin-maintenance-actions"><button id="adminMaintenanceToggleBtn" class="primary" type="button" onclick="toggleSiteMaintenance()" disabled>Turn Maintenance ON</button><button class="secondary" type="button" onclick="loadSiteMaintenance()">Refresh Status</button></div></div><div id="adminSpecialEventsCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Special Events</h3><span class="global-badge">Event Control</span></div><div class="admin-note">Special events created for the site appear here. Turning an event ON makes it available to members; turning it OFF hides it without deleting event data or your private Test Mode access.</div><div id="adminSpecialEventsList" class="admin-special-events-list"><div class="muted">Loading special events…</div></div><button class="secondary" type="button" style="width:100%;margin-top:10px" onclick="loadSpecialEvents()">Refresh Events</button></div><div id="adminMonthlyBonusCard" class="form-card admin-card hidden">
+  <div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Monthly Bonus Pokémon</h3><span class="global-badge">Monthly Feature</span></div>
+  <div class="admin-note">Choose up to 10 Pokémon, set the multiplier, and schedule the dates. Once saved, the homepage, Pokédex filter, and bonus scoring update automatically — no monthly site patch required.</div>
+  <div class="admin-monthly-period-toolbar">
+    <label>Bonus Period<select id="adminMonthlyBonusPeriodSelect" onchange="loadAdminMonthlyBonusEditor(this.value)"><option value="">New period</option></select></label>
+    <button class="secondary" type="button" onclick="newAdminMonthlyBonusPeriod()">New</button>
+    <button class="secondary" type="button" onclick="loadAdminMonthlyBonusPeriods()">Refresh</button>
+  </div>
+  <div class="admin-monthly-grid">
+    <label>Name<input id="adminMonthlyBonusName" maxlength="80" placeholder="September 2026"></label>
+    <label><input id="adminMonthlyBonusEnabled" type="checkbox" style="width:auto;margin-right:7px" checked> Enabled</label>
+    <label>Start Date<input id="adminMonthlyBonusStart" type="date"></label>
+    <label>End Date<input id="adminMonthlyBonusEnd" type="date"></label>
+  </div>
+  <div class="admin-monthly-actions">
+    <button class="secondary" type="button" onclick="randomizeAdminMonthlyBonus()">🎲 Randomize 10</button>
+    <button class="secondary" type="button" onclick="clearAdminMonthlyBonusSlots()">Clear Pokémon</button>
+  </div>
+  <div id="adminMonthlyBonusPokemonList" class="admin-monthly-pokemon-list"></div>
+  <div class="admin-monthly-preview">A 2× monthly Pokémon adds one extra point on top of the normal catch. If it is also a Team Bonus Pokémon, both bonuses stack.</div>
+  <div class="admin-monthly-actions">
+    <button class="primary" type="button" onclick="saveAdminMonthlyBonusPeriod()">Save Monthly Bonus</button>
+    <button id="adminMonthlyBonusDeleteBtn" class="danger hidden" type="button" onclick="deleteAdminMonthlyBonusPeriod()">Delete Period</button>
+  </div>
+</div><div id="adminTestModeCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Test Mode</h3><span class="global-badge">Private Testing</span></div><div class="admin-note">Turns on unfinished test features for this browser only. Regular members are not affected.</div><div id="adminTestModeStatus" class="admin-test-mode-status">Test Mode is OFF</div><button id="adminTestModeToggleBtn" class="primary" type="button" style="width:100%;margin-top:10px" onclick="toggleAdminTestMode()">Turn Test Mode ON</button><button id="adminTestModeResetBtn" class="secondary hidden" type="button" style="width:100%;margin-top:8px" onclick="resetAdminTestSandbox()">Reset Test Data</button><div class="admin-test-mode-note"><strong>Safe sandbox:</strong> while Test Mode is ON, Pokédex books/catches, Safari marks, saved shinies, shiny catches, and shiny artwork choices are stored only in a private browser test copy. They do not overwrite your real challenge save or team catch/bonus totals. Turning Test Mode OFF returns you to your real saved progress.</div></div><div class="form-card"><h3>Appearance</h3><div class="setting-row"><strong>Site Theme</strong><div class="muted">Choose how the Reading Frenzy site appears on this browser and device. Your team artwork and colors are preserved.</div><div class="site-theme-options"><button id="siteThemeLightBtn" class="site-theme-option" type="button" onclick="setSiteTheme('light')">☀️ Light</button><button id="siteThemeDarkBtn" class="site-theme-option" type="button" onclick="setSiteTheme('dark')">🌙 Dark</button></div><div class="muted" style="margin-top:8px">This preference is saved only on this device.</div></div></div><div class="form-card"><h3>Account</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Yo
+===== Monthly Bonus @ 2530815 =====
+minMonthlyBonusPeriodSelect" onchange="loadAdminMonthlyBonusEditor(this.value)"><option value="">New period</option></select></label>
+    <button class="secondary" type="button" onclick="newAdminMonthlyBonusPeriod()">New</button>
+    <button class="secondary" type="button" onclick="loadAdminMonthlyBonusPeriods()">Refresh</button>
+  </div>
+  <div class="admin-monthly-grid">
+    <label>Name<input id="adminMonthlyBonusName" maxlength="80" placeholder="September 2026"></label>
+    <label><input id="adminMonthlyBonusEnabled" type="checkbox" style="width:auto;margin-right:7px" checked> Enabled</label>
+    <label>Start Date<input id="adminMonthlyBonusStart" type="date"></label>
+    <label>End Date<input id="adminMonthlyBonusEnd" type="date"></label>
+  </div>
+  <div class="admin-monthly-actions">
+    <button class="secondary" type="button" onclick="randomizeAdminMonthlyBonus()">🎲 Randomize 10</button>
+    <button class="secondary" type="button" onclick="clearAdminMonthlyBonusSlots()">Clear Pokémon</button>
+  </div>
+  <div id="adminMonthlyBonusPokemonList" class="admin-monthly-pokemon-list"></div>
+  <div class="admin-monthly-preview">A 2× monthly Pokémon adds one extra point on top of the normal catch. If it is also a Team Bonus Pokémon, both bonuses stack.</div>
+  <div class="admin-monthly-actions">
+    <button class="primary" type="button" onclick="saveAdminMonthlyBonusPeriod()">Save Monthly Bonus</button>
+    <button id="adminMonthlyBonusDeleteBtn" class="danger hidden" type="button" onclick="deleteAdminMonthlyBonusPeriod()">Delete Period</button>
+  </div>
+</div><div id="adminTestModeCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Test Mode</h3><span class="global-badge">Private Testing</span></div><div class="admin-note">Turns on unfinished test features for this browser only. Regular members are not affected.</div><div id="adminTestModeStatus" class="admin-test-mode-status">Test Mode is OFF</div><button id="adminTestModeToggleBtn" class="primary" type="button" style="width:100%;margin-top:10px" onclick="toggleAdminTestMode()">Turn Test Mode ON</button><button id="adminTestModeResetBtn" class="secondary hidden" type="button" style="width:100%;margin-top:8px" onclick="resetAdminTestSandbox()">Reset Test Data</button><div class="admin-test-mode-note"><strong>Safe sandbox:</strong> while Test Mode is ON, Pokédex books/catches, Safari marks, saved shinies, shiny catches, and shiny artwork choices are stored only in a private browser test copy. They do not overwrite your real challenge save or team catch/bonus totals. Turning Test Mode OFF returns you to your real saved progress.</div></div><div class="form-card"><h3>Appearance</h3><div class="setting-row"><strong>Site Theme</strong><div class="muted">Choose how the Reading Frenzy site appears on this browser and device. Your team artwork and colors are preserved.</div><div class="site-theme-options"><button id="siteThemeLightBtn" class="site-theme-option" type="button" onclick="setSiteTheme('light')">☀️ Light</button><button id="siteThemeDarkBtn" class="site-theme-option" type="button" onclick="setSiteTheme('dark')">🌙 Dark</button></div><div class="muted" style="margin-top:8px">This preference is saved only on this device.</div></div></div><div class="form-card"><h3>Account</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="downloadMyBackup()">Download My Backup</button><div class="muted" style="margin-top:6px">Downloads a personal JSON backup of your Reading Frenzy profile and challenge data. It does not include your password.</div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="migrateLocalData()">Import Data From Original Local Version</button></div></div><div class="form-card"><h3>Profile &amp; Trainer Card</h3><div class="setting-row"><label>Display name</label><input id="displayName" maxlength="50" aria-describedby="displayNameLockNote"><div id="displayNameLockNote" class="username-lock-note">Loading display name status…</div><label>Username</label><input id="username" aria-describedby="usernameLockNote"><div id="usernameLockNote" class="username-lock-note">Loading username status…</div><button id="saveProfileBtn" class="secondary" style="width:100%;margin-top:8px" onclick="saveProfile()">Save Profile</button></div></div><div class="form-card"><h3>Choose Your Team</h3><div class="muted">Pick the faction you want attached to your Reading Dex. This choice can only be made once.</div><div 
+===== monthly bonus @ 26346950 =====
+if(!value)return "";
+  const d=new Date(`${value}T12:00:00`);
+  if(Number.isNaN(d.getTime()))return String(value);
+  return d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+}
+function monthlyBonusPokemonFromRow(row){
+  return all().find(p=>String(catalogSlugForPokemon(p)||"")===String(row?.catalog_slug||""))||null;
+}
+async function initializeMonthlyBonusEligibility(){
+  if(!user||publicMode||isAdminTestMode()||!monthlyBonusPokemon.length)return;
+  const caughtKeys=[];
+  monthlyBonusPokemon.forEach(row=>{
+    const p=monthlyBonusPokemonFromRow(row);
+    if(p&&challengeData?.[p.id]?.caught)caughtKeys.push(String(p.id));
+  });
+  try{
+    const{error}=await sb.rpc("initialize_monthly_bonus_user",{p_caught_keys:caughtKeys});
+    if(error)console.warn("Monthly bonus eligibility initialization failed",error);
+  }catch(err){console.warn("Monthly bonus eligibility initialization failed",err)}
+}
+async function loadMonthlyBonusPokemon(){
+  try{
+    const{data,error}=await sb.rpc("get_active_monthly_bonus_pokemon");
+    if(error)throw error;
+    monthlyBonusPokemon=Array.isArray(data)?data:[];
+    const first=monthlyBonusPokemon[0]||null;
+    monthlyBonusPeriod=first?{id:first.period_id,name:first.period_name,start_date:first.start_date,end_date:first.end_date}:null;
+    await initializeMonthlyBonusEligibility();
+  }catch(err){
+    console.warn("Could not load monthly bonus Pokémon",err);
+    monthlyBonusPokemon=[];
+    monthlyBonusPeriod=null;
+  }
+  renderHomeMonthlyBonus();
+  if(document.getElementById("dexPage")?.classList.contains("active"))renderDex();
+}
+function renderHomeMonthlyBonus(){
+  const box=document.getElementById("homeMonthlyBonus");
+  const grid=document.getElementById("homeMonthlyBonusGrid");
+  if(!box||!grid)return;
+  box.classList.remove("hidden");
+  if(!monthlyBonusPokemon.length||!monthlyBonusPeriod){
+    const title=document.getElementById("homeMonthlyBonusTitle");
+    const dates=document.getElementById("homeMonthlyBonusDates");
+    if(title)title.textContent="Pokémon of the Month";
+    if(dates)dates.textContent="Monthly bonus Pokémon will appear here.";
+    grid.innerHTML='<div style="grid-column:1/-1;padding:14px;text-align:center;color:#786f7c;font-size:13px">No Monthly Bonus Pokémon are active yet.</div>';
+    return;
+  }
+  const title=document.getElementById("homeMonthlyBonusTitle");
+  const dates=document.getElementById("homeMonthlyBonusDates");
+  if(title)title.textContent=monthlyBonusPeriod.name||"Pokémon of the Month";
+  if(dates)dates.textContent=`${monthlyBonusDateLabel(monthlyBonusPeriod.start_date)} – ${monthlyBonusDateLabel(monthlyBonusPeriod.end_date)}`;
+  grid.innerHTML=monthlyBonusPokemon.map(row=>{
+    const p=monthlyBonusPokemonFromRow(row);
+    const caughtNow=!!(p&&challengeData?.[p.id]?.caught);
+    const src=String(p?.image||row.image_url||(+row.dex_number?image(+row.dex_number):"")).trim();
+    const name=row.pokemon_name||p?.name||"Pokémon";
+    const form=row.form_name||p?.form||"";
+    return `<div class="home-monthly-mon" role="${p?"button":"img"}" tabindex="${p?"0":"-1"}" ${p?`onclick="openPokemon('${esc(p.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPokemon('${esc(p.id)}')}"`:""}>
+      ${caughtNow?'<span class="home-monthly-mon-caught">✓ CAUGHT</span>':""}
+      <span class="home-monthly-mon-x">${Number(row.multiplier||2)}×</span>
+      <div class="home-monthly-mon-img">${src?`<img src="${esc(src)}" alt="${esc(name)}">`:'<div class="placeholder-mon">?</div>'}</div>
+      <div class="home-monthly-mon-name">${esc(name)}</div>
+      ${form?`<div class="home-monthly-mon-form">${esc(form)}</div>`:""}
+    </div>`;
+  }).join("");
+}
+async function syncMonthlyBonusForPokemon(p,isCaught){
+  if(publicMode||!user||isAdminTestMode()||!p)return 0;
+  const slug=catalogSlugForPokemon(p);
+  if(!slug)return 0;
+  try{
+    if(isCaught){
+      const{data,error}=await sb.rpc("award_monthly_bonus",{p_pokemon_key:String(p.id),p_catalog_slug:String(slug)});
+      if(error){console.error(error);return 0}
+      return Math.max(0,Number(data)||0);
+    }
+    const{error}=await sb.rpc("remove_monthly_bonus",{p_pokemon_key:String(p.id)});
+    if(error)console.error(error);
+    return 0;
+  }catch(err){console.error(err);return 0}
+}
+function adminMonthlyCatalogRows(){
+  const seen=new Set();
+  return all().filter(p=>{
+    const slug=String(catalogSlugForPokemon(p)||"");
+    if(!slug||seen.has(slug)||p.custom)return false;
+    seen.add(slug);return true;
+  }).sort((a,b)=>(+a.dex||99999)-(+b.dex||99999)||String(a.name||"").localeCompare(String(b.name||""))||String(a.form||"").localeCompare(String(b.form||"")));
+}
+function adminMonthlyOptionHtml(selected=""){
+  return `<option value="">Choose Pokémon…</option>`+adminMonthlyCatalogRows().map(p=>{
+    const slug=String(catalogSlugForPokemon(p)||"");
+    const label=`${p.dex?`#${String(p.dex).padStart(4,"0")} • `:""}${p.name||"Pokémon"}${p.form?` • ${p.form}`:""}`;
+    return `<option value="${esc(slug)}" ${slug===String(selected)?"selected":""}>${esc(label)}</option>`;
+  }).join("");
+}
+function defaultMonthlyDates(){
+  const d=new Date(),y=d.getFullYear(),m=d.getMonth();
+  cons
+===== adminMonthlyBonus @ 2528907 =====
+nanceStatus" class="admin-maintenance-status">Checking maintenance status…</div><label>Maintenance Message</label><textarea id="adminMaintenanceMessage" maxlength="240" placeholder="Site maintenance is currently in progress. Some features may be temporarily unavailable."></textarea><div class="muted" style="margin-top:6px">Optional • maximum 240 characters. You can change the message before turning maintenance mode on.</div><div class="admin-maintenance-actions"><button id="adminMaintenanceToggleBtn" class="primary" type="button" onclick="toggleSiteMaintenance()" disabled>Turn Maintenance ON</button><button class="secondary" type="button" onclick="loadSiteMaintenance()">Refresh Status</button></div></div><div id="adminSpecialEventsCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Special Events</h3><span class="global-badge">Event Control</span></div><div class="admin-note">Special events created for the site appear here. Turning an event ON makes it available to members; turning it OFF hides it without deleting event data or your private Test Mode access.</div><div id="adminSpecialEventsList" class="admin-special-events-list"><div class="muted">Loading special events…</div></div><button class="secondary" type="button" style="width:100%;margin-top:10px" onclick="loadSpecialEvents()">Refresh Events</button></div><div id="adminMonthlyBonusCard" class="form-card admin-card hidden">
+  <div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Monthly Bonus Pokémon</h3><span class="global-badge">Monthly Feature</span></div>
+  <div class="admin-note">Choose up to 10 Pokémon, set the multiplier, and schedule the dates. Once saved, the homepage, Pokédex filter, and bonus scoring update automatically — no monthly site patch required.</div>
+  <div class="admin-monthly-period-toolbar">
+    <label>Bonus Period<select id="adminMonthlyBonusPeriodSelect" onchange="loadAdminMonthlyBonusEditor(this.value)"><option value="">New period</option></select></label>
+    <button class="secondary" type="button" onclick="newAdminMonthlyBonusPeriod()">New</button>
+    <button class="secondary" type="button" onclick="loadAdminMonthlyBonusPeriods()">Refresh</button>
+  </div>
+  <div class="admin-monthly-grid">
+    <label>Name<input id="adminMonthlyBonusName" maxlength="80" placeholder="September 2026"></label>
+    <label><input id="adminMonthlyBonusEnabled" type="checkbox" style="width:auto;margin-right:7px" checked> Enabled</label>
+    <label>Start Date<input id="adminMonthlyBonusStart" type="date"></label>
+    <label>End Date<input id="adminMonthlyBonusEnd" type="date"></label>
+  </div>
+  <div class="admin-monthly-actions">
+    <button class="secondary" type="button" onclick="randomizeAdminMonthlyBonus()">🎲 Randomize 10</button>
+    <button class="secondary" type="button" onclick="clearAdminMonthlyBonusSlots()">Clear Pokémon</button>
+  </div>
+  <div id="adminMonthlyBonusPokemonList" class="admin-monthly-pokemon-list"></div>
+  <div class="admin-monthly-preview">A 2× monthly Pokémon adds one extra point on top of the normal catch. If it is also a Team Bonus Pokémon, both bonuses stack.</div>
+  <div class="admin-monthly-actions">
+    <button class="primary" type="button" onclick="saveAdminMonthlyBonusPeriod()">Save Monthly Bonus</button>
+    <button id="adminMonthlyBonusDeleteBtn" class="danger hidden" type="button" onclick="deleteAdminMonthlyBonusPeriod()">Delete Period</button>
+  </div>
+</div><div id="adminTestModeCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Test Mode</h3><span class="global-badge">Private Testing</span></div><div class="admin-note">Turns on unfinished test features for this browser only. Regular members are not affected.</div><div id="adminTestModeStatus" class="admin-test-mode-status">Test Mode is OFF</div><button id="adminTestModeToggleBtn" class="primary" type="button" style="width:100%;margin-top:10px" onclick="toggleAdminTestMode()">Turn Test Mode ON</button><button id="adminTestModeResetBtn" class="secondary hidden" type="button" style="width:100%;margin-top:8px" onclick="resetAdminTestSandbox()">Reset Test Data</button><div class="admin-test-mode-note"><strong>Safe sandbox:</strong> while Test Mode is ON, Pokédex books/catches, Safari marks, saved shinies, shiny catches, and shiny artwork choices are stored only in a private browser test copy. They do not overwrite your real challenge save or team catch/bonus totals. Turning Test Mode OFF returns you to your real saved progress.</div></div><div class="form-card"><h3>Appearance</h3><div class="setting-row"><strong>Site Theme</strong><div class="muted">Choose how the Reading Frenzy site appears on this browser and device. Your team artwork and colors are preserved.</div><div class="site-theme-options"><button id="siteThemeLightBtn" class="site-theme-option" type="button" onclick="setSiteTheme('light')">☀️ Light</button><button id="siteThemeDarkBtn" class="site-theme-option" type="button" onclick="setSiteTheme('dark')">🌙 Dark</button></div><div class="muted" style="margin-top:8px">This preference is saved only on this device.</div></di
+===== adminMonthlyBonus @ 2529413 =====
+class="primary" type="button" onclick="toggleSiteMaintenance()" disabled>Turn Maintenance ON</button><button class="secondary" type="button" onclick="loadSiteMaintenance()">Refresh Status</button></div></div><div id="adminSpecialEventsCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Special Events</h3><span class="global-badge">Event Control</span></div><div class="admin-note">Special events created for the site appear here. Turning an event ON makes it available to members; turning it OFF hides it without deleting event data or your private Test Mode access.</div><div id="adminSpecialEventsList" class="admin-special-events-list"><div class="muted">Loading special events…</div></div><button class="secondary" type="button" style="width:100%;margin-top:10px" onclick="loadSpecialEvents()">Refresh Events</button></div><div id="adminMonthlyBonusCard" class="form-card admin-card hidden">
+  <div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Monthly Bonus Pokémon</h3><span class="global-badge">Monthly Feature</span></div>
+  <div class="admin-note">Choose up to 10 Pokémon, set the multiplier, and schedule the dates. Once saved, the homepage, Pokédex filter, and bonus scoring update automatically — no monthly site patch required.</div>
+  <div class="admin-monthly-period-toolbar">
+    <label>Bonus Period<select id="adminMonthlyBonusPeriodSelect" onchange="loadAdminMonthlyBonusEditor(this.value)"><option value="">New period</option></select></label>
+    <button class="secondary" type="button" onclick="newAdminMonthlyBonusPeriod()">New</button>
+    <button class="secondary" type="button" onclick="loadAdminMonthlyBonusPeriods()">Refresh</button>
+  </div>
+  <div class="admin-monthly-grid">
+    <label>Name<input id="adminMonthlyBonusName" maxlength="80" placeholder="September 2026"></label>
+    <label><input id="adminMonthlyBonusEnabled" type="checkbox" style="width:auto;margin-right:7px" checked> Enabled</label>
+    <label>Start Date<input id="adminMonthlyBonusStart" type="date"></label>
+    <label>End Date<input id="adminMonthlyBonusEnd" type="date"></label>
+  </div>
+  <div class="admin-monthly-actions">
+    <button class="secondary" type="button" onclick="randomizeAdminMonthlyBonus()">🎲 Randomize 10</button>
+    <button class="secondary" type="button" onclick="clearAdminMonthlyBonusSlots()">Clear Pokémon</button>
+  </div>
+  <div id="adminMonthlyBonusPokemonList" class="admin-monthly-pokemon-list"></div>
+  <div class="admin-monthly-preview">A 2× monthly Pokémon adds one extra point on top of the normal catch. If it is also a Team Bonus Pokémon, both bonuses stack.</div>
+  <div class="admin-monthly-actions">
+    <button class="primary" type="button" onclick="saveAdminMonthlyBonusPeriod()">Save Monthly Bonus</button>
+    <button id="adminMonthlyBonusDeleteBtn" class="danger hidden" type="button" onclick="deleteAdminMonthlyBonusPeriod()">Delete Period</button>
+  </div>
+</div><div id="adminTestModeCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Test Mode</h3><span class="global-badge">Private Testing</span></div><div class="admin-note">Turns on unfinished test features for this browser only. Regular members are not affected.</div><div id="adminTestModeStatus" class="admin-test-mode-status">Test Mode is OFF</div><button id="adminTestModeToggleBtn" class="primary" type="button" style="width:100%;margin-top:10px" onclick="toggleAdminTestMode()">Turn Test Mode ON</button><button id="adminTestModeResetBtn" class="secondary hidden" type="button" style="width:100%;margin-top:8px" onclick="resetAdminTestSandbox()">Reset Test Data</button><div class="admin-test-mode-note"><strong>Safe sandbox:</strong> while Test Mode is ON, Pokédex books/catches, Safari marks, saved shinies, shiny catches, and shiny artwork choices are stored only in a private browser test copy. They do not overwrite your real challenge save or team catch/bonus totals. Turning Test Mode OFF returns you to your real saved progress.</div></div><div class="form-card"><h3>Appearance</h3><div class="setting-row"><strong>Site Theme</strong><div class="muted">Choose how the Reading Frenzy site appears on this browser and device. Your team artwork and colors are preserved.</div><div class="site-theme-options"><button id="siteThemeLightBtn" class="site-theme-option" type="button" onclick="setSiteTheme('light')">☀️ Light</button><button id="siteThemeDarkBtn" class="site-theme-option" type="button" onclick="setSiteTheme('dark')">🌙 Dark</button></div><div class="muted" style="margin-top:8px">This preference is saved only on this device.</div></div></div><div class="form-card"><h3>Account</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hi
+===== adminMonthlyBonus @ 2529817 =====
+span></div><div class="admin-note">Special events created for the site appear here. Turning an event ON makes it available to members; turning it OFF hides it without deleting event data or your private Test Mode access.</div><div id="adminSpecialEventsList" class="admin-special-events-list"><div class="muted">Loading special events…</div></div><button class="secondary" type="button" style="width:100%;margin-top:10px" onclick="loadSpecialEvents()">Refresh Events</button></div><div id="adminMonthlyBonusCard" class="form-card admin-card hidden">
+  <div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Monthly Bonus Pokémon</h3><span class="global-badge">Monthly Feature</span></div>
+  <div class="admin-note">Choose up to 10 Pokémon, set the multiplier, and schedule the dates. Once saved, the homepage, Pokédex filter, and bonus scoring update automatically — no monthly site patch required.</div>
+  <div class="admin-monthly-period-toolbar">
+    <label>Bonus Period<select id="adminMonthlyBonusPeriodSelect" onchange="loadAdminMonthlyBonusEditor(this.value)"><option value="">New period</option></select></label>
+    <button class="secondary" type="button" onclick="newAdminMonthlyBonusPeriod()">New</button>
+    <button class="secondary" type="button" onclick="loadAdminMonthlyBonusPeriods()">Refresh</button>
+  </div>
+  <div class="admin-monthly-grid">
+    <label>Name<input id="adminMonthlyBonusName" maxlength="80" placeholder="September 2026"></label>
+    <label><input id="adminMonthlyBonusEnabled" type="checkbox" style="width:auto;margin-right:7px" checked> Enabled</label>
+    <label>Start Date<input id="adminMonthlyBonusStart" type="date"></label>
+    <label>End Date<input id="adminMonthlyBonusEnd" type="date"></label>
+  </div>
+  <div class="admin-monthly-actions">
+    <button class="secondary" type="button" onclick="randomizeAdminMonthlyBonus()">🎲 Randomize 10</button>
+    <button class="secondary" type="button" onclick="clearAdminMonthlyBonusSlots()">Clear Pokémon</button>
+  </div>
+  <div id="adminMonthlyBonusPokemonList" class="admin-monthly-pokemon-list"></div>
+  <div class="admin-monthly-preview">A 2× monthly Pokémon adds one extra point on top of the normal catch. If it is also a Team Bonus Pokémon, both bonuses stack.</div>
+  <div class="admin-monthly-actions">
+    <button class="primary" type="button" onclick="saveAdminMonthlyBonusPeriod()">Save Monthly Bonus</button>
+    <button id="adminMonthlyBonusDeleteBtn" class="danger hidden" type="button" onclick="deleteAdminMonthlyBonusPeriod()">Delete Period</button>
+  </div>
+</div><div id="adminTestModeCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Test Mode</h3><span class="global-badge">Private Testing</span></div><div class="admin-note">Turns on unfinished test features for this browser only. Regular members are not affected.</div><div id="adminTestModeStatus" class="admin-test-mode-status">Test Mode is OFF</div><button id="adminTestModeToggleBtn" class="primary" type="button" style="width:100%;margin-top:10px" onclick="toggleAdminTestMode()">Turn Test Mode ON</button><button id="adminTestModeResetBtn" class="secondary hidden" type="button" style="width:100%;margin-top:8px" onclick="resetAdminTestSandbox()">Reset Test Data</button><div class="admin-test-mode-note"><strong>Safe sandbox:</strong> while Test Mode is ON, Pokédex books/catches, Safari marks, saved shinies, shiny catches, and shiny artwork choices are stored only in a private browser test copy. They do not overwrite your real challenge save or team catch/bonus totals. Turning Test Mode OFF returns you to your real saved progress.</div></div><div class="form-card"><h3>Appearance</h3><div class="setting-row"><strong>Site Theme</strong><div class="muted">Choose how the Reading Frenzy site appears on this browser and device. Your team artwork and colors are preserved.</div><div class="site-theme-options"><button id="siteThemeLightBtn" class="site-theme-option" type="button" onclick="setSiteTheme('light')">☀️ Light</button><button id="siteThemeDarkBtn" class="site-theme-option" type="button" onclick="setSiteTheme('dark')">🌙 Dark</button></div><div class="muted" style="margin-top:8px">This preference is saved only on this device.</div></div></div><div class="form-card"><h3>Account</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="downloadMyBackup()">Download My Backup</button><div class="muted" style="margin-top:6px">Downloads a personal JSON backup of you
+===== adminMonthlyBonus @ 2529915 =====
+nt ON makes it available to members; turning it OFF hides it without deleting event data or your private Test Mode access.</div><div id="adminSpecialEventsList" class="admin-special-events-list"><div class="muted">Loading special events…</div></div><button class="secondary" type="button" style="width:100%;margin-top:10px" onclick="loadSpecialEvents()">Refresh Events</button></div><div id="adminMonthlyBonusCard" class="form-card admin-card hidden">
+  <div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Monthly Bonus Pokémon</h3><span class="global-badge">Monthly Feature</span></div>
+  <div class="admin-note">Choose up to 10 Pokémon, set the multiplier, and schedule the dates. Once saved, the homepage, Pokédex filter, and bonus scoring update automatically — no monthly site patch required.</div>
+  <div class="admin-monthly-period-toolbar">
+    <label>Bonus Period<select id="adminMonthlyBonusPeriodSelect" onchange="loadAdminMonthlyBonusEditor(this.value)"><option value="">New period</option></select></label>
+    <button class="secondary" type="button" onclick="newAdminMonthlyBonusPeriod()">New</button>
+    <button class="secondary" type="button" onclick="loadAdminMonthlyBonusPeriods()">Refresh</button>
+  </div>
+  <div class="admin-monthly-grid">
+    <label>Name<input id="adminMonthlyBonusName" maxlength="80" placeholder="September 2026"></label>
+    <label><input id="adminMonthlyBonusEnabled" type="checkbox" style="width:auto;margin-right:7px" checked> Enabled</label>
+    <label>Start Date<input id="adminMonthlyBonusStart" type="date"></label>
+    <label>End Date<input id="adminMonthlyBonusEnd" type="date"></label>
+  </div>
+  <div class="admin-monthly-actions">
+    <button class="secondary" type="button" onclick="randomizeAdminMonthlyBonus()">🎲 Randomize 10</button>
+    <button class="secondary" type="button" onclick="clearAdminMonthlyBonusSlots()">Clear Pokémon</button>
+  </div>
+  <div id="adminMonthlyBonusPokemonList" class="admin-monthly-pokemon-list"></div>
+  <div class="admin-monthly-preview">A 2× monthly Pokémon adds one extra point on top of the normal catch. If it is also a Team Bonus Pokémon, both bonuses stack.</div>
+  <div class="admin-monthly-actions">
+    <button class="primary" type="button" onclick="saveAdminMonthlyBonusPeriod()">Save Monthly Bonus</button>
+    <button id="adminMonthlyBonusDeleteBtn" class="danger hidden" type="button" onclick="deleteAdminMonthlyBonusPeriod()">Delete Period</button>
+  </div>
+</div><div id="adminTestModeCard" class="form-card admin-card hidden"><div class="admin-tools-title"><h3 style="margin:0">Admin Tools • Test Mode</h3><span class="global-badge">Private Testing</span></div><div class="admin-note">Turns on unfinished test features for this browser only. Regular members are not affected.</div><div id="adminTestModeStatus" class="admin-test-mode-status">Test Mode is OFF</div><button id="adminTestModeToggleBtn" class="primary" type="button" style="width:100%;margin-top:10px" onclick="toggleAdminTestMode()">Turn Test Mode ON</button><button id="adminTestModeResetBtn" class="secondary hidden" type="button" style="width:100%;margin-top:8px" onclick="resetAdminTestSandbox()">Reset Test Data</button><div class="admin-test-mode-note"><strong>Safe sandbox:</strong> while Test Mode is ON, Pokédex books/catches, Safari marks, saved shinies, shiny catches, and shiny artwork choices are stored only in a private browser test copy. They do not overwrite your real challenge save or team catch/bonus totals. Turning Test Mode OFF returns you to your real saved progress.</div></div><div class="form-card"><h3>Appearance</h3><div class="setting-row"><strong>Site Theme</strong><div class="muted">Choose how the Reading Frenzy site appears on this browser and device. Your team artwork and colors are preserved.</div><div class="site-theme-options"><button id="siteThemeLightBtn" class="site-theme-option" type="button" onclick="setSiteTheme('light')">☀️ Light</button><button id="siteThemeDarkBtn" class="site-theme-option" type="button" onclick="setSiteTheme('dark')">🌙 Dark</button></div><div class="muted" style="margin-top:8px">This preference is saved only on this device.</div></div></div><div class="form-card"><h3>Account</h3><div class="setting-row"><strong id="accountEmail"></strong><div class="muted">Your challenge automatically saves to the cloud.</div></div><div class="setting-row"><strong>Public sharing</strong><div class="muted">Creates a read-only link to your caught Pokémon, prompts and books.</div><button id="sharingBtn" class="secondary" style="width:100%;margin-top:10px" onclick="togglePublicSharing()">Enable Public Sharing</button><div id="shareLinkWrap" class="hidden" style="margin-top:10px"><div id="shareLink" class="share-box"></div><button class="secondary" style="width:100%;margin-top:8px" onclick="copyShareLink()">Copy Public Link</button></div></div><div class="setting-row"><button class="secondary" style="width:100%" onclick="downloadMyBackup()">Download My Backup</button><div class="muted" style="margin-top:6px">Downloads a personal JSON backup of your Reading Frenzy profile and challenge data. It does not include your password.</div></div><div cl
+===== saveGym @ 2540892 =====
+/option></select><div id="adminTeamAvailabilityStatus" class="team-availability-status">Select a team to manage availability.</div><button id="adminTeamAvailabilityBtn" class="secondary" style="width:100%;margin-top:10px" onclick="toggleAdminTeamAvailability()" disabled>Enable / Disable Team</button></div><div id="adminGymAssetsCard" class="form-card admin-card hidden"><h3>Admin Tools • Gym Images</h3><div class="admin-note">Choose any Gym Leader, Elite Four member, Champion, Trial Captain, Warden, or special battle. Images saved here update for everyone.</div><label>Challenge / Leader</label><select id="gymAssetSelect" onchange="loadGymAssetEditor(this.value)"><option value="">Select a challenge</option></select><label>Leader / Trainer Image URL</label><input id="gymLeaderImage" placeholder="Paste image URL"><label>Or upload leader image</label><input type="file" accept="image/*" id="gymLeaderImageUpload"><label>Badge / Reward Image URL</label><input id="gymBadgeImage" placeholder="Paste badge/reward image URL"><label>Or upload badge / reward image</label><input type="file" accept="image/*" id="gymBadgeImageUpload"><div class="gym-asset-preview"><div id="gymLeaderPreview" class="gym-asset-preview-box">Leader preview</div><div id="gymBadgePreview" class="gym-asset-preview-box">Badge / reward preview</div></div><button class="primary" style="width:100%;margin-top:14px" onclick="saveGymAssets()">Save Images for Everyone</button></div><div id="adminGlobalCard" class="form-card admin-card hidden"><h3>Admin Tools • Global Pokémon</h3><div class="admin-note">Add or edit challenge-wide Pokémon data. Changes here appear for everyone.</div><label>Existing global entry</label><select id="globalEditSelect" onchange="loadGlobalEditor(this.value)"><option value="">Create new entry</option></select><label>Name</label><input id="globalName"><div class="field-grid"><div><label>National Dex Number</label><input id="globalDex" inputmode="numeric"></div><div><label>Region</label><select id="globalRegion"></select></div></div><label>Form / Variant</label><input id="globalForm"><div class="field-grid"><div><label>Type 1</label><input id="globalType1"></div><div><label>Type 2</label><input id="globalType2"></div></div><label>Global Reading Prompt</label><textarea id="globalPrompt"></textarea><label>Pokédex Fact</label><textarea id="globalFact"></textarea><label>Image URL</label><input id="globalImage"><label>Or upload an image</label><input type="file" accept="image/*" id="globalImageUpload"><label><input id="globalBonus" type="checkbox" style="width:auto;margin-right:8px">Bonus / special Pokémon</label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGlobalPokemon()">Save for Everyone</button><button id="globalDeleteBtn" class="danger hidden" style="width:100%;margin-top:8px" onclick="deleteGlobalPokemon()">Delete Global Entry</button></div></section><section id="detailPage" class="page"><div id="adminDetailEditBar" class="admin-image-edit-bar hidden"><button id="adminDetailEditBtn" class="secondary" onclick="toggleAdminDetailEditMode()">Edit Pokémon Details</button><span id="adminDetailEditStatus" class="muted">Pokédex Editors • edit the global prompt and Rotom fact</span></div><button class="secondary" onclick="goPage('dex')" style="margin-bottom:12px">← Back to Pokédex</button><div id="detailContent"></div></section></main><nav id="bottomNav" class="bottom-nav hidden"><button class="nav-btn active" data-page="home" onclick="goPage('home')"><span class="nav-icon">🏠</span>Home</button><button class="nav-btn" data-page="dex" onclick="goPage('dex')"><span class="nav-icon">◉</span>Pokédex</button><button class="nav-btn" data-page="safari" onclick="goPage('safari')"><span class="nav-icon">🌿</span>Safari</button><button class="nav-btn" data-page="gyms" onclick="goPage('gyms')"><span class="nav-icon">◇</span>Gyms</button><button class="nav-btn" data-page="myteam" onclick="goPage('myteam')"><span class="nav-icon">◆</span>My Team</button><button class="nav-btn" data-page="stats" onclick="goPage('stats')"><span class="nav-icon">▥</span>Team Stats</button><button id="testFeatureNavBtn" class="nav-btn" data-page="achievements" onclick="openTestFeatureNav()"><span id="testFeatureNavIcon" class="nav-icon">🏆</span><span id="testFeatureNavLabel">Achievements</span><span id="achievementNavDot" class="achievement-nav-dot hidden" aria-label="Achievement ready to claim"></span></button><button class="nav-btn" data-page="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span>Settings</button></nav><button id="backToTopBtn" class="back-to-top" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑ Top</button><div id="teamRequiredModal" class="team-required-modal hidden" role="dialog" aria-modal="true" aria-labelledby="teamRequiredTitle"><div class="team-required-card"><div class="team-required-kicker">One quick step</div><h2 id="teamRequiredTitle">Choose a Team to Continue</h2><p>Every Reading Frenzy account now needs a team selection. You can join a <strong>competitive team</strong> for the friendly rankings, or choose <strong>Poké Dolls</strong> if you would rathe
+===== saveGym @ 2546505 =====
+y" type="button" onclick="goToRequiredTeamPicker()">Go to Teams</button></div></div><div class="modal defeat-modal" id="gymDefeatModal" onclick="if(event.target.id==='gymDefeatModal')closeGymDefeatModal()"><div class="modal-card"><div class="modal-handle"></div><h2 id="gymDefeatTitle">Defeat Pokémon</h2><div id="gymDefeatSubtitle" class="muted"></div><div id="gymDefeatChoices" class="defeat-choice-grid"><button id="gymUseExistingBtn" class="defeat-choice" onclick="useExistingGymCatch()">Use Existing Caught Pokémon<span>Use this Pokémon from your main Pokédex if you have already caught it.</span></button><button class="defeat-choice" onclick="showGymNewEntry()">New Entry<span>Complete this Pokémon specifically for the gym battle with a new book.</span></button></div><div id="gymBookForm" class="gym-book-form hidden"><label>Book Title</label><input id="gymBookTitle" placeholder="Book title"><label>Author</label><input id="gymBookAuthor" placeholder="Author (optional)"><label>Cover URL</label><input id="gymBookCover" placeholder="Cover URL (optional)"><label id="gymUseForDexWrap" class="gym-use-for-dex hidden"><input id="gymUseForDex" type="checkbox"><span><strong>Use for Pokémon entry?</strong><small>This book will also be added to this exact Pokémon/form in your Pokédex and mark it caught.</small></span></label><button class="primary" style="width:100%;margin-top:14px" onclick="saveGymNewEntry()">Save New Gym Entry</button></div><button class="secondary" style="width:100%;margin-top:12px" onclick="closeGymDefeatModal()">Cancel</button></div></div><div id="adminUserCardModal" class="admin-user-card-modal hidden" onclick="if(event.target===this)closeAdminUserCard()"><div class="admin-user-card-dialog"><div class="admin-user-card-head"><h3>Member Trainer Card Preview</h3><button class="secondary small-btn" onclick="closeAdminUserCard()">Close</button></div><div id="adminUserCardStatus" class="muted">Loading…</div><div id="adminUserCardPreview"></div></div></div><div id="catchCardModal" class="catch-card-modal hidden" role="dialog" aria-modal="true" aria-labelledby="catchCardModalTitle"><div class="catch-card-modal-shell"><div class="catch-card-modal-head"><div><div class="catch-card-modal-kicker">SHARE YOUR CATCH</div><h2 id="catchCardModalTitle">Pokémon Catch Card</h2><div class="catch-card-modal-note">The card theme is based on this Pokémon’s first listed type.</div></div><button class="catch-card-close" type="button" onclick="closeCatchCard()" aria-label="Close catch card preview">✕</button></div><div class="catch-card-canvas-wrap"><canvas id="catchCardCanvas" width="1080" height="1350" aria-label="Catch Card preview"></canvas><div id="catchCardLoading" class="catch-card-loading hidden">Building your Catch Card…</div></div><div class="catch-card-modal-actions"><button id="downloadCatchCardBtn" class="primary" type="button" onclick="downloadCatchCard()">Download Catch Card</button><button class="secondary" type="button" onclick="closeCatchCard()">Back</button></div></div></div><div id="gymVictoryCardModal" class="catch-card-modal hidden" role="dialog" aria-modal="true" aria-labelledby="gymVictoryCardModalTitle"><div class="catch-card-modal-shell"><div class="catch-card-modal-head"><div><div class="catch-card-modal-kicker">SHARE YOUR VICTORY</div><h2 id="gymVictoryCardModalTitle">Gym Victory Card</h2><div class="catch-card-modal-note">Uses the completed gym’s current leader, badge, Pokémon team, and your Trainer Card character.</div></div><button class="catch-card-close" type="button" onclick="closeGymVictoryCard()" aria-label="Close gym victory card preview">✕</button></div><div class="catch-card-canvas-wrap"><canvas id="gymVictoryCardCanvas" width="1080" height="1350" aria-label="Gym Victory Card preview"></canvas><div id="gymVictoryCardLoading" class="catch-card-loading hidden">Building your Gym Victory Card…</div></div><div class="catch-card-modal-actions"><button id="downloadGymVictoryCardBtn" class="primary" type="button" onclick="downloadGymVictoryCard()">Download Gym Victory Card</button><button class="secondary" type="button" onclick="closeGymVictoryCard()">Back</button></div></div></div><div id="teamThemePreviewModal" class="team-theme-preview-modal hidden" role="dialog" aria-modal="true" aria-labelledby="teamThemePreviewTitle"><div class="team-theme-preview-shell team-selection-preview-shell"><div class="team-theme-preview-toolbar"><div><div class="team-theme-preview-kicker">TEAM SELECTION PREVIEW</div><h2 id="teamThemePreviewTitle">Team Preview</h2><div class="team-theme-preview-note">Browse this team before joining. Nothing in this preview changes your account or selects the team.</div></div><button class="team-theme-preview-close" type="button" onclick="closeTeamThemePreview()" aria-label="Close team preview">✕</button></div><div class="team-selection-preview-body"><div class="team-selection-preview-hero"><div id="teamSelectionCollageWrap" class="team-selection-collage-wrap"><img id="teamSelectionCollage" class="team-selection-collage" alt="Team collage"><div id="teamSelectionCollageFallback" class="team-selection-collage-fallback hidden">Collage preview coming soon.</div></div><div class="te
+===== saveGym @ 26490462 =====
+ardSymbol(g){
+const t=String(g.specialty_type||g.challenge_type||"?").trim();
+return t ? t[0].toUpperCase() : "★";
+}
+function refreshGymAssetEditor(){
+const s=document.getElementById("gymAssetSelect");
+if(!s)return;
+const current=s.value;
+s.innerHTML='<option value="">Select a challenge</option>';
+[...gymsData]
+.sort((a,b)=>(a.region||"").localeCompare(b.region||"")||(a.sort_order||0)-(b.sort_order||0))
+.forEach(g=>s.add(new Option(`${g.region} • ${g.leader_name} • ${g.challenge_type||"Challenge"}`,g.id)));
+if([...s.options].some(o=>o.value===current))s.value=current;
+if(current)loadGymAssetEditor(current);
+}
+function loadGymAssetEditor(id){
+const g=gymsData.find(x=>x.id===id);
+gymLeaderImage.value=g?.leader_image_url||"";
+gymBadgeImage.value=g?.badge_image_url||"";
+gymLeaderImageUpload.value="";
+gymBadgeImageUpload.value="";
+renderGymAssetPreviews();
+}
+function renderGymAssetPreviews(){
+const leader=gymLeaderImage?.value?.trim()||"";
+const badge=gymBadgeImage?.value?.trim()||"";
+if(gymLeaderPreview)gymLeaderPreview.innerHTML=leader?`<img src="${esc(leader)}" alt="Leader preview" onerror="this.parentElement.textContent='Could not load leader image'">`:"Leader preview";
+if(gymBadgePreview)gymBadgePreview.innerHTML=badge?`<img src="${esc(badge)}" alt="Badge preview" onerror="this.parentElement.textContent='Could not load badge image'">`:"Badge / reward preview";
+}
+async function saveGymAssets(){
+if(!isAdmin)return toast("Admin access required.");
+const id=gymAssetSelect.value;
+if(!id)return toast("Choose a gym challenge first.");
+let leaderUrl=gymLeaderImage.value.trim();
+let badgeUrl=gymBadgeImage.value.trim();
+const leaderFile=gymLeaderImageUpload.files[0];
+const badgeFile=gymBadgeImageUpload.files[0];
+try{
+if(leaderFile)leaderUrl=await upload(leaderFile,"gym-leader");
+if(badgeFile)badgeUrl=await upload(badgeFile,"gym-badge");
+}catch(e){
+console.error(e);
+toast("Image upload failed.");
+return;
+}
+const{error}=await sb.from("gyms").update({
+leader_image_url:leaderUrl||null,
+badge_image_url:badgeUrl||null,
+updated_at:new Date().toISOString()
+}).eq("id",id);
+if(error){
+console.error(error);
+toast(error.message||"Could not save gym images.");
+return;
+}
+await loadGyms();
+gymAssetSelect.value=id;
+loadGymAssetEditor(id);
+renderGyms();
+renderBadgeCase();
+toast("Gym images saved for everyone.");
+}
+async function loadGyms(){
