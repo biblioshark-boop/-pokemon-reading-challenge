@@ -1,0 +1,43 @@
+name: Exact inspect team catch bonus functions
+
+on:
+  push:
+    branches:
+      - inspect-pokemon-monthly-bonus
+    paths-ignore:
+      - exact-team-bonus-functions.txt
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: inspect-pokemon-monthly-bonus
+      - name: Extract functions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8", errors="replace")
+          out=[]
+          for name in ["logTeamCatchForPokemon","syncMyTeamBonusForPokemon"]:
+            m=re.search(rf"(?:async\s+)?function\s+{name}\s*\(",s)
+            if not m: continue
+            start=m.start()
+            n=re.search(r"\n(?:async\s+)?function\s+[A-Za-z0-9_$]+\s*\(",s[m.end():])
+            end=(m.end()+n.start()) if n else min(len(s),start+10000)
+            out.append(f"\n===== {name} =====\n"+s[start:min(end,start+10000)])
+          Path("exact-team-bonus-functions.txt").write_text("".join(out),encoding="utf-8")
+          PY
+      - name: Commit output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add exact-team-bonus-functions.txt
+          git commit -m "Exact team bonus functions inspection" || exit 0
+          git push origin HEAD:inspect-pokemon-monthly-bonus
