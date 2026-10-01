@@ -1,4 +1,3 @@
-// RF_WORKER_PATCH: Cross-site Pumpkin Hunt test browse — 2026-10-01
 // RF_WORKER_PATCH: Shared username management moved to Hub — 2026-09-26
 // RF_WORKER_PATCH: Locked achievement progress — 2026-09-25
 // RF_WORKER_PATCH: Restore Pokémon settings; narrow local admin-control hiding — 2026-09-25
@@ -433,78 +432,6 @@ function addSharedAuthShell(response) {
                     returnToHub();
                     return;
                   }
-
-
-                  async function rfInitCrossSitePumpkinTest(){
-                    try{
-                      const adminCheck=await client.rpc('is_app_admin');
-                      if(adminCheck.error||adminCheck.data!==true)return;
-                    }catch(_){return;}
-                    let busy=false,active=null,timer=null;
-                    function clearPumpkin(){
-                      document.getElementById('rf-pumpkin-cross-site')?.remove();
-                      if(timer){clearTimeout(timer);timer=null;}
-                      active=null;
-                    }
-                    function asset(path){
-                      try{return new URL(String(path||''),'https://thereadingfrenzy.com/').href;}
-                      catch(_){return String(path||'');}
-                    }
-                    function show(item){
-                      clearPumpkin();
-                      const btn=document.createElement('button');
-                      btn.id='rf-pumpkin-cross-site'; btn.type='button';
-                      btn.setAttribute('aria-label','Claim '+(item.display_name||'pumpkin'));
-                      btn.style.cssText='position:fixed;z-index:2147483645;border:0;background:transparent;padding:0;cursor:pointer;filter:drop-shadow(0 4px 7px rgba(0,0,0,.28));';
-                      const img=document.createElement('img');
-                      img.src=asset(item.asset_path); img.alt=item.display_name||'Pumpkin collectible';
-                      img.style.cssText='display:block;width:'+(window.innerWidth<=700?'88px':'118px')+';height:auto;';
-                      btn.appendChild(img); document.body.appendChild(btn);
-                      const size=btn.getBoundingClientRect().width||(window.innerWidth<=700?88:118);
-                      const pad=16,topPad=70;
-                      btn.style.left=Math.round(pad+Math.random()*Math.max(0,window.innerWidth-size-pad*2))+'px';
-                      btn.style.top=Math.round(topPad+Math.random()*Math.max(0,window.innerHeight-size-topPad-pad))+'px';
-                      btn.addEventListener('click',async(ev)=>{
-                        ev.preventDefault();ev.stopPropagation();
-                        if(busy||!active?.spawn_key)return;
-                        busy=true;btn.disabled=true;
-                        try{
-                          const claimed=await client.rpc('admin_test_claim_rf_pumpkin_browse_spawn_for_site',{p_site_area:'pokemon',p_spawn_key:active.spawn_key});
-                          if(claimed.error)throw claimed.error;
-                          const result=Array.isArray(claimed.data)?claimed.data[0]:claimed.data;
-                          clearPumpkin();
-                          if(result){
-                            alert('You found '+(result.display_name||'a pumpkin')+'!'+(result.rarity==='gold'?'\n\n✨ GOLDEN PUMPKIN! +1,000 Points + a Shiny Ticket!':'\n\n+'+(Number(result.points_awarded)||0)+' Reading Frenzy Points'));
-                          }
-                        }catch(err){console.warn('Pumpkin Hunt Pokémon test claim failed',err);btn.disabled=false;}
-                        finally{busy=false;}
-                      });
-                      active=item;
-                      const expires=new Date(item.expires_at||0).getTime();
-                      if(Number.isFinite(expires)&&expires>Date.now())timer=setTimeout(clearPumpkin,Math.max(0,expires-Date.now()));
-                    }
-                    async function roll(navType){
-                      if(busy)return;
-                      busy=true;clearPumpkin();
-                      try{
-                        const rolled=await client.rpc('admin_test_roll_rf_pumpkin_browse_spawn_for_site',{p_site_area:'pokemon',p_navigation_type:navType});
-                        if(rolled.error)throw rolled.error;
-                        const item=Array.isArray(rolled.data)?rolled.data[0]:rolled.data;
-                        if(item?.spawned&&item?.spawn_key)show(item);
-                      }catch(err){console.warn('Pumpkin Hunt Pokémon test roll failed',err);}
-                      finally{busy=false;}
-                    }
-                    const navEntry=performance.getEntriesByType('navigation')[0];
-                    await roll(navEntry?.type==='reload'?'reload':'navigate');
-                    document.addEventListener('click',(ev)=>{
-                      if(ev.target.closest?.('#rf-pumpkin-cross-site'))return;
-                      const nav=ev.target.closest?.('a[href],[data-route],[data-page],nav button,[role="tab"],.tab-button,.nav-button');
-                      if(nav)setTimeout(()=>roll('navigate'),350);
-                    },true);
-                    window.addEventListener('hashchange',()=>setTimeout(()=>roll('navigate'),100));
-                    window.addEventListener('popstate',()=>setTimeout(()=>roll('navigate'),100));
-                  }
-                  rfInitCrossSitePumpkinTest();
 
                   applyHubAccountUi();
                   await refreshGlobalMaintenance(client);
