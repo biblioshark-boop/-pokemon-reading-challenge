@@ -457,9 +457,9 @@ function addSharedAuthShell(response) {
                     if(!node)return;
                     const label=rfPumpkinActionLabel(node);
                     let actionKey='';
-                    if(/(^|\s|\/|#)faq(\s|$|\/|#)/i.test(label)) actionKey='pokemon-faq';
-                    else if(/victory\s*card|download[^\n]{0,40}victory/i.test(label)) actionKey='victory-card';
-                    else if(/achievement\s*card|download[^\n]{0,40}achievement/i.test(label)) actionKey='achievement-card';
+                    if(label.includes('faq')) actionKey='pokemon-faq';
+                    else if(label.includes('victory card')||(label.includes('download')&&label.includes('victory'))) actionKey='victory-card';
+                    else if(label.includes('achievement card')||(label.includes('download')&&label.includes('achievement'))) actionKey='achievement-card';
                     if(actionKey)setTimeout(()=>rfQueuePumpkinAction(actionKey),0);
                   },true);
 
