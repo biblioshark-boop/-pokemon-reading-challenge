@@ -433,6 +433,36 @@ function addSharedAuthShell(response) {
                     return;
                   }
 
+
+                  async function rfQueuePumpkinAction(actionKey){
+                    try{
+                      const result=await client.rpc('trigger_rf_pumpkin_action',{p_action_key:actionKey});
+                      if(result.error)throw result.error;
+                    }catch(err){
+                      console.warn('Pokémon Pumpkin Hunt action trigger failed',actionKey,err);
+                    }
+                  }
+
+                  function rfPumpkinActionLabel(node){
+                    return [
+                      node?.textContent||'',
+                      node?.getAttribute?.('aria-label')||'',
+                      node?.getAttribute?.('title')||'',
+                      node?.getAttribute?.('href')||''
+                    ].join(' ').replace(/\s+/g,' ').trim().toLowerCase();
+                  }
+
+                  document.addEventListener('click',(event)=>{
+                    const node=event.target?.closest?.('a,button,[role="button"],summary');
+                    if(!node)return;
+                    const label=rfPumpkinActionLabel(node);
+                    let actionKey='';
+                    if(/(^|\s|\/|#)faq(\s|$|\/|#)/i.test(label)) actionKey='pokemon-faq';
+                    else if(/victory\s*card|download[^\n]{0,40}victory/i.test(label)) actionKey='victory-card';
+                    else if(/achievement\s*card|download[^\n]{0,40}achievement/i.test(label)) actionKey='achievement-card';
+                    if(actionKey)setTimeout(()=>rfQueuePumpkinAction(actionKey),0);
+                  },true);
+
                   applyHubAccountUi();
                   await refreshGlobalMaintenance(client);
                   setInterval(()=>refreshGlobalMaintenance(client),30000);
