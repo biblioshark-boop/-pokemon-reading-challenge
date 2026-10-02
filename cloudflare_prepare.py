@@ -66,7 +66,7 @@ def main():
     text = SOURCE.read_text(encoding="utf-8")
     # First structural extraction. Keep the oversized legacy source intact.
     # The extracted stylesheet is assembled at the exact original position.
-    css_pattern = re.compile(r'(<style id="dexDetailPrevNext20260818">)([\\s\\S]*?)(</style>)')
+    css_pattern = re.compile(r'(<style id="dexDetailPrevNext20260818">)([\s\S]*?)(</style>)')
     css_matches = list(css_pattern.finditer(text))
     if len(css_matches) != 1:
         raise SystemExit("ERROR: Expected exactly one Dex navigation stylesheet.")
