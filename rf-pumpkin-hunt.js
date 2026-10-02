@@ -1,4 +1,4 @@
-/* RF_CHALLENGE_PUMPKINS: 20261002181500 — optional live browse overlay. */
+/* RF_CHALLENGE_PUMPKINS: 20261002184000 — optional live browse overlay. */
 (() => {
   'use strict';
   if (window.__rfChallengePumpkinV1) return;
@@ -139,7 +139,7 @@
     rolling=true;attemptedView=key;
     const navigationType=initial&&performance.getEntriesByType('navigation')[0]?.type==='reload'?'reload':'navigate';initial=false;
     try {
-      const item=await rpc('roll_rf_pumpkin_browse_spawn',{p_navigation_type:navigationType});
+      const item=await rpc('roll_rf_challenge_pumpkin_browse_spawn',{p_site_area:site,p_navigation_type:navigationType});
       if(version!==generation || key!==currentView || viewKey()!==key) return;
       if(item?.spawned&&item.spawn_key)showPumpkin(item,key);
     } catch(err) {console.warn('Optional Pumpkin Hunt unavailable',err);}
