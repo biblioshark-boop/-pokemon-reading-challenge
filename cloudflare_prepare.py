@@ -64,6 +64,17 @@ def main():
             pass
 
     text = SOURCE.read_text(encoding="utf-8")
+    # First structural extraction. Keep the oversized legacy source intact.
+    # The extracted stylesheet is assembled at the exact original position.
+    css_pattern = re.compile(r'(<style id="dexDetailPrevNext20260818">)([\s\S]*?)(</style>)')
+    css_matches = list(css_pattern.finditer(text))
+    if len(css_matches) != 1:
+        raise SystemExit("ERROR: Expected exactly one Dex navigation stylesheet.")
+    css_match = css_matches[0]
+    css = (ROOT / "styles" / "dex-detail-navigation.css").read_text(encoding="utf-8")
+    if css_match.group(2) != css:
+        raise SystemExit("ERROR: Extracted Dex navigation CSS differs from the legacy source; review before deploying.")
+    text = text[:css_match.start(2)] + css + text[css_match.end(2):]
     # Keep the oversized source file intact while applying the reviewed event patch.
     # Exact context checks prevent silently applying it to incompatible future edits.
     patch_file = ROOT / "pokemon-special-event-controls.patch.json"
