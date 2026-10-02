@@ -1,6 +1,7 @@
 from pathlib import Path
 import base64
 import hashlib
+import json
 import re
 import shutil
 
@@ -63,6 +64,14 @@ def main():
             pass
 
     text = SOURCE.read_text(encoding="utf-8")
+    # Keep the oversized source file intact while applying the reviewed event patch.
+    # Exact context checks prevent silently applying it to incompatible future edits.
+    patch_file = ROOT / "pokemon-special-event-controls.patch.json"
+    for change in json.loads(patch_file.read_text(encoding="utf-8")):
+        if text.count(change["old"]) != 1:
+            raise SystemExit("ERROR: Special Event patch context changed; review the source before deploying.")
+        text = text.replace(change["old"], change["new"])
+
     extracted_dir = DIST_ASSETS / "extracted-inline"
     extracted_dir.mkdir(parents=True, exist_ok=True)
 
