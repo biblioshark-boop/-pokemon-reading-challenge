@@ -108,6 +108,18 @@ def main():
     except RuntimeError as exc:
         raise SystemExit(f"ERROR: {exc}")
 
+    # Optional Pumpkin Hunt runs separately after the challenge loads.
+    processed = re.sub(r"RF_BUILD:\\d+", "RF_BUILD:20261002181500", processed, count=1)
+    processed = re.sub(r'const RF_BUILD="\\d+";', 'const RF_BUILD="20261002181500";', processed, count=1)
+    processed = re.sub(r"RF_PATCH_NAME:[^<]+? -->", "RF_PATCH_NAME:Patch #278 — Live Challenge Pumpkin Hunt -->", processed, count=1)
+    processed = re.sub(r'const RF_PATCH_NAME="[^"]+";', 'const RF_PATCH_NAME="Patch #278 — Live Challenge Pumpkin Hunt";', processed, count=1)
+    script = '<script async src="rf-pumpkin-hunt.js?v=20261002181500" data-rf-challenge="pokemon"></script>'
+    if "</body>" not in processed:
+        raise SystemExit("ERROR: Expected a body closing tag for the optional pumpkin script.")
+    body_end = processed.rfind("</body>")
+    processed = processed[:body_end] + script + processed[body_end:]
+    shutil.copyfile(ROOT / "rf-pumpkin-hunt.js", DIST / "rf-pumpkin-hunt.js")
+
     out_index = DIST / "index.html"
     out_index.write_text(processed, encoding="utf-8")
 
