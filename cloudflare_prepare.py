@@ -109,8 +109,8 @@ def main():
         raise SystemExit(f"ERROR: {exc}")
 
     # Optional Pumpkin Hunt runs separately after the challenge loads.
-    processed = re.sub(r"RF_BUILD:\\d+", "RF_BUILD:20261002181500", processed, count=1)
-    processed = re.sub(r'const RF_BUILD="\\d+";', 'const RF_BUILD="20261002181500";', processed, count=1)
+    processed = re.sub(r"RF_BUILD:\d+", "RF_BUILD:20261002181500", processed, count=1)
+    processed = re.sub(r'const RF_BUILD="\d+";', 'const RF_BUILD="20261002181500";', processed, count=1)
     processed = re.sub(r"RF_PATCH_NAME:[^<]+? -->", "RF_PATCH_NAME:Patch #278 — Live Challenge Pumpkin Hunt -->", processed, count=1)
     processed = re.sub(r'const RF_PATCH_NAME="[^"]+";', 'const RF_PATCH_NAME="Patch #278 — Live Challenge Pumpkin Hunt";', processed, count=1)
     script = '<script async src="rf-pumpkin-hunt.js?v=20261002181500" data-rf-challenge="pokemon"></script>'
