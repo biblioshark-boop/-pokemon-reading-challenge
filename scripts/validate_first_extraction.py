@@ -27,11 +27,15 @@ def main():
         raise SystemExit("Usage: validate_first_extraction.py /path/to/main-checkout")
     baseline = Path(sys.argv[1]).resolve()
     source = (ROOT / "index.html").read_bytes()
-    assert source == (baseline / "index.html").read_bytes(), "Legacy source differs from main"
+    for name in ["team-trainer-characters.js", "leader-character-art.js"]:
+        marker = f"/* RF_INCLUDE:source-fragments/{name} */".encode()
+        assert source.count(marker) == 1, "Expected one fragment marker"
+        source = source.replace(marker, (ROOT / "source-fragments" / name).read_bytes())
+    assert source == (baseline / "index.html").read_bytes(), "Reconstructed source differs from main"
     matches = re.findall(STYLE, source)
     assert len(matches) == 1, "Expected one stylesheet"
     assert matches[0] == (ROOT / "styles/dex-detail-navigation.css").read_bytes(), "Extracted CSS differs"
-    print("PASS: legacy source unchanged; extracted stylesheet matches main byte for byte")
+    print("PASS: reconstructed source unchanged; extracted stylesheet matches main byte for byte")
 
     # Use the same asset inputs for both builds, including deduplication inputs.
     with tempfile.TemporaryDirectory(prefix="pokemon-extraction-") as tmp:
@@ -41,6 +45,8 @@ def main():
             target.mkdir()
             for name in ["index.html", "cloudflare_prepare.py", "pokemon-special-event-controls.patch.json", "rf-pumpkin-hunt.js"]:
                 shutil.copyfile(checkout / name, target / name)
+            if (checkout / "source-fragments").exists():
+                shutil.copytree(checkout / "source-fragments", target / "source-fragments")
             if (checkout / "styles").exists():
                 shutil.copytree(checkout / "styles", target / "styles")
             if (baseline / "assets").exists():

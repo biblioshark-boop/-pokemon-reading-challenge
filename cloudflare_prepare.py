@@ -64,6 +64,24 @@ def main():
             pass
 
     text = SOURCE.read_text(encoding="utf-8")
+
+    # Keep static catalogs at their original script positions without browser requests.
+    for filename, constant in [
+        ("team-trainer-characters.js", "TEAM_TRAINER_CHARACTERS"),
+        ("leader-character-art.js", "LEADER_CHARACTER_ART"),
+    ]:
+        marker = f"/* RF_INCLUDE:source-fragments/{filename} */"
+        if text.count(marker) != 1:
+            raise SystemExit(f"Expected exactly one source fragment marker: {filename}")
+        fragment = (ROOT / "source-fragments" / filename).read_text(encoding="utf-8")
+        prefix = f"const {constant}="
+        if not fragment.startswith(prefix) or not fragment.endswith(";"):
+            raise SystemExit(f"Invalid static catalog declaration: {filename}")
+        json.loads(fragment[len(prefix):-1])
+        text = text.replace(marker, fragment)
+    if "/* RF_INCLUDE:" in text:
+        raise SystemExit("Unknown source fragment marker")
+
     # First structural extraction. Keep the oversized legacy source intact.
     # The extracted stylesheet is assembled at the exact original position.
     css_pattern = re.compile(r'(<style id="dexDetailPrevNext20260818">)([\s\S]*?)(</style>)')
