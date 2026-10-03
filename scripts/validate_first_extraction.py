@@ -26,12 +26,17 @@ def main():
     if len(sys.argv) != 2:
         raise SystemExit("Usage: validate_first_extraction.py /path/to/main-checkout")
     baseline = Path(sys.argv[1]).resolve()
-    source = (ROOT / "index.html").read_bytes()
-    for name in ["team-trainer-characters.js", "leader-character-art.js"]:
-        marker = f"/* RF_INCLUDE:source-fragments/{name} */".encode()
-        assert source.count(marker) == 1, "Expected one fragment marker"
-        source = source.replace(marker, (ROOT / "source-fragments" / name).read_bytes())
-    assert source == (baseline / "index.html").read_bytes(), "Reconstructed source differs from main"
+    def reconstructed(checkout):
+        source = (checkout / "index.html").read_bytes()
+        markers = re.findall(rb'/\* RF_INCLUDE:(source-fragments/[a-z-]+\.js) \*/', source)
+        assert len(markers) == len(set(markers)), "Duplicate fragment marker"
+        for path in markers:
+            source = source.replace(b"/* RF_INCLUDE:" + path + b" */", (checkout / path.decode()).read_bytes())
+        assert b"/* RF_INCLUDE:" not in source, "Unknown fragment marker"
+        return source
+
+    source = reconstructed(ROOT)
+    assert source == reconstructed(baseline), "Reconstructed source differs from main"
     matches = re.findall(STYLE, source)
     assert len(matches) == 1, "Expected one stylesheet"
     assert matches[0] == (ROOT / "styles/dex-detail-navigation.css").read_bytes(), "Extracted CSS differs"

@@ -69,6 +69,7 @@ def main():
     for filename, constant in [
         ("team-trainer-characters.js", "TEAM_TRAINER_CHARACTERS"),
         ("leader-character-art.js", "LEADER_CHARACTER_ART"),
+        ("team-card-banners.js", "TEAM_CARD_BANNERS"),
     ]:
         marker = f"/* RF_INCLUDE:source-fragments/{filename} */"
         if text.count(marker) != 1:
