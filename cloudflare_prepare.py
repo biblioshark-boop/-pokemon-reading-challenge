@@ -83,19 +83,23 @@ def main():
     if "/* RF_INCLUDE:" in text:
         raise SystemExit("Unknown source fragment marker")
 
-    # Assemble navigation CSS at its original style position.
-    # The extracted stylesheet is assembled at the exact original position.
-    css_pattern = re.compile(r'(<style id="dexDetailPrevNext20260818">)([\s\S]*?)(</style>)')
-    css_matches = list(css_pattern.finditer(text))
-    if len(css_matches) != 1:
-        raise SystemExit("ERROR: Expected exactly one Dex navigation stylesheet.")
-    css_match = css_matches[0]
-    css = (ROOT / "styles" / "dex-detail-navigation.css").read_text(encoding="utf-8")
-    if css_match.group(2) != "/* RF_CSS_INCLUDE:styles/dex-detail-navigation.css */":
-        raise SystemExit("ERROR: Expected the exact Dex navigation CSS include marker.")
-    text = text[:css_match.start(2)] + css + text[css_match.end(2):]
+    # Reinsert extracted styles in their exact original cascade positions.
+    for style_id, filename in [
+        ("dexDetailPrevNext20260818", "dex-detail-navigation.css"),
+        ("teamPageBackgroundsVisible20260818", "team-page-backgrounds.css"),
+    ]:
+        css_pattern = re.compile(r'(<style id="' + re.escape(style_id) + r'">)([\s\S]*?)(</style>)')
+        css_matches = list(css_pattern.finditer(text))
+        if len(css_matches) != 1:
+            raise SystemExit(f"ERROR: Expected exactly one stylesheet: {style_id}")
+        css_match = css_matches[0]
+        marker = f"/* RF_CSS_INCLUDE:styles/{filename} */"
+        if css_match.group(2) != marker:
+            raise SystemExit(f"ERROR: Expected exact CSS include marker: {style_id}")
+        css = (ROOT / "styles" / filename).read_text(encoding="utf-8")
+        text = text[:css_match.start(2)] + css + text[css_match.end(2):]
     if "/* RF_CSS_INCLUDE:" in text:
-        raise SystemExit("ERROR: Unknown or duplicate navigation CSS include marker.")
+        raise SystemExit("ERROR: Unknown or duplicate CSS include marker.")
     # Apply the reviewed event patch with exact context checks.
     # Exact context checks prevent silently applying it to incompatible future edits.
     patch_file = ROOT / "pokemon-special-event-controls.patch.json"
