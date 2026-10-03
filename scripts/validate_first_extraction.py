@@ -33,6 +33,11 @@ def main():
         for path in markers:
             source = source.replace(b"/* RF_INCLUDE:" + path + b" */", (checkout / path.decode()).read_bytes())
         assert b"/* RF_INCLUDE:" not in source, "Unknown fragment marker"
+        css_marker = b"/* RF_CSS_INCLUDE:styles/dex-detail-navigation.css */"
+        if css_marker in source:
+            assert source.count(css_marker) == 1, "Duplicate CSS include marker"
+            source = source.replace(css_marker, (checkout / "styles/dex-detail-navigation.css").read_bytes())
+        assert b"/* RF_CSS_INCLUDE:" not in source, "Unknown CSS marker"
         return source
 
     source = reconstructed(ROOT)
