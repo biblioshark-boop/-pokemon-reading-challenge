@@ -87,6 +87,7 @@ def main():
     for style_id, filename in [
         ("dexDetailPrevNext20260818", "dex-detail-navigation.css"),
         ("teamPageBackgroundsVisible20260818", "team-page-backgrounds.css"),
+        ("safariZoneSparseFix20260818", "safari-zone.css"),
     ]:
         css_pattern = re.compile(r'(<style id="' + re.escape(style_id) + r'">)([\s\S]*?)(</style>)')
         css_matches = list(css_pattern.finditer(text))
