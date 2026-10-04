@@ -12,7 +12,7 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-STYLE = rb'<style id="gymStadiumBackground20260818">([\s\S]*?)</style>'
+STYLE = rb'<title>[^<]+</title><style>([\s\S]*?)</style>'
 
 
 def manifest(directory):
@@ -33,7 +33,7 @@ def main():
         for path in markers:
             source = source.replace(b"/* RF_INCLUDE:" + path + b" */", (checkout / path.decode()).read_bytes())
         assert b"/* RF_INCLUDE:" not in source, "Unknown fragment marker"
-        for filename in ["dex-detail-navigation.css", "team-page-backgrounds.css", "safari-zone.css", "badge-case.css", "team-star.css", "gym-stadium-background.css"]:
+        for filename in ["dex-detail-navigation.css", "team-page-backgrounds.css", "safari-zone.css", "badge-case.css", "team-star.css", "gym-stadium-background.css", "base.css"]:
             css_marker = f"/* RF_CSS_INCLUDE:styles/{filename} */".encode()
             if css_marker in source:
                 assert source.count(css_marker) == 1, "Duplicate CSS include marker"
@@ -45,7 +45,7 @@ def main():
     assert source == reconstructed(baseline), "Reconstructed source differs from main"
     matches = re.findall(STYLE, source)
     assert len(matches) == 1, "Expected one stylesheet"
-    assert matches[0] == (ROOT / "styles/gym-stadium-background.css").read_bytes(), "Extracted CSS differs"
+    assert matches[0] == (ROOT / "styles/base.css").read_bytes(), "Extracted CSS differs"
     print("PASS: reconstructed source unchanged; extracted stylesheet matches main byte for byte")
 
     # Use the same asset inputs for both builds, including deduplication inputs.

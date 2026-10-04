@@ -83,6 +83,13 @@ def main():
     if "/* RF_INCLUDE:" in text:
         raise SystemExit("Unknown source fragment marker")
 
+    # Preserve the original anonymous base style element and its position.
+    base_style = re.search(r'(<style>)([\s\S]*?)(</style>)', text)
+    if not base_style or base_style.group(2) != "/* RF_CSS_INCLUDE:styles/base.css */":
+        raise SystemExit("ERROR: Expected exact base stylesheet include marker.")
+    base_css = (ROOT / "styles" / "base.css").read_text(encoding="utf-8")
+    text = text[:base_style.start(2)] + base_css + text[base_style.end(2):]
+
     # Reinsert extracted styles in their exact original cascade positions.
     for style_id, filename in [
         ("dexDetailPrevNext20260818", "dex-detail-navigation.css"),
