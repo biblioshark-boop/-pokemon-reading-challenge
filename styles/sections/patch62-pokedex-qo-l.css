@@ -1,0 +1,12 @@
+
+.dex-book-search{padding:12px 14px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 3px 10px rgba(0,0,0,.05)}
+.dex-book-search-label{font-weight:950;font-size:14px;margin-bottom:7px}
+.dex-book-search .search{background:var(--bg)}
+.dex-book-search-note{font-size:11px;line-height:1.35;margin-top:6px}
+.dex-evo-or{display:inline-flex;align-items:center;justify-content:center;align-self:center;padding:4px 7px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-size:10px;font-weight:1000;letter-spacing:.08em;color:var(--muted);margin:0 5px;white-space:nowrap}
+.dex-gym-links{margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,.10);display:grid;gap:7px}
+.dex-gym-links-title{font-size:12px;font-weight:1000;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.dex-gym-link{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:1px solid var(--line);border-radius:13px;padding:9px 10px;background:rgba(255,255,255,.58);color:var(--text)}
+.dex-gym-link span{min-width:0;display:block}.dex-gym-link strong{display:block;font-size:12px}.dex-gym-link small{display:block;margin-top:2px;font-size:10px;color:var(--muted)}.dex-gym-link b{font-size:11px;white-space:nowrap;color:var(--accent)}
+#gymsPage .gym-card.gym-jump-highlight{outline:4px solid #ffd166!important;outline-offset:4px;box-shadow:0 0 0 8px rgba(255,209,102,.22),0 12px 30px rgba(0,0,0,.35)!important}
+@media(max-width:520px){.dex-gym-link{align-items:flex-start;flex-direction:column}.dex-gym-link b{align-self:flex-end}.dex-evo-or{margin:0 3px;padding:3px 6px;font-size:9px}}

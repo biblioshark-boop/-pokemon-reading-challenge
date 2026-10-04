@@ -1,0 +1,96 @@
+
+/* Patch #102: Poké Dolls uses one real 2x2 grid instead of two nested column stacks.
+   This keeps Lounge/Members and Activity/Cheer in separate grid cells with no overlap. */
+#myteamPage.poke-dolls-layout .myteam-main-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 390px;
+  grid-template-rows:auto auto;
+  gap:18px;
+  align-items:stretch;
+}
+#myteamPage.poke-dolls-layout .myteam-left-stack,
+#myteamPage.poke-dolls-layout .myteam-right-stack{
+  display:contents;
+}
+#myteamPage.poke-dolls-layout #myTeamContributorsPanel{
+  grid-column:1;
+  grid-row:1;
+  min-width:0;
+  width:auto;
+  max-width:none;
+  min-height:0;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+}
+#myteamPage.poke-dolls-layout #myTeamTopContributors{
+  flex:1;
+  min-width:0;
+  min-height:0;
+  display:flex;
+}
+#myteamPage.poke-dolls-layout .myteam-community-card{
+  flex:1;
+  min-width:0;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+#myteamPage.poke-dolls-layout .myteam-community-copy{
+  width:100%;
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:break-word;
+}
+#myteamPage.poke-dolls-layout #myTeamActivityPanel{
+  grid-column:1;
+  grid-row:2;
+  min-width:0;
+  width:auto;
+  max-width:none;
+  box-sizing:border-box;
+}
+#myteamPage.poke-dolls-layout .my-team-members-panel{
+  grid-column:2;
+  grid-row:1;
+  position:static;
+  top:auto;
+  min-width:0;
+  width:auto;
+  max-width:none;
+  box-sizing:border-box;
+  align-self:stretch;
+}
+#myteamPage.poke-dolls-layout .my-team-members-list{
+  max-height:340px;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+#myteamPage.poke-dolls-layout .myteam-cheer-panel{
+  grid-column:2;
+  grid-row:2;
+  position:static;
+  top:auto;
+  min-width:0;
+  width:auto;
+  max-width:none;
+  min-height:0;
+  box-sizing:border-box;
+}
+@media(max-width:900px){
+  #myteamPage.poke-dolls-layout .myteam-main-layout{
+    grid-template-columns:1fr;
+    grid-template-rows:auto;
+  }
+  #myteamPage.poke-dolls-layout #myTeamContributorsPanel{grid-column:1;grid-row:1;}
+  #myteamPage.poke-dolls-layout #myTeamActivityPanel{grid-column:1;grid-row:2;}
+  #myteamPage.poke-dolls-layout .my-team-members-panel{grid-column:1;grid-row:3;}
+  #myteamPage.poke-dolls-layout .myteam-cheer-panel{grid-column:1;grid-row:4;}
+  #myteamPage.poke-dolls-layout .my-team-members-list{max-height:300px;}
+}

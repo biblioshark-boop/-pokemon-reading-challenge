@@ -1,0 +1,16 @@
+
+.login-load-overlay{
+ position:fixed;inset:0;z-index:99999;background:var(--bg,#f5f3ef);
+ display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.login-load-overlay.hidden{display:none}
+.login-load-card{
+ display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:16px;
+ background:rgba(255,255,255,.96);color:#20232a;box-shadow:0 8px 30px rgba(0,0,0,.16);
+ font-size:15px;text-align:center
+}
+.login-load-spinner{
+ width:20px;height:20px;border:3px solid rgba(0,0,0,.16);
+ border-top-color:#555;border-radius:50%;animation:rfLoginSpin .8s linear infinite
+}
+@keyframes rfLoginSpin{to{transform:rotate(360deg)}}

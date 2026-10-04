@@ -1,0 +1,12 @@
+
+.admin-members-toolbar{display:flex;gap:8px;margin:10px 0 12px}
+.admin-members-toolbar input{flex:1}
+.admin-members-list{display:grid;gap:8px;max-height:420px;overflow:auto;padding-right:2px}
+.admin-member-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+.admin-member-main{min-width:0}
+.admin-member-name{font-weight:900;overflow-wrap:anywhere}
+.admin-member-meta{font-size:12px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.admin-member-team{font-size:11px;font-weight:800;padding:5px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line);white-space:nowrap}
+.admin-member-count{font-size:12px;color:var(--muted)}
+#teamLeaderMemberSelect{margin-top:8px}
+@media(max-width:600px){.admin-member-row{grid-template-columns:1fr}.admin-member-team{justify-self:start}}

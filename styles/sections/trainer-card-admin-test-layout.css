@@ -1,0 +1,624 @@
+
+/* Patch #223 — Separate Admin Test Mode Trainer Card renderer.
+   The live #trainerCard is untouched and simply hidden while Test Mode is active. */
+#trainerCardTestMockup{display:none}
+#trainerCard.trainer-card-live-hidden{display:none!important}
+#trainerCardTestMockup.trainer-card-live-visible{display:block!important}
+
+html.admin-test-mode #trainerCard{display:none!important}
+html.admin-test-mode #trainerCardTestMockup{display:block!important}
+
+.trainer-test-mockup{
+  --ttm-gold:#f4cb48;
+  position:relative;
+  width:100%;
+  aspect-ratio:5/3;
+  overflow:hidden;
+  border-radius:28px;
+  color:#fff;
+  background:linear-gradient(135deg,#17102d,#09070f);
+  border:3px solid rgba(255,255,255,.30);
+  box-shadow:0 18px 38px rgba(0,0,0,.28);
+  isolation:isolate;
+  box-sizing:border-box;
+}
+.trainer-test-mockup.is-leader{
+  border:5px solid var(--ttm-gold);
+  box-shadow:0 18px 38px rgba(0,0,0,.30),inset 0 0 0 2px rgba(255,255,255,.10);
+}
+.trainer-test-mockup::after{
+  content:"";
+  position:absolute;
+  width:31%;
+  aspect-ratio:1;
+  right:-13%;
+  bottom:-24%;
+  border:6.5vw solid rgba(255,255,255,.09);
+  border-radius:50%;
+  z-index:-1;
+}
+.ttm-top{
+  position:absolute;
+  left:4.2%;
+  right:4.2%;
+  top:9.2%;
+  height:55.5%;
+  display:block;
+  box-sizing:border-box;
+}
+.ttm-left{
+  position:static;
+  min-width:0;
+  display:block;
+}
+.ttm-identity-row{
+  position:absolute;
+  left:0;
+  top:0;
+  width:56%;
+  height:69.9%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,40%) minmax(0,55.5%);
+  gap:4.5%;
+  align-items:stretch;
+  box-sizing:border-box;
+}
+.ttm-avatar-wrap{
+  position:relative;
+  min-width:0;
+  height:100%;
+  border-radius:24px;
+  overflow:hidden;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  background:rgba(255,255,255,.34);
+  border:2px solid rgba(255,255,255,.92);
+  box-shadow:inset 0 0 28px rgba(255,255,255,.10),0 8px 20px rgba(0,0,0,.22);
+}
+.ttm-avatar{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+}
+.ttm-avatar-fallback{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  font-size:clamp(28px,5vw,68px);
+  font-weight:1000;
+  color:rgba(255,255,255,.88);
+}
+.ttm-identity{
+  min-width:0;
+  align-self:center;
+  padding-top:3%;
+}
+.ttm-kicker{
+  font-size:clamp(7px,.82vw,10px);
+  font-weight:1000;
+  letter-spacing:.12em;
+  color:rgba(255,255,255,.87);
+  white-space:nowrap;
+}
+.ttm-name{
+  margin-top:5%;
+  width:100%;
+  font-size:40px;
+  line-height:.98;
+  font-weight:1000;
+  letter-spacing:-.035em;
+  color:#fff;
+  white-space:nowrap;
+  overflow:visible;
+}
+.ttm-username{
+  margin-top:4%;
+  width:100%;
+  font-size:clamp(11px,1.55vw,20px);
+  font-weight:850;
+  color:rgba(255,255,255,.85);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.ttm-leader{
+  width:max-content;
+  max-width:100%;
+  margin-top:7%;
+  padding:8px 16px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  border-radius:999px;
+  background:rgba(255,215,80,.98);
+  color:#3b2a00;
+  white-space:nowrap;
+  box-shadow:0 6px 14px rgba(0,0,0,.15);
+}
+.ttm-leader.hidden{display:none!important}
+.ttm-leader span{
+  font-size:clamp(8px,.9vw,12px);
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+.ttm-leader strong{
+  font-size:clamp(9px,1vw,13px);
+  font-weight:1000;
+}
+.ttm-stats{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:56%;
+  height:28%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:3%;
+  align-items:stretch;
+  box-sizing:border-box;
+}
+.ttm-stats>div{
+  min-width:0;
+  padding:8px 13px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  border:2px solid var(--ttm-gold);
+  border-radius:14px;
+  background:rgba(6,5,12,.80);
+  box-shadow:0 7px 18px rgba(0,0,0,.22);
+}
+.ttm-stats span{
+  margin-bottom:4px;
+  font-size:clamp(7px,.8vw,10px);
+  font-weight:1000;
+  letter-spacing:.13em;
+}
+.ttm-stats strong{
+  min-width:0;
+  font-size:18px;
+  line-height:1.05;
+  font-weight:1000;
+  white-space:nowrap;
+  overflow:visible;
+  text-overflow:clip;
+}
+
+/* Badge case gets its own independent column and keeps the asset's natural ratio. */
+.ttm-badge-shell{
+  position:absolute;
+  right:0;
+  top:-3.5%;
+  width:41.2%;
+  min-width:0;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding-top:6%;
+  box-sizing:border-box;
+}
+.ttm-badge-case{
+  position:relative;
+  width:100%;
+  max-width:100%;
+  aspect-ratio:1448/833;
+  flex:0 0 auto;
+}
+.ttm-badge-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  pointer-events:none;
+}
+.ttm-special-slots,.ttm-gym-slots{
+  position:absolute;
+  display:grid;
+  align-items:center;
+  justify-items:center;
+  pointer-events:none;
+}
+.ttm-special-slots{
+  left:7.7%;
+  top:22.7%;
+  width:20.7%;
+  height:67.5%;
+  grid-template-columns:1fr;
+  grid-template-rows:repeat(2,1fr);
+  row-gap:10%;
+}
+.ttm-gym-slots{
+  left:34.6%;
+  top:22.7%;
+  width:58.2%;
+  height:67.5%;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+  column-gap:4%;
+  row-gap:10%;
+}
+.ttm-badge-slot{
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  overflow:visible;
+}
+.ttm-special-badge{
+  width:auto;
+  height:auto;
+  max-width:80%;
+  max-height:80%;
+  object-fit:contain;
+}
+.ttm-gym-badge{
+  width:auto;
+  height:auto;
+  max-width:72%;
+  max-height:72%;
+  object-fit:contain;
+}
+.ttm-gyms-defeated{
+  position:relative;
+  width:88%;
+  min-height:31px;
+  margin-top:1.5%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid var(--ttm-gold);
+  border-radius:999px;
+  background:rgba(12,11,14,.96);
+  color:#fff;
+  font-size:clamp(9px,1.1vw,14px);
+  font-weight:950;
+  box-shadow:0 7px 18px rgba(0,0,0,.28);
+}
+.ttm-gyms-defeated::before{
+  content:"";
+  width:17px;
+  height:17px;
+  margin-right:8px;
+  border:4px solid var(--ttm-gold);
+  border-radius:50%;
+  box-sizing:border-box;
+}
+
+/* Exact mockup divider */
+.ttm-divider{
+  position:absolute;
+  left:4.2%;
+  right:4.2%;
+  top:67.2%;
+  height:24px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  color:var(--ttm-gold);
+}
+.ttm-line{
+  height:2px;
+  flex:1 1 auto;
+  background:var(--ttm-gold);
+}
+.ttm-divider strong{
+  font-size:clamp(9px,1.2vw,14px);
+  font-weight:1000;
+  letter-spacing:.18em;
+  white-space:nowrap;
+}
+.ttm-ball{
+  position:relative;
+  width:22px;
+  height:22px;
+  flex:0 0 22px;
+  border:4px solid var(--ttm-gold);
+  border-radius:50%;
+  box-sizing:border-box;
+}
+.ttm-ball::before{
+  content:"";
+  position:absolute;
+  left:-7px;
+  right:-7px;
+  top:7px;
+  height:3px;
+  background:var(--ttm-gold);
+}
+.ttm-ball::after{
+  content:"";
+  position:absolute;
+  left:5px;
+  top:5px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--ttm-gold);
+}
+
+/* Pokémon row */
+.ttm-pokemon-team{
+  position:absolute;
+  left:4.0%;
+  right:4.0%;
+  bottom:2.4%;
+  height:25.8%;
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:1.4%;
+  align-items:end;
+}
+.ttm-mon{
+  position:relative;
+  width:100%;
+  height:100%;
+  min-width:0;
+}
+.ttm-mon::after{
+  content:"";
+  position:absolute;
+  left:3%;
+  right:3%;
+  bottom:0;
+  height:23%;
+  border-radius:50%;
+  background:radial-gradient(ellipse at center,
+    rgba(188,94,255,.98) 0%,
+    rgba(188,94,255,.48) 34%,
+    rgba(188,94,255,.18) 56%,
+    transparent 76%);
+  filter:blur(2px);
+  box-shadow:0 0 18px rgba(188,94,255,.64);
+}
+.ttm-mon img{
+  position:absolute;
+  left:50%;
+  bottom:8%;
+  width:auto;
+  height:auto;
+  max-width:96%;
+  max-height:91%;
+  object-fit:contain;
+  object-position:center bottom;
+  transform:translateX(-50%);
+  filter:drop-shadow(0 8px 10px rgba(0,0,0,.35)) drop-shadow(0 0 9px rgba(188,94,255,.35));
+  z-index:2;
+}
+.ttm-mon.empty{
+  display:grid;
+  place-items:center;
+  color:rgba(255,255,255,.40);
+  grid-column:auto!important;
+  padding:0!important;
+  text-align:initial!important;
+}
+.ttm-mon.empty::before{
+  content:"◉";
+  font-size:clamp(18px,3vw,34px);
+}
+.ttm-orb{
+  position:absolute;
+  right:2.7%;
+  top:4.8%;
+  width:42px;
+  height:42px;
+  border:5px solid rgba(255,255,255,.84);
+  border-radius:50%;
+  opacity:.82;
+}
+.ttm-orb::before,.ttm-orb::after{
+  content:"";
+  position:absolute;
+  top:14px;
+  width:19px;
+  height:5px;
+  background:rgba(255,255,255,.76);
+}
+.ttm-orb::before{left:-20px}
+.ttm-orb::after{right:-20px}
+.ttm-orb span{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:rgba(255,255,255,.88);
+  transform:translate(-50%,-50%);
+}
+
+/* Patch #235 — Mobile Admin Test Mode layout only.
+   Desktop #234 card styling and logic remain unchanged. */
+@media(max-width:700px) and (pointer:coarse){
+  html.admin-test-mode #trainerCard{display:none!important}
+  html.admin-test-mode #trainerCardTestMockup{display:block!important}
+
+  .trainer-test-mockup{
+    aspect-ratio:auto;
+    min-height:760px;
+    padding:18px 16px 22px;
+    border-radius:24px;
+    overflow:hidden;
+  }
+
+  .ttm-top{
+    position:relative;
+    left:auto;
+    right:auto;
+    top:auto;
+    height:auto;
+    display:block;
+  }
+
+  .ttm-left{position:static;display:block}
+
+  .ttm-identity-row{
+    position:relative;
+    left:auto; top:auto; width:auto; height:auto;
+    display:grid;
+    grid-template-columns:112px minmax(0,1fr);
+    gap:14px;
+    align-items:center;
+  }
+
+  .ttm-avatar-wrap{
+    width:112px;
+    height:150px;
+    border-radius:18px;
+  }
+
+  .ttm-identity{
+    padding-top:0;
+    align-self:center;
+    min-width:0;
+  }
+
+  .ttm-kicker{
+    font-size:8px;
+    letter-spacing:.12em;
+    white-space:normal;
+    line-height:1.25;
+  }
+
+  .ttm-name{
+    margin-top:8px;
+    font-size:27px!important;
+    line-height:1;
+    white-space:normal;
+  }
+
+  .ttm-username{
+    margin-top:7px;
+    font-size:14px;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+  }
+
+  .ttm-leader{
+    margin-top:10px;
+    padding:7px 11px;
+    gap:6px;
+    max-width:100%;
+  }
+
+  .ttm-leader span{font-size:8px}
+  .ttm-leader strong{font-size:10px}
+
+  .ttm-stats{
+    position:relative; left:auto; bottom:auto; width:auto; height:auto;
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+
+  .ttm-stats>div{
+    padding:9px 8px;
+    border-radius:12px;
+  }
+
+  .ttm-stats span{font-size:7px}
+  .ttm-stats strong{font-size:13px!important}
+
+  .ttm-badge-shell{
+    position:relative; right:auto; top:auto; width:auto;
+    margin-top:18px;
+    height:auto;
+    padding-top:0;
+  }
+
+  .ttm-badge-case{
+    width:min(100%,392px);
+    max-width:392px;
+  }
+
+  .ttm-gyms-defeated{
+    width:min(90%,338px);
+    min-height:29px;
+    margin-top:4px;
+    font-size:11px;
+  }
+
+  .ttm-divider{
+    position:relative;
+    left:auto;
+    right:auto;
+    top:auto;
+    height:auto;
+    margin:18px 0 10px;
+    gap:7px;
+  }
+
+  .ttm-divider strong{
+    font-size:10px;
+    letter-spacing:.12em;
+  }
+
+  .ttm-ball{
+    width:18px;
+    height:18px;
+    flex-basis:18px;
+    border-width:3px;
+  }
+
+  .ttm-ball::before{
+    left:-5px;
+    right:-5px;
+    top:6px;
+    height:2px;
+  }
+
+  .ttm-ball::after{
+    left:4px;
+    top:4px;
+    width:4px;
+    height:4px;
+  }
+
+  .ttm-pokemon-team{
+    position:relative;
+    left:auto;
+    right:auto;
+    bottom:auto;
+    height:168px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-rows:repeat(2,minmax(0,1fr));
+    gap:8px 6px;
+    align-items:end;
+  }
+
+  .ttm-mon{height:80px}
+
+  .ttm-mon img{
+    max-width:94%;
+    max-height:88%;
+    bottom:7%;
+  }
+
+  .ttm-mon::after{
+    left:6%;
+    right:6%;
+    height:24%;
+  }
+
+  .ttm-mon.empty::before{font-size:20px}
+
+  .ttm-orb{
+    right:18px;
+    top:16px;
+    transform:scale(.72);
+    transform-origin:top right;
+  }
+}

@@ -1,0 +1,58 @@
+
+/* Patch #109 — targeted bug fixes only. */
+/* Pokémon detail controls: preserve the bottom border/radius of tabs and navigation buttons. */
+#detailPage .dex-detail-nav{overflow:visible!important;padding-bottom:3px!important}
+#detailPage .dex-detail-nav button{box-sizing:border-box;line-height:1.2;overflow:visible}
+#detailPage .dex43-book-tabs{overflow:visible;padding-bottom:3px}
+#detailPage .dex43-book-tab{box-sizing:border-box;line-height:1.2;overflow:visible}
+#detailPage .dex43-community-list.expanded{padding-bottom:5px}
+#detailPage .dex43-community-more{box-sizing:border-box;line-height:1.2;margin-bottom:3px;overflow:visible}
+
+/* Team member lists: make touch scrolling dependable on iPhone/mobile browsers. */
+.my-team-members-list{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+  pointer-events:auto;
+  position:relative;
+  z-index:1;
+}
+
+/* Keep My Team content centered and prevent a wide child from pulling the page sideways. */
+@media(max-width:900px){
+  #myteamPage,
+  #myteamPage .myteam-main-layout,
+  #myteamPage .myteam-left-stack,
+  #myteamPage .myteam-right-stack,
+  #myteamPage .myteam-panel,
+  #myteamPage .my-team-members-panel{
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box;
+  }
+  #myteamPage .myteam-main-layout{width:100%!important;margin-left:auto!important;margin-right:auto!important;transform:none!important}
+  body[data-team="team-magma"] #myteamPage{width:100%!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important;overflow-x:clip}
+  .my-team-members-list{max-height:min(52vh,360px)!important}
+}
+
+/* iOS Safari can drop emoji/nav layers while the browser chrome is moving. Keep the fixed nav on its own stable compositor layer. */
+@supports (-webkit-touch-callout:none){
+  .bottom-nav{
+    -webkit-transform:translate3d(0,0,0);
+    transform:translate3d(0,0,0);
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    will-change:transform;
+    isolation:isolate;
+  }
+  .bottom-nav .nav-btn,
+  .bottom-nav .nav-icon{
+    -webkit-transform:translateZ(0);
+    transform:translateZ(0);
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+  }
+  body[data-team] .bottom-nav .nav-btn.active .nav-icon{filter:none!important;text-shadow:0 0 6px currentColor}
+}

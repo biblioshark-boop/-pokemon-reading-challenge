@@ -1,0 +1,3 @@
+
+#trainerSpecialBadgeRow{gap:var(--trainer-badge-gap,10px)!important}
+#trainerSpecialBadgeRow .trainer-special-badge{width:var(--trainer-badge-size,64px)!important;height:var(--trainer-badge-size,64px)!important;flex:0 0 var(--trainer-badge-size,64px)!important}

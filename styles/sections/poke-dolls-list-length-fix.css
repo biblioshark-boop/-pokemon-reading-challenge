@@ -1,0 +1,23 @@
+
+/* Patch #104: cap recent catches at 10 and keep long cheer history scrollable without stretching its grid mate. */
+#myteamPage.poke-dolls-layout #myTeamActivityPanel{
+  align-self:start;
+  height:auto;
+}
+#myteamPage.poke-dolls-layout .myteam-cheer-panel{
+  align-self:start;
+}
+#myteamPage.poke-dolls-layout .myteam-cheer-feed{
+  max-height:692px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-right:4px;
+  scrollbar-gutter:stable;
+}
+#myteamPage.poke-dolls-layout .myteam-cheer-post{
+  min-height:62px;
+  box-sizing:border-box;
+}
+@media(max-width:900px){
+  #myteamPage.poke-dolls-layout .myteam-cheer-feed{max-height:560px;}
+}

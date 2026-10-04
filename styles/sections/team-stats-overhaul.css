@@ -1,0 +1,77 @@
+
+.my-team-stats-card{
+position:relative;overflow:hidden;margin:0 auto 20px;max-width:900px;
+border-radius:26px;padding:24px;
+background:linear-gradient(135deg,var(--accent),var(--accent2));
+color:white;border:2px solid rgba(255,255,255,.24);
+box-shadow:0 16px 36px rgba(0,0,0,.18)
+}
+.my-team-stats-card::after{
+content:"";position:absolute;width:280px;height:280px;right:-110px;bottom:-150px;
+border:34px solid rgba(255,255,255,.09);border-radius:50%
+}
+.my-team-stats-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.my-team-stats-kicker{font-size:11px;font-weight:1000;letter-spacing:.14em;opacity:.82}
+.my-team-stats-name{font-size:34px;font-weight:1000;line-height:1.05;margin-top:5px}
+.my-team-stats-total{font-size:58px;font-weight:1000;line-height:1}
+.my-team-stats-total span{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-top:7px;text-align:right}
+.my-team-stats-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.my-team-pill{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.2);padding:8px 11px;border-radius:999px;font-size:12px;font-weight:900}
+.my-team-leader-row{position:relative;z-index:1;display:flex;gap:12px;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.2)}
+.my-team-leader-row img{width:58px;height:58px;object-fit:contain;object-position:center bottom;background:rgba(255,255,255,.12);border-radius:14px}
+.my-team-leader-title{font-size:10px;font-weight:1000;letter-spacing:.12em;opacity:.78}
+.my-team-leader-name{font-size:15px;font-weight:1000;margin-top:2px}
+.my-team-leader-user{font-size:12px;opacity:.82;margin-top:2px}
+.team-recent-catches{display:grid;gap:9px;margin-bottom:22px}
+.team-catch-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px 15px;border-radius:17px;background:var(--surface);border:1px solid var(--line);box-shadow:0 5px 14px rgba(0,0,0,.05)}
+.team-catch-name{font-weight:1000;font-size:15px}
+.team-catch-who{font-size:12px;color:var(--muted);margin-top:3px}
+.team-catch-book{font-size:12px;margin-top:4px}
+.team-catch-time{font-size:11px;color:var(--muted);white-space:nowrap;text-align:right}
+.team-catch-leader{display:inline-block;margin-left:5px;font-size:9px;font-weight:1000;letter-spacing:.07em;padding:3px 6px;border-radius:999px;background:#f3c84b;color:#443200}
+.team-rank-row{
+grid-template-columns:44px minmax(0,1fr) auto!important;
+align-items:center
+}
+.team-rank-main{min-width:0}
+.team-rank-name-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.team-rank-leader{font-size:11px;color:var(--muted);margin-top:4px}
+.team-rank-leader strong{color:var(--text)}
+.team-rank-score{min-width:92px;text-align:right}
+.team-rank-row.current-team{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent),0 7px 18px rgba(0,0,0,.07)}
+.team-rank-crown{font-size:13px}
+.stats-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:22px;align-items:start;max-width:1220px;margin:0 auto}
+.stats-main-column{min-width:0}
+.my-team-members-panel{position:sticky;top:18px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--shadow);min-width:0}
+.my-team-members-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.my-team-members-kicker{font-size:10px;font-weight:1000;letter-spacing:.12em;color:var(--muted)}
+.my-team-members-head h3{margin:3px 0 0;font-size:20px;line-height:1.1}
+.my-team-members-count{min-width:34px;height:34px;padding:0 9px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:1000;font-size:13px}
+.my-team-members-list{display:grid;gap:8px;margin-top:12px;max-height:62vh;overflow:auto;padding-right:2px}
+.my-team-member-row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+.my-team-member-row.leader{border-color:#e4b82f;background:linear-gradient(135deg,rgba(244,200,75,.18),var(--surface2))}
+.my-team-member-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 34px;background:var(--accent);color:#fff;font-size:12px;font-weight:1000}
+.my-team-member-main{min-width:0;flex:1}
+.my-team-member-name{font-size:13px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1f2937!important}
+.my-team-member-handle{font-size:11px;color:#5f6673!important;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-team-members-panel .my-team-members-kicker,
+.my-team-members-panel h3,
+.my-team-members-panel .my-team-members-count{color:#1f2937!important}
+.my-team-members-panel .muted,
+.my-team-members-panel .my-team-members-empty{color:#5f6673!important}
+.my-team-member-leader{display:inline-block;margin-top:4px;font-size:9px;font-weight:1000;letter-spacing:.07em;padding:3px 6px;border-radius:999px;background:#f3c84b;color:#443200}
+.my-team-members-empty{padding:14px 4px;color:var(--muted);font-size:13px;line-height:1.45}
+@media(max-width:980px){
+.stats-layout{grid-template-columns:1fr}
+.my-team-members-panel{position:static;order:2}
+.my-team-members-list{max-height:none}
+}
+@media(max-width:620px){
+.my-team-stats-grid{grid-template-columns:1fr}
+.my-team-stats-total{font-size:46px}
+.my-team-stats-total span{text-align:left}
+.team-rank-row{grid-template-columns:36px minmax(0,1fr) auto!important}
+.team-rank-score{min-width:68px}
+.team-catch-row{grid-template-columns:1fr}
+.team-catch-time{text-align:left}
+}

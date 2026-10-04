@@ -109,6 +109,64 @@ def main():
             raise SystemExit(f"ERROR: Expected exact CSS include marker: {style_id}")
         css = (ROOT / "styles" / filename).read_text(encoding="utf-8")
         text = text[:css_match.start(2)] + css + text[css_match.end(2):]
+    # Preserve each remaining style element, including anonymous late overrides.
+    for attributes, path in [
+        (" id=\"siteThemePatch267\"", "styles/sections/site-theme-patch267.css"),
+        (" id=\"mobileSafariEncounterTextContrast20260916\"", "styles/sections/mobile-safari-encounter-text-contrast.css"),
+        (" id=\"darkSafariEncounterContrast20260916\"", "styles/sections/dark-safari-encounter-contrast.css"),
+        (" id=\"lockedRegressionRecovery20260819\"", "styles/sections/locked-regression-recovery.css"),
+        (" id=\"gymTheme20260818\"", "styles/sections/gym-theme.css"),
+        (" id=\"gymHeroThemeSafe20260818\"", "styles/sections/gym-hero-theme-safe.css"),
+        (" id=\"gymTypePillLayoutFix20260818\"", "styles/sections/gym-type-pill-layout-fix.css"),
+        (" id=\"adminMembers20260818\"", "styles/sections/admin-members.css"),
+        (" id=\"usernameLockAndAdminEditor20260818\"", "styles/sections/username-lock-and-admin-editor.css"),
+        (" id=\"gymUncaughtRule20260818\"", "styles/sections/gym-uncaught-rule.css"),
+        (" id=\"teamOneChoiceLock20260818\"", "styles/sections/team-one-choice-lock.css"),
+        (" id=\"trainerCardHome20260818\"", "styles/sections/trainer-card-home.css"),
+        (" id=\"teamCharacterTrainerCard20260818\"", "styles/sections/team-character-trainer-card.css"),
+        (" id=\"trainerCardInlineEditUsernameOnce20260818\"", "styles/sections/trainer-card-inline-edit-username-once.css"),
+        (" id=\"trainerCardUniversalPhoneFit20260819\"", "styles/sections/trainer-card-universal-phone-fit.css"),
+        (" id=\"adminPokemonQuickEdit20260819\"", "styles/sections/admin-pokemon-quick-edit.css"),
+        (" id=\"recoveryAdminTeamLeaderGold20260818\"", "styles/sections/recovery-admin-team-leader-gold.css"),
+        (" id=\"adminUserCardPreview20260818\"", "styles/sections/admin-user-card-preview.css"),
+        (" id=\"teamStatsOverhaul20260818\"", "styles/sections/team-stats-overhaul.css"),
+        (" id=\"teamStatsReadabilityFix20260818\"", "styles/sections/team-stats-readability-fix.css"),
+        (" id=\"teamRankCardsConsistent20260818\"", "styles/sections/team-rank-cards-consistent.css"),
+        (" id=\"authPasswordVisibility20260818\"", "styles/sections/auth-password-visibility.css"),
+        (" id=\"passwordRecoveryFix20260820\"", "styles/sections/password-recovery-fix.css"),
+        (" id=\"planned-catching-styles\"", "styles/sections/planned-catching-styles.css"),
+        (" id=\"fan-disclaimer-styles\"", "styles/sections/fan-disclaimer-styles.css"),
+        (" id=\"required-team-selection-styles\"", "styles/sections/required-team-selection-styles.css"),
+        (" id=\"login-load-overlay-styles\"", "styles/sections/login-load-overlay-styles.css"),
+        (" id=\"dex-image-performance-styles\"", "styles/sections/dex-image-performance-styles.css"),
+        (" id=\"dex-compact-batch-styles\"", "styles/sections/dex-compact-batch-styles.css"),
+        (" id=\"auth-inline-disclaimer-styles\"", "styles/sections/auth-inline-disclaimer-styles.css"),
+        (" id=\"myTeamStage1Styles20260824\"", "styles/sections/my-team-stage1-styles.css"),
+        (" id=\"patch62PokedexQoL\"", "styles/sections/patch62-pokedex-qo-l.css"),
+        (" id=\"manualAdminBonuses20260825\"", "styles/sections/manual-admin-bonuses.css"),
+        (" id=\"specialTrainerBadges20260826\"", "styles/sections/special-trainer-badges.css"),
+        (" id=\"patch115UnifiedTrainerBadgeSizing\"", "styles/sections/patch115-unified-trainer-badge-sizing.css"),
+        (" id=\"competitionBattleStats20260826\"", "styles/sections/competition-battle-stats.css"),
+        (" id=\"pokeDollsMyTeamTrueGridFix20260827\"", "styles/sections/poke-dolls-my-team-true-grid-fix.css"),
+        (" id=\"pokeDollsActivityContainmentFix20260827\"", "styles/sections/poke-dolls-activity-containment-fix.css"),
+        (" id=\"pokeDollsListLengthFix20260827\"", "styles/sections/poke-dolls-list-length-fix.css"),
+        (" id=\"patch109MobileTeamDetailFixes\"", "styles/sections/patch109-mobile-team-detail-fixes.css"),
+        (" id=\"patch110DetailAndIosNavFix\"", "styles/sections/patch110-detail-and-ios-nav-fix.css"),
+        (" id=\"teamSelectionPreviewUpgrade20260827\"", "styles/sections/team-selection-preview-upgrade.css"),
+        (" id=\"trainerCardAdminTestLayout20260906\"", "styles/sections/trainer-card-admin-test-layout.css"),
+        (" id=\"monthlyBonusPokemonStyles20260908\"", "styles/sections/monthly-bonus-pokemon-styles.css"),
+        (" id=\"faqOrientationPatch271\"", "styles/sections/faq-orientation-patch271.css"),
+        ("", "styles/sections/admin-image-editing.css"),
+        ("", "styles/sections/late-page-overrides.css"),
+    ]:
+        marker = f"/* RF_CSS_INCLUDE:{path} */"
+        css_pattern = re.compile(r'(<style' + re.escape(attributes) + r'>)(' + re.escape(marker) + r')(</style>)')
+        css_matches = list(css_pattern.finditer(text))
+        if text.count(marker) != 1 or len(css_matches) != 1:
+            raise SystemExit(f"ERROR: Expected one exact stylesheet include: {path}")
+        css_match = css_matches[0]
+        css = (ROOT / path).read_text(encoding="utf-8")
+        text = text[:css_match.start(2)] + css + text[css_match.end(2):]
     if "/* RF_CSS_INCLUDE:" in text:
         raise SystemExit("ERROR: Unknown or duplicate CSS include marker.")
     # Apply the reviewed event patch with exact context checks.

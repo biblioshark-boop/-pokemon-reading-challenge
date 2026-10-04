@@ -1,0 +1,3 @@
+
+.admin-pokemon-inline-edit{margin-top:14px;padding:14px;border:2px dashed var(--accent);border-radius:18px;background:color-mix(in srgb,var(--surface) 92%,var(--accent) 8%)}
+.admin-pokemon-inline-edit label{display:block;margin-top:10px;font-weight:900;font-size:12px}.admin-pokemon-inline-edit textarea{min-height:76px;resize:vertical}.admin-pokemon-inline-edit button{width:100%;margin-top:10px}

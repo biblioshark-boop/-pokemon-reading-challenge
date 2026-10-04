@@ -1,0 +1,27 @@
+
+/* Locked-in Settings controls */
+.settings-collapse-controls{display:flex;gap:8px;justify-content:flex-end;margin:0 auto 12px;max-width:900px}
+.settings-collapse-controls button{width:auto;padding:9px 13px}
+#settingsPage>.form-card.settings-collapsible>.settings-section-heading{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0}
+#settingsPage>.form-card.settings-collapsible>.settings-section-heading::after{content:"⌄";font-size:20px;line-height:1;transition:transform .18s ease}
+#settingsPage>.form-card.settings-collapsible.settings-collapsed>.settings-section-heading::after{transform:rotate(-90deg)}
+#settingsPage>.form-card.settings-collapsible.settings-collapsed>*:not(.settings-section-heading){display:none!important}
+.back-to-top{position:fixed;right:18px;bottom:92px;z-index:1200;border:0;border-radius:999px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:900;box-shadow:0 8px 24px rgba(0,0,0,.28);opacity:0;pointer-events:none;transform:translateY(8px);transition:.18s ease}
+.back-to-top.visible{opacity:1;pointer-events:auto;transform:none}
+/* The six slots always stay a compact row directly under the character. */
+.trainer-card{height:auto!important;min-height:0!important}
+.trainer-card-grid{min-height:0!important}
+.trainer-card-left{align-self:start;display:flex!important;flex-direction:column;align-items:stretch;min-height:0!important}
+#trainerCardPokemonTeam{grid-column:1;width:166px!important;max-width:166px!important;height:109px!important;max-height:109px!important;margin:8px auto 0!important;display:grid!important;grid-template-columns:repeat(3,52px)!important;grid-template-rows:repeat(2,52px)!important;grid-auto-flow:row!important;grid-auto-rows:52px!important;align-content:start!important;justify-content:center!important;gap:5px!important;overflow:hidden!important;flex:none!important}
+#trainerCardPokemonTeam:empty{display:grid!important;margin:8px auto 0!important}
+.trainer-card.no-pokemon-team #trainerCardPokemonTeam{display:grid!important}
+#trainerCardPokemonTeam .trainer-team-mon{box-sizing:border-box!important;width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;max-width:52px!important;max-height:52px!important;aspect-ratio:1/1!important;margin:0!important;padding:0!important}
+.trainer-card-meta-grid>div{background:rgba(0,0,0,.64)!important;border-color:rgba(255,255,255,.82)!important}
+.trainer-avatar-wrap{background:rgba(255,255,255,.38)!important;border-color:rgba(255,255,255,.86)!important}
+.trainer-team-mon{background:rgba(255,255,255,.48)!important;border-color:rgba(255,255,255,.92)!important}
+.faction-card{background-image:linear-gradient(90deg,rgba(0,0,0,.12),rgba(0,0,0,.48)),var(--faction-image)!important;background-size:cover!important;background-position:center!important}
+@media(max-width:520px){
+#trainerCardPokemonTeam{width:99px!important;max-width:99px!important;height:65px!important;max-height:65px!important;grid-template-columns:repeat(3,31px)!important;grid-template-rows:repeat(2,31px)!important;grid-auto-rows:31px!important;gap:3px!important}
+#trainerCardPokemonTeam .trainer-team-mon{width:31px!important;height:31px!important;min-width:31px!important;min-height:31px!important;max-width:31px!important;max-height:31px!important;border-radius:7px!important}
+.back-to-top{right:12px;bottom:82px;padding:9px 12px}
+}

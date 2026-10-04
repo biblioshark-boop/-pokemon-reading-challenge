@@ -1,0 +1,9 @@
+
+/* Patch #271 — one-time FAQ orientation only. */
+.faq-orientation-modal{position:fixed;z-index:1600;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.62)}
+.faq-orientation-modal.open{display:flex}
+.faq-orientation-card{width:min(520px,100%);background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 18px 48px rgba(0,0,0,.34);text-align:center}
+.faq-orientation-card h2{margin:0 0 10px;font-size:24px}
+.faq-orientation-card p{margin:0 0 12px;line-height:1.55}
+.faq-orientation-location{padding:11px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-weight:850}
+.faq-orientation-card .primary{width:100%;margin-top:4px}

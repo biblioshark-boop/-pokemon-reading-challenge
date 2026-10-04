@@ -1,0 +1,9 @@
+
+/* Patch #268 — mobile-only light-theme Safari encounter text contrast. */
+@media(max-width:700px){
+  html:not([data-site-theme="dark"]) #safariPage:not(.haunted-safari) .safari-encounter,
+  html:not([data-site-theme="dark"]) #safariPage:not(.haunted-safari) .safari-encounter h3,
+  html:not([data-site-theme="dark"]) #safariPage:not(.haunted-safari) .safari-encounter .prompt-label,
+  html:not([data-site-theme="dark"]) #safariPage:not(.haunted-safari) .safari-encounter .prompt-text{color:#20371d!important;}
+  html:not([data-site-theme="dark"]) #safariPage:not(.haunted-safari) .safari-encounter .wild-label{color:#496447!important;}
+}

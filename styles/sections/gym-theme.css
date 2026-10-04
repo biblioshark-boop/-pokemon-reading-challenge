@@ -1,0 +1,59 @@
+
+/* Gym theme: unmistakable gray + orange/red */
+#gymsPage .gym-card{
+background:#444 !important;
+border:2px solid #c4512d !important;
+color:#fff !important;
+box-shadow:0 8px 20px rgba(0,0,0,.28) !important;
+}
+#gymsPage .gym-card-top{
+background:linear-gradient(90deg,#8d2f25,#d06130) !important;
+color:#fff !important;
+border-radius:14px;
+padding:10px 12px !important;
+margin:-4px -4px 12px !important;
+}
+#gymsPage .gym-leader-name,
+#gymsPage .gym-kind{color:#fff !important;}
+#gymsPage .gym-specialty{
+background:#e07532 !important;
+border-color:#ffab68 !important;
+color:#fff !important;
+}
+#gymsPage .gym-mon{
+background:#616161 !important;
+border:1px solid #858585 !important;
+color:#fff !important;
+}
+#gymsPage .gym-mon-name{color:#fff !important;}
+#gymsPage .gym-mon-form,
+#gymsPage .gym-mon-note{color:#e4e4e4 !important;}
+#gymsPage .gym-mon img,
+#gymsPage .gym-mon-fallback{
+background:#333 !important;
+border-radius:12px !important;
+}
+#gymsPage .gym-mon-prompt{
+background:#303030 !important;
+border-color:#707070 !important;
+color:#fff !important;
+}
+#gymsPage .gym-mon-prompt strong{color:#ff9d62 !important;}
+#gymsPage .gym-defeat-btn{
+background:#d65b35 !important;
+border-color:#ff8b66 !important;
+color:#fff !important;
+}
+#gymsPage .gym-defeat-btn.done{
+background:#777 !important;
+border-color:#999 !important;
+}
+#gymsPage .trainer-portrait{
+background:#333 !important;
+border-color:#a8563d !important;
+}
+#gymsPage .gym-clear-banner{
+background:#303030 !important;
+color:#fff !important;
+border-color:#c4512d !important;
+}
