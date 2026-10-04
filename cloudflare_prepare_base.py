@@ -81,12 +81,13 @@ def main():
             raise SystemExit(f"Invalid static catalog declaration: {filename}")
         json.loads(fragment[len(prefix):-1])
         text = text.replace(marker, fragment)
-    # Restore core lists and palettes at their original script position.
-    config_marker = "/* RF_INCLUDE:source-fragments/site-config.js */"
-    if text.count(config_marker) != 1:
-        raise SystemExit("Expected exactly one site configuration marker")
-    config = (ROOT / "source-fragments/site-config.js").read_text(encoding="utf-8")
-    text = text.replace(config_marker, config)
+    # Restore configuration and helpers at their original script positions.
+    for filename in ["site-config.js", "display-helpers.js"]:
+        marker = f"/* RF_INCLUDE:source-fragments/{filename} */"
+        if text.count(marker) != 1:
+            raise SystemExit(f"Expected exactly one source fragment marker: {filename}")
+        fragment = (ROOT / "source-fragments" / filename).read_text(encoding="utf-8")
+        text = text.replace(marker, fragment)
     if "/* RF_INCLUDE:" in text:
         raise SystemExit("Unknown source fragment marker")
 
