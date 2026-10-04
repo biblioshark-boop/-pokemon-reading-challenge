@@ -1,0 +1,37 @@
+
+/* Stats text needs stronger contrast against patterned team backgrounds. */
+body.team-pattern-page[data-team="team-rocket"] #statsPage,
+body.team-pattern-page[data-team="team-galactic"] #statsPage{
+color:#fff8f2;
+}
+body.team-pattern-page[data-team="team-rocket"] #statsPage .section-title,
+body.team-pattern-page[data-team="team-rocket"] #statsPage .team-leader-note,
+body.team-pattern-page[data-team="team-rocket"] #statsPage > .muted,
+body.team-pattern-page[data-team="team-galactic"] #statsPage .section-title,
+body.team-pattern-page[data-team="team-galactic"] #statsPage .team-leader-note,
+body.team-pattern-page[data-team="team-galactic"] #statsPage > .muted{
+color:#fff8f2 !important;
+text-shadow:0 2px 8px rgba(0,0,0,.55);
+}
+body.team-pattern-page[data-team="team-rocket"] #statsPage .team-leader-note,
+body.team-pattern-page[data-team="team-galactic"] #statsPage .team-leader-note{
+opacity:.92;
+}
+body.team-pattern-page[data-team="team-plasma"] #statsPage{
+color:#182734;
+}
+body.team-pattern-page[data-team="team-plasma"] #statsPage .section-title,
+body.team-pattern-page[data-team="team-plasma"] #statsPage .team-leader-note,
+body.team-pattern-page[data-team="team-plasma"] #statsPage > .muted{
+color:#182734 !important;
+text-shadow:0 1px 0 rgba(255,255,255,.7);
+}
+/* Keep empty-state Recent Team Catches copy readable too. */
+body.team-pattern-page[data-team="team-rocket"] #teamRecentCatches > .muted,
+body.team-pattern-page[data-team="team-galactic"] #teamRecentCatches > .muted{
+color:#fff8f2 !important;
+text-shadow:0 2px 8px rgba(0,0,0,.55);
+}
+body.team-pattern-page[data-team="team-plasma"] #teamRecentCatches > .muted{
+color:#243847 !important;
+}

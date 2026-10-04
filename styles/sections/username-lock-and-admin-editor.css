@@ -1,0 +1,25 @@
+
+#settingsPage #username:disabled{
+opacity:1 !important;
+color:var(--text) !important;
+-webkit-text-fill-color:var(--text) !important;
+background:var(--surface2) !important;
+cursor:not-allowed;
+}
+.username-lock-note{
+margin-top:7px;
+font-size:12px;
+line-height:1.4;
+color:var(--muted);
+font-style:italic;
+}
+.admin-username-editor{
+margin-top:16px;
+padding:14px;
+border-radius:16px;
+background:var(--surface2);
+border:1px solid var(--line);
+}
+.admin-username-editor h4{
+margin:0 0 8px;
+}

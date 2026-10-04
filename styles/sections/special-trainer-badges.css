@@ -1,0 +1,57 @@
+
+.trainer-special-badge-row{display:flex;align-items:center;gap:10px;min-height:0;margin-top:10px;flex-wrap:nowrap;overflow:visible;max-width:100%}
+.trainer-special-badge-row:empty{display:none}
+.trainer-special-badge{width:64px;height:64px;object-fit:contain;display:block;flex:0 0 64px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.28));transition:width .16s ease,height .16s ease,flex-basis .16s ease}
+.trainer-special-badge-row.badge-count-1 .trainer-special-badge{width:88px;height:88px;flex-basis:88px}
+.trainer-special-badge-row.badge-count-2 .trainer-special-badge{width:82px;height:82px;flex-basis:82px}
+.trainer-special-badge-row.badge-count-3 .trainer-special-badge{width:74px;height:74px;flex-basis:74px}
+.trainer-special-badge-row.badge-count-4 .trainer-special-badge{width:68px;height:68px;flex-basis:68px}
+.trainer-special-badge-row.badge-count-5 .trainer-special-badge{width:64px;height:64px;flex-basis:64px}
+.trainer-special-badge-editor-title{margin-top:18px;font-weight:1000;font-size:14px;color:var(--ink)}
+.trainer-special-badge-editor-help{margin:4px 0 8px;font-size:12px;color:var(--muted)}
+.trainer-badge-details{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.72);overflow:hidden;margin-bottom:14px}
+.trainer-badge-details>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:900;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.trainer-badge-details>summary::-webkit-details-marker{display:none}
+.trainer-badge-options{display:grid;gap:8px;padding:0 10px 10px}
+.trainer-gym-badge-search-wrap{padding:0 10px 8px}
+.trainer-gym-badge-search{margin:0;width:100%}
+.trainer-gym-badge-options{max-height:300px;overflow-y:auto;overscroll-behavior:contain;padding-right:8px;scrollbar-gutter:stable}
+@media(max-width:650px){.trainer-gym-badge-options{max-height:270px}}
+.trainer-card-inline-edit .trainer-badge-choice{width:100%;display:grid;grid-template-columns:54px minmax(0,1fr) 28px;gap:10px;align-items:center;text-align:left;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.trainer-card-inline-edit .trainer-badge-choice.selected{border-color:#2f9f62;background:#f0fbf5}
+.trainer-badge-choice img{width:50px;height:50px;object-fit:contain}
+.trainer-badge-choice strong{display:block;font-size:13px}.trainer-badge-choice small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.trainer-badge-check{font-size:18px;font-weight:1000;color:#23884e;text-align:center}
+.admin-badge-modal{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:18px}
+.admin-badge-modal.hidden{display:none!important}.admin-badge-dialog{width:min(560px,96vw);max-height:86vh;overflow:auto;background:#fff;border-radius:18px;padding:18px;color:#24151b}
+.admin-badge-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.admin-badge-list{display:grid;gap:10px;margin-top:12px}
+.admin-badge-item{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #e2cbd3;border-radius:14px;padding:10px;background:#fff8fb}
+.admin-badge-item img{width:60px;height:60px;object-fit:contain}.admin-badge-item strong{display:block}.admin-badge-item small{display:block;color:#7c6570;margin-top:3px}
+.admin-badge-item button{width:auto!important;min-width:92px}
+
+.trainer-badge-choice{display:grid!important;grid-template-columns:54px minmax(0,1fr) auto!important;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:9px 10px}
+.trainer-badge-choice.selected{border-color:#2f9f62;background:#f0fbf5}
+.trainer-badge-choice-main{min-width:0;text-align:left}
+.trainer-badge-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.trainer-badge-actions button{width:auto!important;padding:7px 10px!important;font-size:11px!important;margin:0!important}
+.trainer-badge-toggle{min-width:42px!important;font-size:15px!important;font-weight:1000!important}
+.special-badge-preview-modal,.badge-earned-modal{position:fixed;inset:0;z-index:100250;background:rgba(0,0,0,.74);display:flex;align-items:center;justify-content:center;padding:18px}
+.special-badge-preview-card,.badge-earned-card{width:min(520px,94vw);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:20px;color:#24151b;box-shadow:0 18px 70px rgba(0,0,0,.42);text-align:center}
+.special-badge-preview-card img,.badge-earned-card img{width:min(320px,76vw);height:auto;max-height:48vh;object-fit:contain;display:block;margin:4px auto 12px}
+.special-badge-preview-card h3,.badge-earned-card h3{margin:4px 0 8px;font-size:24px}
+.special-badge-preview-card p,.badge-earned-card p{margin:0 auto 14px;max-width:430px;color:#725c66;line-height:1.45}
+.special-badge-modal-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.special-badge-modal-actions button{width:auto!important;min-width:120px}
+.badge-earned-kicker{font-size:12px;font-weight:1000;letter-spacing:.12em;color:#c52d75;margin-bottom:5px}
+@media(max-width:650px){.trainer-special-badge-row{gap:6px;margin-top:8px;flex-wrap:nowrap;overflow:visible;max-width:100%}.trainer-special-badge{width:46px;height:46px;flex-basis:46px}.trainer-special-badge-row.badge-count-1 .trainer-special-badge{width:58px;height:58px;flex-basis:58px}.trainer-special-badge-row.badge-count-2 .trainer-special-badge{width:56px;height:56px;flex-basis:56px}.trainer-special-badge-row.badge-count-3 .trainer-special-badge{width:52px;height:52px;flex-basis:52px}.trainer-special-badge-row.badge-count-4 .trainer-special-badge{width:49px;height:49px;flex-basis:49px}.trainer-special-badge-row.badge-count-5 .trainer-special-badge{width:46px;height:46px;flex-basis:46px}.admin-badge-item{grid-template-columns:52px minmax(0,1fr)}.admin-badge-item img{width:48px;height:48px}.admin-badge-item button{grid-column:1/-1;width:100%!important}.trainer-badge-choice{grid-template-columns:48px minmax(0,1fr)!important}.trainer-badge-actions{grid-column:1/-1;justify-content:stretch}.trainer-badge-actions button{flex:1}.special-badge-preview-card img,.badge-earned-card img{width:min(280px,78vw)}}
+
+/* Patch #135: use the cropped case artwork so invisible padding does not make the Trainer Card tall. */
+.trainer-badge-case{position:relative;width:min(100%,440px);aspect-ratio:1448/833;margin:8px auto 0;overflow:visible}
+.trainer-badge-case-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;user-select:none}
+.trainer-case-special-slots,.trainer-case-gym-slots{position:absolute;display:grid;align-items:center;justify-items:center;pointer-events:none}
+.trainer-case-special-slots{left:7.7%;top:22.7%;width:20.7%;height:67.5%;grid-template-columns:1fr;grid-template-rows:repeat(2,1fr);row-gap:10%}
+.trainer-case-gym-slots{left:34.6%;top:22.7%;width:58.2%;height:67.5%;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);column-gap:4%;row-gap:10%}
+.trainer-case-badge-slot{width:100%;height:100%;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.trainer-case-special-badge{width:78%;height:78%;max-width:78px;max-height:78px;object-fit:contain;display:block;margin:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.34))}
+.trainer-case-gym-badge{width:68%;height:68%;max-width:58px;max-height:58px;object-fit:contain;display:block;margin:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.34))}
+@media(max-width:650px){.trainer-badge-case{width:100%;max-width:440px}.trainer-case-special-badge{max-width:64px;max-height:64px}.trainer-case-gym-badge{max-width:50px;max-height:50px}}

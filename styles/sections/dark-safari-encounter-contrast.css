@@ -1,0 +1,18 @@
+
+/* Patch #269 — regular Safari encounter contrast in dark mode only. */
+html[data-site-theme="dark"] #safariPage:not(.haunted-safari) .safari-encounter{
+  background:linear-gradient(180deg,rgba(24,35,29,.98),rgba(19,29,24,.98))!important;
+  border-color:#668747!important;
+  color:var(--text)!important;
+  box-shadow:0 15px 30px rgba(0,0,0,.34)!important;
+}
+html[data-site-theme="dark"] #safariPage:not(.haunted-safari) .safari-encounter h3,
+html[data-site-theme="dark"] #safariPage:not(.haunted-safari) .safari-encounter .prompt-label,
+html[data-site-theme="dark"] #safariPage:not(.haunted-safari) .safari-encounter .prompt-text{color:#f4f7fb!important;}
+html[data-site-theme="dark"] #safariPage:not(.haunted-safari) .safari-encounter .wild-label{color:#bdc9d5!important;}
+html[data-site-theme="dark"] #safariPage:not(.haunted-safari) .safari-prompt{
+  background:rgba(37,45,55,.96)!important;
+  border-color:#4d6650!important;
+  color:var(--text)!important;
+  text-align:center!important;
+}

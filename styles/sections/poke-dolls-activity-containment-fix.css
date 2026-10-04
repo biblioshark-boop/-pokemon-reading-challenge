@@ -1,0 +1,31 @@
+
+/* Patch #103: keep Poké Dolls activity rows inside the left grid cell. */
+#myteamPage.poke-dolls-layout #myTeamActivityPanel{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+}
+#myteamPage.poke-dolls-layout #myTeamActivityPanel .myteam-activity-list{
+  min-width:0;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+}
+#myteamPage.poke-dolls-layout #myTeamActivityPanel .myteam-activity-row{
+  min-width:0;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+}
+#myteamPage.poke-dolls-layout #myTeamActivityPanel .myteam-activity-main{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+}
+#myteamPage.poke-dolls-layout #myTeamActivityPanel .myteam-activity-mon,
+#myteamPage.poke-dolls-layout #myTeamActivityPanel .myteam-activity-who,
+#myteamPage.poke-dolls-layout #myTeamActivityPanel .myteam-activity-book{
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}

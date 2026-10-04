@@ -1,0 +1,21 @@
+
+/* Ranking cards stay visually identical across every team theme. */
+#statsPage .team-rank-row{
+color:#241f1a !important;
+}
+#statsPage .team-rank-name,
+#statsPage .team-rank-name-line,
+#statsPage .team-rank-score,
+#statsPage .team-rank-score span,
+#statsPage .team-rank-num{
+color:#241f1a !important;
+text-shadow:none !important;
+}
+#statsPage .team-rank-leader,
+#statsPage .team-rank-sub{
+color:#756b61 !important;
+text-shadow:none !important;
+}
+#statsPage .team-rank-leader strong{
+color:#241f1a !important;
+}

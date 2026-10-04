@@ -33,11 +33,11 @@ def main():
         for path in markers:
             source = source.replace(b"/* RF_INCLUDE:" + path + b" */", (checkout / path.decode()).read_bytes())
         assert b"/* RF_INCLUDE:" not in source, "Unknown fragment marker"
-        for filename in ["dex-detail-navigation.css", "team-page-backgrounds.css", "safari-zone.css", "badge-case.css", "team-star.css", "gym-stadium-background.css", "base.css"]:
-            css_marker = f"/* RF_CSS_INCLUDE:styles/{filename} */".encode()
-            if css_marker in source:
-                assert source.count(css_marker) == 1, "Duplicate CSS include marker"
-                source = source.replace(css_marker, (checkout / "styles" / filename).read_bytes())
+        css_paths = re.findall(rb'/\* RF_CSS_INCLUDE:(styles/[a-z0-9/-]+\.css) \*/', source)
+        assert len(css_paths) == len(set(css_paths)), "Duplicate CSS include marker"
+        for path in css_paths:
+            marker = b"/* RF_CSS_INCLUDE:" + path + b" */"
+            source = source.replace(marker, (checkout / path.decode()).read_bytes())
         assert b"/* RF_CSS_INCLUDE:" not in source, "Unknown CSS marker"
         return source
 

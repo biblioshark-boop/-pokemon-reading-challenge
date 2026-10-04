@@ -1,0 +1,27 @@
+
+.defeat-choice-grid.one-choice{grid-template-columns:1fr !important}
+.gym-use-for-dex{
+margin-top:14px;
+display:flex;
+gap:10px;
+align-items:flex-start;
+padding:12px;
+border-radius:14px;
+border:1px solid var(--line);
+background:var(--surface);
+cursor:pointer;
+}
+.gym-use-for-dex.hidden{display:none !important}
+.gym-use-for-dex input{
+width:auto !important;
+margin:3px 0 0 !important;
+flex:0 0 auto;
+}
+.gym-use-for-dex span{display:block}
+.gym-use-for-dex strong{display:block}
+.gym-use-for-dex small{
+display:block;
+margin-top:3px;
+color:var(--muted);
+line-height:1.35;
+}

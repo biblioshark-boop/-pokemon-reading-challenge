@@ -1,0 +1,52 @@
+
+/* Patch #110 — only the two remaining #109 display bugs. */
+/* Detail status card: stop nested card/button edges from being clipped or visually fading. */
+#detailPage .dex52-status-wide{
+  overflow:visible!important;
+  padding-bottom:18px!important;
+}
+#detailPage .dex52-status-wide .dex43-status-card{
+  overflow:visible!important;
+  padding-bottom:2px!important;
+}
+#detailPage .dex52-status-wide .dex43-status-card > button{
+  position:relative;
+  z-index:1;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+#detailPage .dex52-status-wide .dex43-status-card > button:last-of-type{
+  margin-bottom:2px!important;
+}
+
+/* iPhone/Safari bottom nav: undo the #109 forced compositor layers that can blank during browser-chrome scrolling. */
+@supports (-webkit-touch-callout:none){
+  .bottom-nav{
+    -webkit-transform:none!important;
+    transform:none!important;
+    -webkit-backface-visibility:visible!important;
+    backface-visibility:visible!important;
+    will-change:auto!important;
+    isolation:auto!important;
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    min-height:68px!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  .bottom-nav .nav-btn,
+  .bottom-nav .nav-icon{
+    -webkit-transform:none!important;
+    transform:none!important;
+    -webkit-backface-visibility:visible!important;
+    backface-visibility:visible!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  body[data-team] .bottom-nav .nav-btn.active .nav-icon{
+    filter:none!important;
+    text-shadow:none!important;
+  }
+}

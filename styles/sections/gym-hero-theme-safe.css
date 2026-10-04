@@ -1,0 +1,36 @@
+
+#gymsPage .gym-hero{
+background:linear-gradient(180deg,#4a4a4a 0%,#383838 100%) !important;
+border:2px solid #c4512d !important;
+box-shadow:0 8px 20px rgba(0,0,0,.22) !important;
+color:#fff !important;
+}
+#gymsPage .gym-hero h2{
+color:#fff !important;
+}
+#gymsPage .gym-hero p{
+color:#e7e7e7 !important;
+}
+#gymsPage .gym-hero .gym-tabs{
+background:#2e2e2e !important;
+border-radius:16px !important;
+padding:4px !important;
+}
+#gymsPage .gym-hero .gym-tab{
+background:#ececec !important;
+color:#222 !important;
+border-color:#777 !important;
+}
+#gymsPage .gym-hero .gym-tab.active{
+background:linear-gradient(90deg,#8d2f25,#d06130) !important;
+color:#fff !important;
+border-color:#ff8d64 !important;
+}
+#gymsPage .gym-hero .gym-filter label{
+color:#fff !important;
+}
+#gymsPage .gym-hero .gym-filter select{
+background:#5a5a5a !important;
+color:#fff !important;
+border:1px solid #c4512d !important;
+}
