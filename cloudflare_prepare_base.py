@@ -70,6 +70,7 @@ def main():
         ("team-trainer-characters.js", "TEAM_TRAINER_CHARACTERS"),
         ("leader-character-art.js", "LEADER_CHARACTER_ART"),
         ("team-card-banners.js", "TEAM_CARD_BANNERS"),
+        ("special-badge-images.js", "SPECIAL_BADGE_IMAGES"),
     ]:
         marker = f"/* RF_INCLUDE:source-fragments/{filename} */"
         if text.count(marker) != 1:
