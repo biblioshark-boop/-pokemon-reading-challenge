@@ -12,7 +12,7 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-STYLE = rb'<title>[^<]+</title><style>([\s\S]*?)</style>'
+BADGE_DECLARATION = rb'const SPECIAL_BADGE_IMAGES=([^\n]+);'
 
 
 def manifest(directory):
@@ -43,10 +43,10 @@ def main():
 
     source = reconstructed(ROOT)
     assert source == reconstructed(baseline), "Reconstructed source differs from main"
-    matches = re.findall(STYLE, source)
-    assert len(matches) == 1, "Expected one stylesheet"
-    assert matches[0] == (ROOT / "styles/base.css").read_bytes(), "Extracted CSS differs"
-    print("PASS: reconstructed source unchanged; extracted stylesheet matches main byte for byte")
+    matches = re.findall(BADGE_DECLARATION, source)
+    assert len(matches) == 1, "Expected one badge catalog"
+    assert b"const SPECIAL_BADGE_IMAGES=" + matches[0] + b";" == (ROOT / "source-fragments/special-badge-images.js").read_bytes(), "Extracted badge catalog differs"
+    print("PASS: reconstructed source unchanged; extracted badge catalog matches main byte for byte")
 
     # Use the same asset inputs for both builds, including deduplication inputs.
     with tempfile.TemporaryDirectory(prefix="pokemon-extraction-") as tmp:
@@ -54,7 +54,7 @@ def main():
         for label, checkout in [("main", baseline), ("branch", ROOT)]:
             target = Path(tmp) / label
             target.mkdir()
-            for name in ["index.html", "cloudflare_prepare.py", "pokemon-special-event-controls.patch.json", "rf-pumpkin-hunt.js"]:
+            for name in ["index.html", "cloudflare_prepare.py", "cloudflare_prepare_base.py", "pokemon-save-conflict-guard.patch.json", "pokemon-special-event-controls.patch.json", "rf-pumpkin-hunt.js"]:
                 shutil.copyfile(checkout / name, target / name)
             if (checkout / "source-fragments").exists():
                 shutil.copytree(checkout / "source-fragments", target / "source-fragments")
