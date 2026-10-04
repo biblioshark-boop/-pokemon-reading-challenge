@@ -90,6 +90,7 @@ def main():
         ("safariZoneSparseFix20260818", "safari-zone.css"),
         ("badgeCaseGymTheme20260818", "badge-case.css"),
         ("teamStarPatch84", "team-star.css"),
+        ("gymStadiumBackground20260818", "gym-stadium-background.css"),
     ]:
         css_pattern = re.compile(r'(<style id="' + re.escape(style_id) + r'">)([\s\S]*?)(</style>)')
         css_matches = list(css_pattern.finditer(text))
