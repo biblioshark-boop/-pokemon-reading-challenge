@@ -1,5 +1,5 @@
 # Pokémon HTML cleanup checkpoint
-Inspected main: 65c206ae5761e74c797591a677cc45200e9f11a6 (Patch 284).
+Inspected main: bff312b258d09fb3cf37abbf87d172f03335532f (Patch 285).
 
 ## Completed original numbered steps
 1. Badge Case CSS
@@ -19,8 +19,8 @@ The original notes called this 16 steps but do not record named steps 11–16. D
 | Area | Status and boundary |
 | --- | --- |
 | Safari / Special Events | Display fragments completed: encounter card, daily status, Missed Shinies. Mode controls completed in Patch 284. Paused at the display extraction checkpoint. |
-| Achievements | Patch 285 stages the unchanged card grid renderer. Eligibility, claims, saving and downloads remain inline; further stateful extraction needs gameplay tests. |
-| Profile / admin tools | Review display boundaries separately; preserve real admin authorization, profile data and writes. |
+| Achievements | Card grid renderer completed in Patch 285. Eligibility, claims, saving and downloads remain inline; further stateful extraction needs gameplay tests. |
+| Profile / admin tools | Patch 286 stages unchanged admin member-list rendering. Profile writes, admin authorization and all mutation handlers remain inline. |
 | Shiny logic | Defer state/save logic until dedicated gameplay baseline. Preserve regular Safari 1-in-60, Haunted Safari's existing odds, limits and prompt catches 1-in-50. |
 | Final review | Check build assembly, existing patches, scope/order and member smoke checks; stop this cleanup phase. |
 
@@ -47,3 +47,8 @@ Report remaining work by these areas, not an endless sequence of unplanned tiny 
 ## Achievement display dependency review
 Patch 285 moves renderAchievementShell unchanged and restores its original inline position. Existing eligibility refresh/state and notification helpers remain unchanged. Category selection, unlocked totals, filtering, pagination, claimed/ready/locked cards and trainer-team progress retain current behavior. Claim handlers, evolution eligibility, save state and downloads stay in place.
 After merge: open Achievements, switch category and locked/unlocked filters, check totals and page controls, and inspect an unlocked card and a locked trainer-team card. No new claim is needed.
+
+## Profile/admin checkpoint
+Patch 286 moves renderAdminMembers unchanged, preserving search, join-date sorting, counts and row action markup. Member loading, profile identity updates, badge award/removal, deletion, team writes and admin authorization stay in place. These handlers are tightly coupled to permissions and saved state; defer their extraction.
+After merge: as admin, open Members, search for a member, switch newest/oldest sorting, and open a member's editor or User Card. Do not delete, award or edit anything for this check.
+After this display checkpoint, proceed to final assembly/scope validation; deferred stateful areas are not required to finish this cleanup phase.

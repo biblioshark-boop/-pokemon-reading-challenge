@@ -33,8 +33,8 @@ for index, change in enumerate(json.loads(prompt_patch.read_text(encoding="utf-8
     if text.count(change["old"]) != 1:
         raise SystemExit(f"ERROR: Prompt shiny patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
-text = text.replace("20261002184000", "20261005203500", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #285 — Extract Achievement Card Display")
+text = text.replace("20261002184000", "20261005204500", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #286 — Extract Admin Member List")
 DIST_INDEX.write_text(text, encoding="utf-8")
 if DIST_INDEX.stat().st_size > MAX_CF_ASSET:
     raise SystemExit("ERROR: Prepared index.html exceeds Cloudflare's 25 MiB limit after save conflict guard.")
