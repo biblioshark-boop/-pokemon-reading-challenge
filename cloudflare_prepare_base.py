@@ -81,8 +81,8 @@ def main():
             raise SystemExit(f"Invalid static catalog declaration: {filename}")
         json.loads(fragment[len(prefix):-1])
         text = text.replace(marker, fragment)
-    # Restore configuration and helpers at their original script positions.
-    for filename in ["site-config.js", "display-helpers.js"]:
+    # Restore configuration, helpers, and renderers at their original script positions.
+    for filename in ["site-config.js", "display-helpers.js", "pokedex-grid-render.js", "pokedex-detail-render.js"]:
         marker = f"/* RF_INCLUDE:source-fragments/{filename} */"
         if text.count(marker) != 1:
             raise SystemExit(f"Expected exactly one source fragment marker: {filename}")

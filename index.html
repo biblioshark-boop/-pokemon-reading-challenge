@@ -3722,116 +3722,7 @@ function updateWishlistFilterCount(){
  const label=document.getElementById("dexWishlistFilterLabel");
  if(label)label.textContent=`Wishlist Only (${all().filter(wishlisted).length})`;
 }
-function renderDex(preserveBatch=false){
-let l=all(),q=String(searchInput.value||"").trim().toLowerCase(),qTerms=q.split(/\s+/).filter(Boolean);
-updateWishlistFilterCount();
-updateCatchingFilterCount();
-if(!preserveBatch)resetDexBatch();
-l=l.filter(p=>{
- const ownBooks=publicMode?[]:(Array.isArray(challengeData[p.id]?.books)?challengeData[p.id].books:[]);
- const bookText=ownBooks.map(b=>String((b&&typeof b==="object"?b.title:b)||"")).join(" ");
- const promptText=p.custom?(challengeData[p.id]?.prompt||p.prompt||""):(p.prompt||challengeData[p.id]?.prompt||"");
- const searchText=`${p.name||""} ${p.form||""} ${p.dex||""} ${promptText} ${bookText}`.toLowerCase();
- const matchesSearch=!q||qTerms.every(term=>searchText.includes(term));
- const regionMatches=!dexSelectedRegions.size||dexSelectedRegions.has(p.region);
- const statusMatches=!dexSelectedStatuses.size||[...dexSelectedStatuses].some(status=>dexStatusMatches(p,status));
- return matchesSearch&&regionMatches&&achievementTypeFilterMatches(p)&&achievementTagFilterMatches(p)&&statusMatches;
-});
-if(dexSortMode==="az")l.sort((a,b)=>a.name.localeCompare(b.name)||String(a.form||"").localeCompare(String(b.form||"")));
-else if(dexSortMode==="za")l.sort((a,b)=>b.name.localeCompare(a.name)||String(b.form||"").localeCompare(String(a.form||"")));
-else if(dexSortMode==="caught")l.sort((a,b)=>+caught(b)-+caught(a));
-else if(dexSortMode==="uncaught")l.sort((a,b)=>+caught(a)-+caught(b));
-else l.sort((a,b)=>{
-const d=(+a.dex||99999)-(+b.dex||99999);if(d)return d;
-if(+a.dex===201&&+b.dex===201)return String(a.form||"").localeCompare(String(b.form||""),undefined,{numeric:true});
-return (a.sortOrder??99999)-(b.sortOrder??99999);
-});
-dexCurrentFiltered=l;
-if(!l.length){dexGrid.innerHTML='<div class="empty">No Pokémon match.</div>';return}
-const existingDexCards=preserveBatch?[...(dexGrid?.querySelectorAll(".pokemon-card")||[])]:[];
-const existingDexCount=existingDexCards.length;
-const visibleDex=preserveBatch?l.slice(existingDexCount,dexBatchShown):l.slice(0,dexBatchShown);
-if(preserveBatch)document.getElementById("dexLoadSentinel")?.remove();
-const dexFragment=document.createDocumentFragment();
-visibleDex.forEach(p=>{
-const editable=adminImageEditMode&&isAdmin&&!p.custom&&!!catalogSlugForPokemon(p);
-const b=document.createElement(editable?"div":"button");
-const adminImageReveal=editable&&String(profile?.username||"").toLowerCase()==="biblioshark_travis";
-b.className="pokemon-card"+(caught(p)?" caught":"")+(currentlyCatching(p)?" catching":"")+(editable?" admin-image-card":"")+(adminImageReveal?" admin-image-reveal":"");
-b.dataset.pokemonId=p.id;
-if(editable){
-b.ondragover=e=>{e.preventDefault();b.classList.add("image-drag-over")};
-b.ondragleave=()=>b.classList.remove("image-drag-over");
-b.ondrop=e=>handlePokemonImageDrop(e,p.id);
-}
-const dexIsShinyList=(dexSelectedStatuses.has("savedshiny")&&isShinyEligiblePokemon(p)&&challengeData?.[p.id]?.shinySaved===true&&challengeData?.[p.id]?.shinyCaught!==true)||(dexSelectedStatuses.has("shinycatch")&&isShinyEligiblePokemon(p)&&challengeData?.[p.id]?.shinyCaught===true);
-const dexHasCaughtShiny=challengeData?.[p.id]?.shinyCaught===true;
-const adminImageVariant=editable?adminPokemonImageVariant(p.id):"regular";
-const shinyEligible=isShinyEligiblePokemon(p);
-const dexShowsShiny=(editable&&adminImageVariant==="shiny"&&shinyEligible)||(dexIsShinyList&&dexHasCaughtShiny);
-const dexArtwork=editable&&adminImageVariant==="shiny"&&shinyEligible
-  ? safariShinyImageUrl(p)
-  : (dexIsShinyList&&dexHasCaughtShiny?safariShinyImageUrl(p):p.image);
-const media=dexArtwork?`<img loading="lazy" src="${esc(gridThumbSrc(dexArtwork))}" data-fullsrc="${esc(dexArtwork)}" referrerpolicy="no-referrer" data-stage="0" data-form-api="${esc(p.formApiName||"")}" data-form-label="${esc(p.rawForm||p.form||"")}" data-base-name="${esc(p.name||"")}" onerror="this.onerror=null;this.src='${esc(p.image||image(+p.dex||0))}'"><div class="placeholder-mon" style="display:none">?</div>`:`<div class="placeholder-mon">?</div>`;
-const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
-const editTools=editable?`<div class="admin-image-overlay">
-<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:6px">
-<button type="button" class="small-btn ${adminImageVariant==="regular"?"active":""}" onclick="event.stopPropagation();setAdminPokemonImageVariant('${esc(p.id)}','regular')">Regular</button>
-${shinyEligible?`<button type="button" class="small-btn ${adminImageVariant==="shiny"?"active":""}" onclick="event.stopPropagation();setAdminPokemonImageVariant('${esc(p.id)}','shiny')">✨ Shiny</button>`:""}
-</div>
-<span>${shinyEligible?(adminImageVariant==="shiny"?(p.manualShinyImage?"Custom shiny ✓":"No custom shiny image"):(p.manualImage?"Custom image ✓":"No custom regular image")):(p.manualImage?"Custom image ✓ • No Shiny form":"No custom regular image • No Shiny form")}</span>
-<button type="button" class="small-btn" onclick="event.stopPropagation();choosePokemonCardImage('${esc(p.id)}')">${adminImageVariant==="shiny"&&shinyEligible?(p.manualShinyImage?"Replace Shiny Image":"Add Shiny Image"):(p.manualImage?"Replace Image":"Add Regular Image")}</button>
-</div>`:"";
-const cardEntry=challengeData[p.id]||{};
-const cardPrompt=p.custom?(cardEntry.prompt||p.prompt||""):(p.prompt||cardEntry.prompt||"");
-b.innerHTML=`<span class="status-dot"></span>${publicMode?"":`<button class="wishlist-star ${wishlisted(p)?"active":""}" type="button" title="${wishlisted(p)?"Remove from wishlist":"Add to wishlist"}" aria-label="${wishlisted(p)?"Remove from wishlist":"Add to wishlist"}" aria-pressed="${wishlisted(p)}" onclick="event.stopPropagation();toggleWishlist('${p.id}')">${wishlisted(p)?"★":"☆"}</button>`}<div class="pokemon-img-wrap ${dexShowsShiny?"rf-shiny-sparkle":""}">${media}</div><div class="dex-number">${p.dex?"#"+String(p.dex).padStart(4,"0"):(p.global?"Bonus":"Custom")}</div><div class="pokemon-name">${esc(p.name)}</div>${p.form?`<span class="form-tag">${esc(p.form)}</span>`:""}${types?`<div class="type-row">${types}</div>`:""}${monthlyBonusForPokemon(p)?`<span class="monthly-bonus-chip">⭐ MONTHLY BONUS • ${Number(monthlyBonusForPokemon(p).multiplier||2)}×</span>`:""}${achievementTagsHtml(p)}${currentlyCatching(p)?`<span class="catching-chip">🎯 Currently Catching</span>`:""}${cardEntry.plannedBook&&!publicMode?`<span class="planned-chip" title="${esc(cardEntry.plannedBook)}">📘 ${esc(cardEntry.plannedBook)}</span>`:""}<div class="pokemon-card-prompt-wrap"><div class="pokemon-card-prompt"><span>Prompt</span><div class="pokemon-card-prompt-text">${esc(cardPrompt||"Prompt coming soon.")}</div></div><button class="pokemon-card-prompt-toggle hidden" type="button" aria-label="Expand reading prompt" aria-expanded="false" onclick="event.stopPropagation();togglePokemonCardPrompt(this)">⌄</button></div>${editTools}`;
-if(!editable)b.onclick=()=>openPokemon(p.id);
-dexFragment.appendChild(b)
-})
-if(dexBatchShown<dexCurrentFiltered.length){
-  const sentinel=document.createElement("div");
-  sentinel.id="dexLoadSentinel";
-  sentinel.className="empty";
-  sentinel.style.cursor="pointer";
-  sentinel.textContent=`Loading more Pokémon… (${Math.min(dexBatchShown,dexCurrentFiltered.length)} of ${dexCurrentFiltered.length})`;
-  dexFragment.appendChild(sentinel);
-}
-if(preserveBatch)dexGrid.appendChild(dexFragment);
-else dexGrid.replaceChildren(dexFragment);
-prioritizeVisibleDexImages();
-setupAheadOfScrollPreload();
-setupDexInfiniteLoader();
-schedulePokemonPromptToggleScan();
-}
-function updatePokemonPromptToggles(){
-  (dexGrid?.querySelectorAll(".pokemon-card-prompt-wrap")||[]).forEach(wrap=>{
-    const prompt=wrap.querySelector(".pokemon-card-prompt");
-    const btn=wrap.querySelector(".pokemon-card-prompt-toggle");
-    if(!prompt||!btn)return;
-    const expanded=prompt.classList.contains("expanded");
-    if(expanded){
-      btn.classList.remove("hidden");
-      btn.setAttribute("aria-expanded","true");
-      btn.textContent="⌃";
-      btn.setAttribute("aria-label","Collapse reading prompt");
-      return;
-    }
-    const overflowing=prompt.scrollHeight>prompt.clientHeight+2;
-    btn.classList.toggle("hidden",!overflowing);
-    btn.setAttribute("aria-expanded","false");
-    btn.textContent="⌄";
-    btn.setAttribute("aria-label","Expand reading prompt");
-  });
-}
-function togglePokemonCardPrompt(btn){
-  const wrap=btn?.closest(".pokemon-card-prompt-wrap");
-  const prompt=wrap?.querySelector(".pokemon-card-prompt");
-  if(!prompt)return;
-  const expanded=prompt.classList.toggle("expanded");
-  btn.setAttribute("aria-expanded",expanded?"true":"false");
-  btn.textContent=expanded?"⌃":"⌄";
-  btn.setAttribute("aria-label",expanded?"Collapse reading prompt":"Expand reading prompt");
-}
+/* RF_INCLUDE:source-fragments/pokedex-grid-render.js */
 
 function promptPdfSafeText(v){
   return String(v??"")
@@ -4323,40 +4214,7 @@ function pokemonShinyToggleHtml(p,e){
   const shiny=e.shinyView==="shiny";
   return `<div class="dex-shiny-toggle" aria-label="Choose regular or shiny artwork"><button type="button" class="${!shiny?"active":""}" onclick="setPokemonShinyView('regular')">Regular</button><button type="button" class="${shiny?"active":""}" onclick="setPokemonShinyView('shiny')">✨ Shiny</button></div>`;
 }
-function openPokemon(id,fromHistory=false){
-currentPokemonId=id;
-const p=all().find(x=>x.id===id),e=entry(id);
-if(!p)return toast("Pokémon entry not found.");
-const promptValue=p.custom?(e.prompt||p.prompt||""):(p.prompt||e.prompt||"");
-const types=(p.types||[]).map(t=>`<span class="type-badge ${typeClass(t)}">${esc(t)}</span>`).join("");
-const adminDetailImageEdit=isAdmin&&adminDetailEditMode&&!publicMode&&!p.custom&&!!catalogSlugForPokemon(p);
-const adminDetailVariant=adminDetailImageEdit?adminPokemonImageVariant(p.id):"regular";
-const detailShowsShiny=adminDetailImageEdit?(adminDetailVariant==="shiny"&&isShinyEligiblePokemon(p)):(isShinyEligiblePokemon(p)&&e?.shinyCaught===true&&e?.shinyView==="shiny");
-const selectedArtwork=adminDetailImageEdit
- ? (detailShowsShiny?safariShinyImageUrl(p):(p.image||image(+p.dex||0)))
- : pokemonSelectedArtwork(p,e);
-const fallbackArtwork=p.image||image(+p.dex||0);
-const media=selectedArtwork?`<img src="${esc(selectedArtwork)}" data-stage="0" data-form-api="${esc(p.formApiName||"")}" data-form-label="${esc(p.rawForm||p.form||"")}" data-base-name="${esc(p.name||"")}" onerror="this.onerror=null;this.src='${esc(fallbackArtwork)}'"><div class="placeholder-mon" style="padding:50px 0;display:none">?</div>`:`<div class="placeholder-mon" style="padding:50px 0">?</div>`;
-const promptBlock=`<div class="dex43-side-card dex43-card dex43-prompt-card"><h3>📖 Reading Prompt</h3><div class="dex43-prompt">${promptValue?esc(promptValue):"Prompt coming soon."}</div><div class="dex43-rating-note">Rate each book you use for this prompt in the Books Read section.${isUnownPokemon(p)?`<br><strong>Unown exception:</strong> An Unown may reuse a reading even if that book already counted for another Pokémon.${unownSpecialTitleCharacter(p)?` For this form, the book title must contain <strong>${esc(unownSpecialTitleCharacter(p))}</strong>.`:""}`:""}</div></div>`;
-const booksBlock=`<div class="dex43-card dex43-books dex43-books-card"><div class="dex43-books-head"><h3>📚 Books Read</h3>${publicMode?"":`<button id="detailAddBookBtn" class="primary" onclick="bookModal()">+ Add Book</button>`}</div>${publicMode?"":`<div class="dex43-book-tabs"><button id="detailMyBooksTab" class="dex43-book-tab active" type="button" onclick="setDetailBooksTab('mine')">My Books</button><button id="detailOthersBooksTab" class="dex43-book-tab" type="button" onclick="setDetailBooksTab('community')">What Others Read</button></div>`}<div id="bookList"></div></div>`;
-const caughtBlock=publicMode?"":`<div class="dex43-side-card dex43-card dex43-status dex43-status-card"><h3>◉ Caught Status</h3><div class="muted">At least one book is required.</div><button class="${e.caught?"secondary":"primary"}" onclick="toggleCaught()">${e.caught?"Mark as Uncaught":"Mark as Caught"}</button><button class="secondary wishlist-detail-btn ${e.wishlist?"active":""}" onclick="toggleWishlist('${p.id}')">${e.wishlist?"★ Remove from Wishlist":"☆ Add to Wishlist"}</button><button class="secondary currently-catching-btn ${e.currentlyCatching&&!e.caught?"active":""}" onclick="toggleCurrentlyCatching('${p.id}')">${e.currentlyCatching&&!e.caught?"🎯 Remove from Currently Catching":"🎯 Add to Currently Catching"}</button><div class="planned-book-box"><div class="planned-book-head"><span>📘 Planned Book</span><span class="planned-private">Private</span></div><div class="planned-book-row"><input id="plannedBookInput" type="text" maxlength="180" value="${esc(e.plannedBook||"")}" placeholder="Book you plan to use…" onkeydown="if(event.key==='Enter'){event.preventDefault();savePlannedBook()}"></div><div class="planned-book-actions"><button class="small-btn" type="button" onclick="savePlannedBook()">Save Planned Book</button>${e.plannedBook?`<button class="small-btn" type="button" onclick="clearPlannedBook()">Clear</button>`:""}</div></div><button class="secondary" onclick="openNextUncaught()">Next Uncaught →</button>${p.custom?`<button class="danger" onclick="deleteCustom('${p.id}')">Delete Custom Pokémon</button>`:""}${p.global&&isAdmin?`<button class="secondary" onclick="goPage('settings');globalEditSelect.value='${esc(p.slug)}';loadGlobalEditor('${esc(p.slug)}');setTimeout(()=>adminGlobalCard?.scrollIntoView({behavior:'smooth'}),50)">Edit Global Entry</button>`:""}</div>`;
-const adminEditBlock=adminPokemonQuickEditHtml(p);
-const factBlock=adminEditBlock?`<div class="dex43-card dex43-side-card dex43-admin">${adminEditBlock}</div>`:`<div id="rotomFactSlot" class="dex43-rotom-slot">${rotomFactHtml(p.fact||`Bzzzt! Rotom is scanning for a cute or curious bit of lore about ${p.name}…`)}</div>`;
-detailBooksTab="mine";communityBooks=[];communityBooksPokemonId="";communityBooksExpanded=false;communityBooksLoading=false;
-const evolutionBlock=`<div id="dexEvolutionCard" class="dex43-card dex-evo-card hidden"><div class="dex-evo-head"><div class="dex-evo-title">Evolution Chain</div><div class="dex-evo-note">Forms are kept in their matching evolution lines.</div></div><div id="dexEvolutionBody" class="dex-evo-loading">Loading evolution chain…</div></div>`;
-const artStateClass=adminDetailImageEdit||e.caught?"caught":"uncaught";
-detailContent.innerHTML=`${dexDetailNavHtml(p.id)}<div class="dex43-shell"><div class="dex43-left"><div class="dex43-card dex43-hero"><div class="dex43-mon-art ${artStateClass} ${detailShowsShiny?"rf-shiny-sparkle":""}">${media}</div><div class="dex43-mon-info"><h2>${esc(p.name)}</h2><div class="dex43-meta">${p.dex?"#"+String(p.dex).padStart(4,"0")+" • ":""}${esc(p.region)}${p.form?" • "+esc(p.form):""}</div>${adminDetailImageEdit?"":pokemonShinyToggleHtml(p,e)}${types?`<div class="type-row">${types}</div>`:""}${achievementTagsHtml(p)}${p.global?`<div style="margin-top:14px"><span class="global-badge">${p.isBonus?"Bonus Pokémon":"Global Catalog"}</span></div>`:""}${pokemonGymLinksHtml(p)}</div></div>${evolutionBlock}<div class="dex43-card dex52-status-wide">${caughtBlock}</div></div><div class="dex43-right">${factBlock}<div class="dex43-card dex52-challenge-card">${promptBlock}<div class="dex52-books-wrap">${booksBlock}</div></div></div></div>`;
-renderBooks();
-renderEvolutionChain(p);
-if(!p.fact)loadRotomFactForPokemon(p);
-if(!fromHistory){
-const detailHash="#pokemon="+encodeURIComponent(id);
-try{history.pushState({rfPage:"detail",pokemonId:id},"",location.pathname+location.search+detailHash)}
-catch{location.hash=detailHash}
-}
-goPage("detail","none");
-applyRegionTheme(p.region);
-}
+/* RF_INCLUDE:source-fragments/pokedex-detail-render.js */
 
 
 const EVO_API_ROOT="https://pokeapi.co/api/v2";
