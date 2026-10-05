@@ -797,38 +797,66 @@ function countAdminPreviewCaught(saveData){
 const entries=saveData?.challengeData||{};
 return Object.values(entries).filter(e=>e&&e.caught===true).length;
 }
+let adminUserCardRequest=0;
 async function viewAdminUserCard(userId){
 if(!isAdmin)return toast("Admin access required.");
 const modal=document.getElementById("adminUserCardModal"),status=document.getElementById("adminUserCardStatus"),preview=document.getElementById("adminUserCardPreview");
 if(!modal||!status||!preview)return;
+const request=++adminUserCardRequest;
 modal.classList.remove("hidden");status.classList.remove("hidden");status.textContent="Loading member card…";preview.innerHTML="";
 const{data,error}=await sb.rpc("get_admin_member_card",{target_user_id:userId,p_challenge_key:CHALLENGE_KEY});
+if(request!==adminUserCardRequest)return;
 if(error){console.error(error);status.textContent=error.message||"Could not load member card.";return}
+const template=document.getElementById("trainerCardTestMockup");
+if(!template){status.textContent="Trainer Card layout is unavailable.";return}
 const p=data?.profile||{},team=data?.team||null,saveData=data?.save_data||{},character=adminPreviewCharacter(team,p),leader=adminPreviewIsLeader(p,team);
-const banner=adminPreviewBanner(team,p),mons=adminPreviewPokemon(p);
-const caughtCount=countAdminPreviewCaught(saveData);
-const customCount=Array.isArray(saveData?.customPokemon)?saveData.customPokemon.length:0;
-const total=Math.max(0,(all()?.length||0)+customCount);
+const banner=adminPreviewBanner(team,p),colors=adminPreviewTeamColors(team);
+const caughtCount=countAdminPreviewCaught(saveData),customCount=Array.isArray(saveData.customPokemon)?saveData.customPokemon.length:0;
+const total=Math.max(0,all().filter(mon=>!mon.custom).length+customCount);
 const percent=total?caughtCount/total*100:0;
-const pctText=percent<1&&caughtCount?percent.toFixed(1)+"%":Math.round(percent)+"%";
-const colors=adminPreviewTeamColors(team);
 const display=p.display_name||p.username||"Trainer";
-const username=p.username?`@${p.username}`:"No username";
-const bannerStyle=banner?.url?`background-image:linear-gradient(105deg,rgba(0,0,0,.18),rgba(0,0,0,.48)),url('${banner.url}');--pc1:${esc(colors[0])};--pc2:${esc(colors[1])}`:`--pc1:${esc(colors[0])};--pc2:${esc(colors[1])}`;
-const teamSlots=Array.from({length:6},(_,i)=>{
-const mon=mons[i];
-if(!mon)return '<div class="admin-preview-team-mon empty" aria-hidden="true">+</div>';
-const label=`${mon.name||"Pokémon"}${mon.form?" "+mon.form:""}`;
-return `<div class="admin-preview-team-mon" title="${esc(label)}">${trainerPokemonImgMarkup(mon,`alt="${esc(label)}"`)}</div>`;
-}).join("");
-status.classList.add("hidden");
-preview.innerHTML=`<div class="admin-preview-card ${leader?"leader":""} ${banner?.url?"has-banner":""}" style="${bannerStyle}"><div class="admin-preview-grid"><div class="admin-preview-left"><div class="admin-preview-avatar-wrap">${character?.url?`<img class="admin-preview-avatar" src="${character.url}" alt="${esc(character.label||"Trainer character")}" onerror="this.style.display='none'">`:`<div style="font-size:42px;font-weight:900">RF</div>`}</div><div class="admin-preview-team" aria-label="Member's chosen Pokémon team">${teamSlots}</div></div><div><div class="admin-preview-kicker">READING FRENZY • TRAINER CARD</div><div class="admin-preview-name">${esc(display)}</div><div class="admin-preview-username">${esc(username)}</div><div class="admin-preview-meta"><div><span>TEAM</span><strong>${esc(team?.name||"No Team")}</strong></div><div><span>CAUGHT</span><strong>${caughtCount} / ${total}</strong></div><div><span>COMPLETE</span><strong>${esc(pctText)}</strong></div></div>
-${leader?`<div class="admin-preview-leader"><span>TEAM LEADER</span><strong>${esc(team?.leader_character||"Team Leader")}</strong></div>`:""}
-</div></div></div>`;
-const previewAvatar=preview.querySelector(".admin-preview-avatar");
-if(previewAvatar&&character?.url)applyVisibleCharacterFit(previewAvatar,character.url);
+const card=template.cloneNode(true);
+card.removeAttribute("id");card.className="trainer-test-mockup admin-member-card";card.style.display="block";
+card.querySelectorAll("[id]").forEach(el=>el.removeAttribute("id"));
+card.querySelectorAll("[data-trainer-test-slot]").forEach(el=>el.removeAttribute("data-trainer-test-slot"));
+const set=(selector,value)=>{const el=card.querySelector(selector);if(el)el.textContent=value};
+set(".ttm-name",display);set(".ttm-username",p.username?`@${p.username}`:"No username");
+const stats=card.querySelectorAll(".ttm-stats strong");
+if(stats[0])stats[0].textContent=team?.name||"No Team";
+if(stats[1])stats[1].textContent=`${caughtCount} / ${total}`;
+if(stats[2])stats[2].textContent=percent<1&&caughtCount?percent.toFixed(1)+"%":Math.round(percent)+"%";
+card.classList.toggle("is-leader",leader);
+card.querySelector(".ttm-leader")?.classList.toggle("hidden",!leader);
+set(".ttm-leader strong",leader?(team?.leader_character||"Team Leader"):"");
+const avatar=card.querySelector(".ttm-avatar"),fallback=card.querySelector(".ttm-avatar-fallback");
+if(avatar&&fallback){
+avatar.removeAttribute("src");avatar.style.display=character?.url?"block":"none";fallback.style.display=character?.url?"none":"grid";
+fallback.textContent=display.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"RF";
+avatar.onload=()=>{avatar.style.display="block";fallback.style.display="none"};
+avatar.onerror=()=>{avatar.style.display="none";fallback.style.display="grid"};
+if(character?.url){avatar.src=character.url;applyVisibleCharacterFit(avatar,character.url)}
 }
-function closeAdminUserCard(){document.getElementById("adminUserCardModal")?.classList.add("hidden")}
+const badgeSlots=(selector,rows,count,imageFor,cls)=>{const box=card.querySelector(selector);if(!box)return;box.innerHTML=Array.from({length:count},(_,i)=>{const b=rows[i],src=b?imageFor(b):"";return `<div class="ttm-badge-slot">${src?`<img class="${cls}" src="${esc(src)}" alt="${esc(b.name||b.badge_name||b.gym_name||"Badge")}">`:""}</div>`}).join("")};
+badgeSlots(".ttm-special-slots",Array.isArray(data.special_badges)?data.special_badges:[],2,b=>specialBadgeImage(b.slug),"ttm-special-badge");
+badgeSlots(".ttm-gym-slots",Array.isArray(data.gym_badges)?data.gym_badges:[],6,trainerGymBadgeImage,"ttm-gym-badge");
+set(".ttm-gyms-defeated",`Gyms Defeated: ${Number(data.gyms_defeated)||0}`);
+const byId=new Map([...all().filter(mon=>!mon.custom),...(Array.isArray(saveData.customPokemon)?saveData.customPokemon:[])].map(mon=>[String(mon.id),mon]));
+const selections=trainerNormalizeSixSlots(Array.isArray(p.trainer_card_team)?p.trainer_card_team:[]);
+const unlocked=trainerUnlockedShinyIdsFromData(saveData.challengeData);
+const slots=card.querySelectorAll(".ttm-mon");
+slots.forEach((el,i)=>{const selection=selections[i],id=trainerTestSelectionBaseId(selection),base=byId.get(id)||(!id.startsWith("custom-")?trainerPokemonForChallengeId(id):null);
+el.className="ttm-mon";el.innerHTML="";el.removeAttribute("title");el.removeAttribute("aria-hidden");
+if(!base){el.classList.add("empty");el.setAttribute("aria-hidden","true");return}
+const mon=trainerTestSelectionIsShiny(selection)&&unlocked.has(id)?{...base,_trainerTestShiny:true,_trainerChallengeId:id}:base;
+const label=`${mon.name||"Pokémon"}${mon.form?" "+mon.form:""}`;el.title=label;
+el.innerHTML=trainerTestPokemonImgMarkup(mon,`alt="${esc(label)}"`);
+});
+card.style.backgroundImage=banner?.url?`linear-gradient(105deg,rgba(0,0,0,.18),rgba(0,0,0,.48)),url("${banner.url}")`:`linear-gradient(135deg,${colors[0]},${colors[1]})`;
+card.style.backgroundSize="cover";card.style.backgroundPosition="center";
+preview.replaceChildren(card);status.classList.add("hidden");
+requestAnimationFrame(()=>{if(request!==adminUserCardRequest)return;fitTrainerMockupText(card.querySelector(".ttm-name"),40,18);if(stats[0]){const long=stats[0].textContent.length>12;stats[0].style.whiteSpace=long?"normal":"nowrap";stats[0].style.lineHeight=long?"1.02":"1.05";fitTrainerMockupText(stats[0],long?16:22,10);}stats.forEach((el,i)=>{if(i)fitTrainerMockupText(el,18,10)});});
+}
+function closeAdminUserCard(){adminUserCardRequest++;document.getElementById("adminUserCardModal")?.classList.add("hidden")}
 
 function renderSiteMaintenance(){
  const banner=document.getElementById("siteMaintenanceBanner");
