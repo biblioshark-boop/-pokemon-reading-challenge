@@ -33,10 +33,17 @@ for index, change in enumerate(json.loads(prompt_patch.read_text(encoding="utf-8
     if text.count(change["old"]) != 1:
         raise SystemExit(f"ERROR: Prompt shiny patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
-text = text.replace("20261002184000", "20261005204500", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #286 — Extract Admin Member List")
+
+my_team_bonus_patch = ROOT / "pokemon-my-team-bonus-points.patch.json"
+for index, change in enumerate(json.loads(my_team_bonus_patch.read_text(encoding="utf-8")), start=1):
+    if text.count(change["old"]) != 1:
+        raise SystemExit(f"ERROR: My Team bonus points patch #{index} context changed; review before deploying.")
+    text = text.replace(change["old"], change["new"], 1)
+
+text = text.replace("20261002184000", "20261006120500", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #287 — Show My Team Bonus Points")
 DIST_INDEX.write_text(text, encoding="utf-8")
 if DIST_INDEX.stat().st_size > MAX_CF_ASSET:
     raise SystemExit("ERROR: Prepared index.html exceeds Cloudflare's 25 MiB limit after save conflict guard.")
 
-print("SUCCESS: Pokémon save conflict guard applied to dist/index.html.")
+print("SUCCESS: Pokémon patches applied to dist/index.html.")
