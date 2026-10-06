@@ -1,6 +1,6 @@
 [
   {
     "old": "const myTeamTotalHtml=`<div class=\"myteam-total\">${Number(row.total_points??row.total_caught??0).toLocaleString()}<span>${competitive?\"team points\": \"community hearts\"} • ${Number(row.total_caught||0).toLocaleString()} caught</span></div>`;",
-    "new": "const myTeamTotalHtml=`<div class=\"myteam-total\">${Number(row.total_points??row.total_caught??0).toLocaleString()}<span>${competitive?\"team points\": \"community hearts\"} • ${Number(row.total_caught||0).toLocaleString()} caught</span>${competitive?`<span>bonus points earned: ${Number(row.bonus_points||0).toLocaleString()}</span>`:\"\"}</div>`;"
+    "new": "const myTeamTotalHtml=`<div class=\"myteam-total\">${Number(row.total_points??row.total_caught??0).toLocaleString()}<span>${competitive?\"team points\": \"community hearts\"} • ${Number(row.total_caught||0).toLocaleString()} caught</span>${competitive?`<span>bonus points earned: ${Math.max(0,Number(row.total_points??row.total_caught??0)-Number(row.total_caught||0)).toLocaleString()}</span>`:\"\"}</div>`;"
   }
 ]
