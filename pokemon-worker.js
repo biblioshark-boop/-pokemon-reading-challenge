@@ -11,6 +11,7 @@ function addSharedAuthShell(response) {
     .on("head", {
       element(el) {
         el.append(`
+          <script defer src="/pokemon/rf-challenge-welcome.js?v=20261007180000"></script>
           <style id="rf-shared-auth-gate">
             html{visibility:hidden}
           </style>
@@ -445,6 +446,8 @@ function addSharedAuthShell(response) {
 
                   clearTimeout(safety);
                   reveal();
+                  window.rfChallengeWelcomeContext = {client, userId:data.session.user.id, challenge:'pokemon'};
+                  window.dispatchEvent(new Event('rf-challenge-welcome-ready'));
                 })
                 .catch((error) => {
                   console.warn('Could not initialize shared auth', error);
@@ -487,3 +490,4 @@ export default {
     return env.ASSETS.fetch(request);
   }
 };
+

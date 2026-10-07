@@ -46,10 +46,18 @@ for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encod
         raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261006201500", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #289 — My Team Raw Personal Points")
+text = text.replace("20261002184000", "20261007180000", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #290 — Challenge Welcome Popups")
+faq_gate = "if(requiresTeamSelection()&&!['home','settings'].includes(n)){"
+if text.count(faq_gate) != 1:
+    raise SystemExit("ERROR: FAQ navigation gate context changed; review before deploying.")
+text = text.replace(faq_gate, "if(requiresTeamSelection()&&!['home','settings','faq'].includes(n)){", 1)
+
+import shutil
+shutil.copyfile(ROOT / "rf-challenge-welcome.js", ROOT / "dist" / "rf-challenge-welcome.js")
 DIST_INDEX.write_text(text, encoding="utf-8")
 if DIST_INDEX.stat().st_size > MAX_CF_ASSET:
     raise SystemExit("ERROR: Prepared index.html exceeds Cloudflare's 25 MiB limit after save conflict guard.")
 
 print("SUCCESS: Pokémon patches applied to dist/index.html.")
+
