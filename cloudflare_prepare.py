@@ -46,8 +46,8 @@ for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encod
         raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261006200000", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #288 — My Team Personal Contribution")
+text = text.replace("20261002184000", "20261006201500", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #289 — My Team Raw Personal Points")
 DIST_INDEX.write_text(text, encoding="utf-8")
 if DIST_INDEX.stat().st_size > MAX_CF_ASSET:
     raise SystemExit("ERROR: Prepared index.html exceeds Cloudflare's 25 MiB limit after save conflict guard.")
