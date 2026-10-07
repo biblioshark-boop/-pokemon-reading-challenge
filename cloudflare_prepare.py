@@ -40,8 +40,14 @@ for index, change in enumerate(json.loads(my_team_bonus_patch.read_text(encoding
         raise SystemExit(f"ERROR: My Team bonus points patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261006120500", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #287 — Show My Team Bonus Points")
+my_team_personal_patch = ROOT / "pokemon-my-team-personal-contribution.patch.json"
+for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encoding="utf-8")), start=1):
+    if text.count(change["old"]) != 1:
+        raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
+    text = text.replace(change["old"], change["new"], 1)
+
+text = text.replace("20261002184000", "20261006200000", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #288 — My Team Personal Contribution")
 DIST_INDEX.write_text(text, encoding="utf-8")
 if DIST_INDEX.stat().st_size > MAX_CF_ASSET:
     raise SystemExit("ERROR: Prepared index.html exceeds Cloudflare's 25 MiB limit after save conflict guard.")
