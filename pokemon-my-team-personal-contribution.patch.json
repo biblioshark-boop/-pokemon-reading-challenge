@@ -1,7 +1,7 @@
 [
   {
     "old": " const teamMemberRows=Array.isArray(pageData?.members)?pageData.members:[];\n renderMyTeamMembersPanel(teamMemberRows);",
-    "new": " const teamMemberRows=Array.isArray(pageData?.members)?pageData.members:[];\n const myTeamViewer=teamMemberRows.find(member=>String(member?.user_id||\"\")===String(user?.id||\"\"))||null;\n const myContribution=Number(myTeamViewer?.points||0);\n const myBonusPoints=Number(myTeamViewer?.bonus_points||0);\n renderMyTeamMembersPanel(teamMemberRows);"
+    "new": " const teamMemberRows=Array.isArray(pageData?.members)?pageData.members:[];\n const myTeamViewer=teamMemberRows.find(member=>String(member?.user_id||\"\")===String(user?.id||\"\"))||null;\n const myBonusPoints=Number(myTeamViewer?.bonus_points||0);\n const myContribution=Number(myTeamViewer?.caught_count||0)+myBonusPoints;\n renderMyTeamMembersPanel(teamMemberRows);"
   },
   {
     "old": " const myTeamTotalHtml=`<div class=\"myteam-total\">${Number(row.total_points??row.total_caught??0).toLocaleString()}<span>${competitive?\"team points\": \"community hearts\"} • ${Number(row.total_caught||0).toLocaleString()} caught</span>${competitive?`<span>bonus points earned: ${Math.max(0,Number(row.total_points??row.total_caught??0)-Number(row.total_caught||0)).toLocaleString()}</span>`:\"\"}</div>`;",
