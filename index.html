@@ -1,5 +1,5 @@
-<!DOCTYPE html><!-- RF_BUILD:20260918042000 --><!-- RF_PATCH_NAME:Patch #274 — Refresh Top Recruiter Badge Image --><html lang="en"><head><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>
-const RF_BUILD="20260918042000";
+<!DOCTYPE html><!-- RF_BUILD:20261009170000 --><!-- RF_PATCH_NAME:Patch #275 — Load statistics only when visible --><html lang="en"><head><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>
+const RF_BUILD="20261009170000";
 const RF_PATCH_NAME="Patch #274 — Refresh Top Recruiter Badge Image";
 const RF_SITE_THEME_KEY="rf_site_theme";
 (()=>{try{const saved=localStorage.getItem(RF_SITE_THEME_KEY);if(saved==="dark")document.documentElement.dataset.siteTheme="dark";}catch{}})();
@@ -5803,6 +5803,7 @@ function renderMyTeamMembersPanel(rows){
 }
 /* RF_INCLUDE:source-fragments/my-team-page-render.js */
 function renderStats(){
+if(!document.getElementById("statsPage")?.classList.contains("active"))return;
 loadCompetitionBattleCard();
 loadSideContributionLeaderboards();
 loadTeamLeaderboard();
