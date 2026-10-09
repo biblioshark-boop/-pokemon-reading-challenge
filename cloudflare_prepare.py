@@ -46,8 +46,8 @@ for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encod
         raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261009170000", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #297 — Statistics Load Reduction")
+text = text.replace("20261002184000", "20261009180000", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #298 — Dark Standings Contrast")
 faq_gate = "if(requiresTeamSelection()&&!['home','settings'].includes(n)){"
 if text.count(faq_gate) != 1:
     raise SystemExit("ERROR: FAQ navigation gate context changed; review before deploying.")
