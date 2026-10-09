@@ -19,3 +19,19 @@ text-shadow:none !important;
 #statsPage .team-rank-leader strong{
 color:#241f1a !important;
 }
+
+/* Keep standings readable when the shared surfaces switch to dark mode. */
+html[data-site-theme="dark"] #statsPage .team-rank-row,
+html[data-site-theme="dark"] #statsPage .team-rank-name,
+html[data-site-theme="dark"] #statsPage .team-rank-name-line,
+html[data-site-theme="dark"] #statsPage .team-rank-score,
+html[data-site-theme="dark"] #statsPage .team-rank-num,
+html[data-site-theme="dark"] #statsPage .team-rank-leader strong{
+color:#f4f7fb !important;
+}
+html[data-site-theme="dark"] #statsPage .team-rank-score span,
+html[data-site-theme="dark"] #statsPage .team-rank-leader,
+html[data-site-theme="dark"] #statsPage .team-rank-sub,
+html[data-site-theme="dark"] #statsPage .team-rank-members{
+color:#b7c0cc !important;
+}
