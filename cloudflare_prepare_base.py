@@ -82,7 +82,7 @@ def main():
         json.loads(fragment[len(prefix):-1])
         text = text.replace(marker, fragment)
     # Restore configuration, helpers, and renderers at their original script positions.
-    for filename in ["achievement-card-catalog.js", "achievement-membership-catalog.js", "team-star-art.js", "team-cheer-catalog.js", "gym-list-render.js", "my-team-page-render.js", "site-config.js", "display-helpers.js", "pokedex-grid-render.js", "pokedex-detail-render.js", "trainer-card-render.js", "trainer-card-download.js", "safari-encounter-render.js", "safari-daily-status-render.js", "safari-missed-shiny-menu.js", "safari-mode-controls.js", "achievement-shell-render.js", "admin-member-list-render.js"]:
+    for filename in ["catch-card-type-catalog.js", "achievement-card-catalog.js", "achievement-membership-catalog.js", "team-star-art.js", "team-cheer-catalog.js", "gym-list-render.js", "my-team-page-render.js", "site-config.js", "display-helpers.js", "pokedex-grid-render.js", "pokedex-detail-render.js", "trainer-card-render.js", "trainer-card-download.js", "safari-encounter-render.js", "safari-daily-status-render.js", "safari-missed-shiny-menu.js", "safari-mode-controls.js", "achievement-shell-render.js", "admin-member-list-render.js"]:
         marker = f"/* RF_INCLUDE:source-fragments/{filename} */"
         if text.count(marker) != 1:
             raise SystemExit(f"Expected exactly one source fragment marker: {filename}")
