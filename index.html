@@ -5779,6 +5779,7 @@ function renderMyTeamMembersPanel(rows){
 }
 /* RF_INCLUDE:source-fragments/my-team-page-render.js */
 function renderStats(){
+if(!document.getElementById("statsPage")?.classList.contains("active"))return;
 loadCompetitionBattleCard();
 loadSideContributionLeaderboards();
 loadTeamLeaderboard();
