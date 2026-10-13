@@ -119,9 +119,11 @@ main:has(#myteamPage.active){
   #myteamPage .myteam-right-stack{grid-column:1!important;grid-row:2!important;width:100%!important}
 }
 </style>"""
-if text.count("</head>") != 1:
-    raise SystemExit("ERROR: Expected exactly one closing head tag for My Team container fix.")
-text = text.replace("</head>", my_team_overlap_fix + "\n</head>", 1)
+head_open = text.lower().find("<head")
+head_close = text.lower().find("</head>", head_open + 1)
+if head_open == -1 or head_close == -1:
+    raise SystemExit("ERROR: Could not locate the document head for My Team container fix.")
+text = text[:head_close] + my_team_overlap_fix + "\n" + text[head_close:]
 
 # Reassert the intended right-rail DOM after the async My Team render.
 runtime_anchor = """ renderMyTeamCheerChoices(row.slug||\"\",canPost);\n renderMyTeamCheerFeedRows(row.slug||\"\",cheerRows);\n renderTeamBonusPanel(row,bonusRows);"""
