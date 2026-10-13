@@ -46,38 +46,41 @@ for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encod
         raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261013200500", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #302 — My Team Actual Runtime Guard")
+text = text.replace("20261002184000", "20261013202000", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #303 — My Team Container Width Fix")
 faq_gate = "if(requiresTeamSelection()&&!['home','settings'].includes(n)){"
 if text.count(faq_gate) != 1:
     raise SystemExit("ERROR: FAQ navigation gate context changed; review before deploying.")
 text = text.replace(faq_gate, "if(requiresTeamSelection()&&!['home','settings','faq'].includes(n)){", 1)
 
-# Lock the My Team desktop layout into two explicit grid columns. Both the left
-# content stack and the right members/cheer rail get explicit grid placement so
-# neither can visually cover the other even if an older rule is still present.
-my_team_overlap_fix = """<style id=\"myTeamRightRailContainment20261013\">
-.myteam-main-layout{
+# My Team was built for an 1120px page, but the global <main> container is only
+# 900px wide. That left the desktop two-column layout trying to fit a fixed
+# right rail inside a container that was too narrow. Widen the parent only while
+# My Team is active, then keep both stacks explicitly contained in their columns.
+my_team_overlap_fix = """<style id=\"myTeamContainerWidthFix20261013\">
+main:has(#myteamPage.active){
+  max-width:1180px!important;
+  width:100%!important;
+}
+#myteamPage{
+  width:100%!important;
+  max-width:1120px!important;
+}
+#myteamPage .myteam-main-layout{
   display:grid!important;
   grid-template-columns:minmax(0,1fr) minmax(290px,320px)!important;
   gap:18px!important;
   align-items:start!important;
   position:relative!important;
 }
-.myteam-left-stack{
+#myteamPage .myteam-left-stack{
   grid-column:1!important;
   grid-row:1!important;
   min-width:0!important;
   width:100%!important;
   max-width:100%!important;
-  position:relative!important;
-  z-index:1!important;
 }
-.myteam-left-stack>*{
-  min-width:0!important;
-  max-width:100%!important;
-}
-.myteam-right-stack{
+#myteamPage .myteam-right-stack{
   grid-column:2!important;
   grid-row:1!important;
   display:flex!important;
@@ -88,40 +91,39 @@ my_team_overlap_fix = """<style id=\"myTeamRightRailContainment20261013\">
   width:100%!important;
   max-width:100%!important;
   position:static!important;
-  inset:auto!important;
   transform:none!important;
-  z-index:auto!important;
 }
-.myteam-right-stack>.my-team-members-panel,
-.myteam-right-stack>.myteam-cheer-panel{
+#myteamPage .myteam-left-stack>*,
+#myteamPage .myteam-right-stack>*{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+#myteamPage .myteam-right-stack>.my-team-members-panel,
+#myteamPage .myteam-right-stack>.myteam-cheer-panel{
   position:static!important;
   top:auto!important;
   inset:auto!important;
   transform:none!important;
   margin:0!important;
   width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  box-sizing:border-box!important;
 }
-.myteam-podium,
-.myteam-podium-card{
+#myteamPage .myteam-podium,
+#myteamPage .myteam-podium-card{
   min-width:0!important;
   max-width:100%!important;
 }
-@media(max-width:980px){
-  .myteam-main-layout{grid-template-columns:1fr!important}
-  .myteam-left-stack{grid-column:1!important;grid-row:1!important}
-  .myteam-right-stack{grid-column:1!important;grid-row:2!important;width:100%!important}
+@media(max-width:1050px){
+  #myteamPage .myteam-main-layout{grid-template-columns:1fr!important}
+  #myteamPage .myteam-left-stack{grid-column:1!important;grid-row:1!important}
+  #myteamPage .myteam-right-stack{grid-column:1!important;grid-row:2!important;width:100%!important}
 }
 </style>"""
 if text.count("</head>") != 1:
-    raise SystemExit("ERROR: Expected exactly one closing head tag for My Team containment fix.")
+    raise SystemExit("ERROR: Expected exactly one closing head tag for My Team container fix.")
 text = text.replace("</head>", my_team_overlap_fix + "\n</head>", 1)
 
-# Reassert the intended right-rail DOM after the async My Team render. The
-# members panel has a class, not an id; the previous guard looked for a missing
-# #myTeamMembersPanel element and therefore returned without doing anything.
+# Reassert the intended right-rail DOM after the async My Team render.
 runtime_anchor = """ renderMyTeamCheerChoices(row.slug||\"\",canPost);\n renderMyTeamCheerFeedRows(row.slug||\"\",cheerRows);\n renderTeamBonusPanel(row,bonusRows);"""
 runtime_guard = runtime_anchor + """
 
