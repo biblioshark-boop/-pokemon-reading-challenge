@@ -46,42 +46,58 @@ for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encod
         raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261013194800", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #301 — My Team Runtime Layout Guard")
+text = text.replace("20261002184000", "20261013200500", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #302 — My Team Actual Runtime Guard")
 faq_gate = "if(requiresTeamSelection()&&!['home','settings'].includes(n)){"
 if text.count(faq_gate) != 1:
     raise SystemExit("ERROR: FAQ navigation gate context changed; review before deploying.")
 text = text.replace(faq_gate, "if(requiresTeamSelection()&&!['home','settings','faq'].includes(n)){", 1)
 
-# Keep the My Team right rail contained within its own grid column. The older
-# 390px sticky rail could visually cover the contributor/activity cards when
-# the available content width was tighter than the desktop breakpoint implied.
+# Lock the My Team desktop layout into two explicit grid columns. Both the left
+# content stack and the right members/cheer rail get explicit grid placement so
+# neither can visually cover the other even if an older rule is still present.
 my_team_overlap_fix = """<style id=\"myTeamRightRailContainment20261013\">
 .myteam-main-layout{
+  display:grid!important;
   grid-template-columns:minmax(0,1fr) minmax(290px,320px)!important;
   gap:18px!important;
   align-items:start!important;
+  position:relative!important;
 }
-.myteam-left-stack,
-.myteam-right-stack{
+.myteam-left-stack{
+  grid-column:1!important;
+  grid-row:1!important;
   min-width:0!important;
   width:100%!important;
   max-width:100%!important;
+  position:relative!important;
+  z-index:1!important;
 }
 .myteam-left-stack>*{
   min-width:0!important;
   max-width:100%!important;
 }
 .myteam-right-stack{
+  grid-column:2!important;
+  grid-row:1!important;
   display:flex!important;
   flex-direction:column!important;
   gap:18px!important;
   align-items:stretch!important;
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  z-index:auto!important;
 }
 .myteam-right-stack>.my-team-members-panel,
 .myteam-right-stack>.myteam-cheer-panel{
   position:static!important;
   top:auto!important;
+  inset:auto!important;
+  transform:none!important;
   margin:0!important;
   width:100%!important;
   max-width:100%!important;
@@ -95,23 +111,24 @@ my_team_overlap_fix = """<style id=\"myTeamRightRailContainment20261013\">
 }
 @media(max-width:980px){
   .myteam-main-layout{grid-template-columns:1fr!important}
-  .myteam-right-stack{width:100%!important}
+  .myteam-left-stack{grid-column:1!important;grid-row:1!important}
+  .myteam-right-stack{grid-column:1!important;grid-row:2!important;width:100%!important}
 }
 </style>"""
 if text.count("</head>") != 1:
     raise SystemExit("ERROR: Expected exactly one closing head tag for My Team containment fix.")
 text = text.replace("</head>", my_team_overlap_fix + "\n</head>", 1)
 
-# The My Team data render runs after the first paint. Reassert the intended DOM
-# structure at the end of that render so members + Cheer Wall cannot become
-# separate grid children and cover the left contributor/activity column.
+# Reassert the intended right-rail DOM after the async My Team render. The
+# members panel has a class, not an id; the previous guard looked for a missing
+# #myTeamMembersPanel element and therefore returned without doing anything.
 runtime_anchor = """ renderMyTeamCheerChoices(row.slug||\"\",canPost);\n renderMyTeamCheerFeedRows(row.slug||\"\",cheerRows);\n renderTeamBonusPanel(row,bonusRows);"""
 runtime_guard = runtime_anchor + """
 
  const enforceMyTeamRightRail=()=>{
    const page=document.getElementById(\"myteamPage\");
    const layout=page?.querySelector(\".myteam-main-layout\");
-   const members=document.getElementById(\"myTeamMembersPanel\");
+   const members=page?.querySelector(\".my-team-members-panel\");
    const cheer=page?.querySelector(\".myteam-cheer-panel\");
    if(!layout||!members||!cheer)return;
    let rail=layout.querySelector(\":scope > .myteam-right-stack\");
