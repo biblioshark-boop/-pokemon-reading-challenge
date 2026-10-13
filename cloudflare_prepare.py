@@ -46,8 +46,8 @@ for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encod
         raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261013194000", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #300 — My Team Right Rail Containment")
+text = text.replace("20261002184000", "20261013194800", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #301 — My Team Runtime Layout Guard")
 faq_gate = "if(requiresTeamSelection()&&!['home','settings'].includes(n)){"
 if text.count(faq_gate) != 1:
     raise SystemExit("ERROR: FAQ navigation gate context changed; review before deploying.")
@@ -101,6 +101,33 @@ my_team_overlap_fix = """<style id=\"myTeamRightRailContainment20261013\">
 if text.count("</head>") != 1:
     raise SystemExit("ERROR: Expected exactly one closing head tag for My Team containment fix.")
 text = text.replace("</head>", my_team_overlap_fix + "\n</head>", 1)
+
+# The My Team data render runs after the first paint. Reassert the intended DOM
+# structure at the end of that render so members + Cheer Wall cannot become
+# separate grid children and cover the left contributor/activity column.
+runtime_anchor = """ renderMyTeamCheerChoices(row.slug||\"\",canPost);\n renderMyTeamCheerFeedRows(row.slug||\"\",cheerRows);\n renderTeamBonusPanel(row,bonusRows);"""
+runtime_guard = runtime_anchor + """
+
+ const enforceMyTeamRightRail=()=>{
+   const page=document.getElementById(\"myteamPage\");
+   const layout=page?.querySelector(\".myteam-main-layout\");
+   const members=document.getElementById(\"myTeamMembersPanel\");
+   const cheer=page?.querySelector(\".myteam-cheer-panel\");
+   if(!layout||!members||!cheer)return;
+   let rail=layout.querySelector(\":scope > .myteam-right-stack\");
+   if(!rail){
+     rail=document.createElement(\"div\");
+     rail.className=\"myteam-right-stack\";
+     layout.appendChild(rail);
+   }
+   if(members.parentElement!==rail)rail.appendChild(members);
+   if(cheer.parentElement!==rail)rail.appendChild(cheer);
+ };
+ enforceMyTeamRightRail();
+ requestAnimationFrame(enforceMyTeamRightRail);"""
+if text.count(runtime_anchor) != 1:
+    raise SystemExit("ERROR: My Team runtime render anchor changed; review before deploying.")
+text = text.replace(runtime_anchor, runtime_guard, 1)
 
 import shutil
 shutil.copyfile(ROOT / "rf-challenge-welcome.js", ROOT / "dist" / "rf-challenge-welcome.js")
