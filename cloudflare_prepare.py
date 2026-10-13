@@ -46,24 +46,60 @@ for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encod
         raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261013192500", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #299 — My Team Panel Overlap Fix")
+text = text.replace("20261002184000", "20261013194000", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #300 — My Team Right Rail Containment")
 faq_gate = "if(requiresTeamSelection()&&!['home','settings'].includes(n)){"
 if text.count(faq_gate) != 1:
     raise SystemExit("ERROR: FAQ navigation gate context changed; review before deploying.")
 text = text.replace(faq_gate, "if(requiresTeamSelection()&&!['home','settings','faq'].includes(n)){", 1)
 
-# Keep the My Team members panel and Team Cheer Wall in normal document flow.
-# The cheer panel's older sticky positioning could slide underneath the members
-# panel at desktop widths, creating the visible overlap reported on My Team.
-my_team_overlap_fix = """<style id=\"myTeamMembersCheerOverlapFix20261013\">
-.myteam-right-stack{display:grid;gap:18px;align-content:start;min-width:0}
+# Keep the My Team right rail contained within its own grid column. The older
+# 390px sticky rail could visually cover the contributor/activity cards when
+# the available content width was tighter than the desktop breakpoint implied.
+my_team_overlap_fix = """<style id=\"myTeamRightRailContainment20261013\">
+.myteam-main-layout{
+  grid-template-columns:minmax(0,1fr) minmax(290px,320px)!important;
+  gap:18px!important;
+  align-items:start!important;
+}
+.myteam-left-stack,
+.myteam-right-stack{
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+.myteam-left-stack>*{
+  min-width:0!important;
+  max-width:100%!important;
+}
+.myteam-right-stack{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:18px!important;
+  align-items:stretch!important;
+}
 .myteam-right-stack>.my-team-members-panel,
-.myteam-right-stack>.myteam-cheer-panel{position:static!important;top:auto!important;margin:0!important;width:100%;min-width:0}
-.myteam-right-stack>.my-team-members-panel{z-index:auto!important}
+.myteam-right-stack>.myteam-cheer-panel{
+  position:static!important;
+  top:auto!important;
+  margin:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+.myteam-podium,
+.myteam-podium-card{
+  min-width:0!important;
+  max-width:100%!important;
+}
+@media(max-width:980px){
+  .myteam-main-layout{grid-template-columns:1fr!important}
+  .myteam-right-stack{width:100%!important}
+}
 </style>"""
 if text.count("</head>") != 1:
-    raise SystemExit("ERROR: Expected exactly one closing head tag for My Team overlap fix.")
+    raise SystemExit("ERROR: Expected exactly one closing head tag for My Team containment fix.")
 text = text.replace("</head>", my_team_overlap_fix + "\n</head>", 1)
 
 import shutil
@@ -73,4 +109,3 @@ if DIST_INDEX.stat().st_size > MAX_CF_ASSET:
     raise SystemExit("ERROR: Prepared index.html exceeds Cloudflare's 25 MiB limit after save conflict guard.")
 
 print("SUCCESS: Pokémon patches applied to dist/index.html.")
-
