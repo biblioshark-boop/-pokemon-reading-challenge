@@ -46,12 +46,25 @@ for index, change in enumerate(json.loads(my_team_personal_patch.read_text(encod
         raise SystemExit(f"ERROR: My Team personal contribution patch #{index} context changed; review before deploying.")
     text = text.replace(change["old"], change["new"], 1)
 
-text = text.replace("20261002184000", "20261009180000", 2)
-text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #298 — Dark Standings Contrast")
+text = text.replace("20261002184000", "20261013192500", 2)
+text = text.replace("Patch #279 — One-time Admin Pumpkin Spawns", "Patch #299 — My Team Panel Overlap Fix")
 faq_gate = "if(requiresTeamSelection()&&!['home','settings'].includes(n)){"
 if text.count(faq_gate) != 1:
     raise SystemExit("ERROR: FAQ navigation gate context changed; review before deploying.")
 text = text.replace(faq_gate, "if(requiresTeamSelection()&&!['home','settings','faq'].includes(n)){", 1)
+
+# Keep the My Team members panel and Team Cheer Wall in normal document flow.
+# The cheer panel's older sticky positioning could slide underneath the members
+# panel at desktop widths, creating the visible overlap reported on My Team.
+my_team_overlap_fix = """<style id=\"myTeamMembersCheerOverlapFix20261013\">
+.myteam-right-stack{display:grid;gap:18px;align-content:start;min-width:0}
+.myteam-right-stack>.my-team-members-panel,
+.myteam-right-stack>.myteam-cheer-panel{position:static!important;top:auto!important;margin:0!important;width:100%;min-width:0}
+.myteam-right-stack>.my-team-members-panel{z-index:auto!important}
+</style>"""
+if text.count("</head>") != 1:
+    raise SystemExit("ERROR: Expected exactly one closing head tag for My Team overlap fix.")
+text = text.replace("</head>", my_team_overlap_fix + "\n</head>", 1)
 
 import shutil
 shutil.copyfile(ROOT / "rf-challenge-welcome.js", ROOT / "dist" / "rf-challenge-welcome.js")
