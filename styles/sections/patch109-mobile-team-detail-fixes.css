@@ -35,6 +35,36 @@
   #myteamPage .myteam-main-layout{width:100%!important;margin-left:auto!important;margin-right:auto!important;transform:none!important}
   body[data-team="team-magma"] #myteamPage{width:100%!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important;overflow-x:clip}
   .my-team-members-list{max-height:min(52vh,360px)!important}
+
+  /* Patch #306 — Recent Team Activity must stay inside its panel on phones.
+     The activity rows use width:100% plus padding, so force border-box sizing and
+     allow the flex content to shrink instead of widening the page. */
+  #myteamPage #myTeamActivityPanel,
+  #myteamPage #myTeamActivityPanel .myteam-activity-list,
+  #myteamPage #myTeamActivityPanel .myteam-activity-row,
+  #myteamPage #myTeamActivityPanel .myteam-activity-main{
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+  #myteamPage #myTeamActivityPanel,
+  #myteamPage #myTeamActivityPanel .myteam-activity-list,
+  #myteamPage #myTeamActivityPanel .myteam-activity-row{
+    width:100%!important;
+    overflow:hidden!important;
+  }
+  #myteamPage #myTeamActivityPanel .myteam-activity-main{
+    flex:1 1 auto!important;
+    width:auto!important;
+    overflow:hidden!important;
+  }
+  #myteamPage #myTeamActivityPanel .myteam-activity-mon,
+  #myteamPage #myTeamActivityPanel .myteam-activity-who,
+  #myteamPage #myTeamActivityPanel .myteam-activity-book{
+    max-width:100%!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
 }
 
 /* iOS Safari can drop emoji/nav layers while the browser chrome is moving. Keep the fixed nav on its own stable compositor layer. */
