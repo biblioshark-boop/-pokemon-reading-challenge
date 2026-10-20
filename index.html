@@ -1587,8 +1587,9 @@ async function downloadAchievementBinder(mode="all"){
 }
 /* RF_INCLUDE:source-fragments/achievement-shell-render.js */
 
+function canUseOwnerTestMode(){return !!(isAdmin&&user?.id==='4040f1b9-c82b-4c0b-b99b-ae4a01daa15c')}
 function loadAdminTestMode(){
-  adminTestMode=isAdmin&&localStorage.getItem(ADMIN_TEST_MODE_KEY)==="1";
+  adminTestMode=canUseOwnerTestMode()&&localStorage.getItem(ADMIN_TEST_MODE_KEY)==="1";
   if(adminTestMode){
     const sandbox=readAdminTestSandbox();
     if(sandbox)applyChallengePayload(sandbox);
@@ -1605,7 +1606,7 @@ function renderAdminTestMode(){
   const status=document.getElementById("adminTestModeStatus");
   const btn=document.getElementById("adminTestModeToggleBtn");
   const resetBtn=document.getElementById("adminTestModeResetBtn");
-  card?.classList.toggle("hidden",!isAdmin);
+  card?.classList.toggle("hidden",!canUseOwnerTestMode());
   if(status){
     status.textContent=adminTestMode?"Test Mode is ON — you are working in a private test copy. Your real Pokédex/Safari/Shiny progress is protected.":"Test Mode is OFF — you are seeing your real saved challenge progress.";
     status.classList.toggle("on",!!adminTestMode);
@@ -1618,7 +1619,7 @@ function renderAdminTestMode(){
   resetBtn?.classList.toggle("hidden",!adminTestMode);
 }
 async function toggleAdminTestMode(){
-  if(!isAdmin||!user)return;
+  if(!canUseOwnerTestMode())return;
   clearTimeout(saveTimer);
   if(!adminTestMode){
     clearAdminTestSandbox();
@@ -1646,7 +1647,7 @@ async function toggleAdminTestMode(){
   window.dispatchEvent(new CustomEvent("rf-admin-test-mode-change",{detail:{enabled:!!adminTestMode}}));
   toast(adminTestMode?"Admin Test Mode enabled — test changes are isolated":"Test Mode disabled — real progress restored");
 }
-function isAdminTestMode(){return !!(isAdmin&&adminTestMode)}
+function isAdminTestMode(){return !!(canUseOwnerTestMode()&&adminTestMode)}
 
 async function loadAdminStatus(){
 if(!user||publicMode){isAdmin=false;canEditPokemonDetails=false;adminTestMode=false;document.documentElement.classList.remove("admin-test-mode");return}
