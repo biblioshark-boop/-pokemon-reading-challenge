@@ -1,5 +1,5 @@
 function renderDex(preserveBatch=false){
-let l=all(),q=String(searchInput.value||"").trim().toLowerCase(),qTerms=q.split(/\s+/).filter(Boolean);
+let l=achievementDexCandidates(),q=String(searchInput.value||"").trim().toLowerCase(),qTerms=q.split(/\s+/).filter(Boolean);
 updateWishlistFilterCount();
 updateCatchingFilterCount();
 if(!preserveBatch)resetDexBatch();

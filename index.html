@@ -994,6 +994,33 @@ function renderDexPreserveScroll(){
   renderDex();
   requestAnimationFrame(()=>window.scrollTo({left:x,top:y,behavior:"auto"}));
 }
+// Include the exact catalog form for trainer filters when it is absent from the loaded Dex.
+function achievementDexCandidates(){
+  const mons=all();
+  const selected=document.getElementById("achievementTagFilter")?.value||"all";
+  if(!selected.startsWith("trainer:"))return mons;
+  const roster=ACHIEVEMENT_TRAINER_SPEC[selected.slice(8)]||[];
+  for(const item of roster){
+    if(!item||typeof item!=="object"||!item.slugIncludes)continue;
+    if(mons.some(p=>achievementTrainerItemMatches(p,item)))continue;
+    const row=(globalChallengeData||[]).find(r=>
+      String(r.name||"").trim().toLowerCase()===String(item.name||"").trim().toLowerCase() &&
+      String(r.slug||"").toLowerCase().includes(String(item.slugIncludes).toLowerCase())
+    );
+    if(!row||mons.some(p=>p.id===`form-${row.slug}`))continue;
+    mons.push({
+      id:`form-${row.slug}`,slug:row.slug,catalogSlug:row.slug,
+      dex:row.dex_number||"",name:row.name,apiName:row.slug,region:row.region||"Special",
+      form:displayFormLabel(row.name,row.form_name),rawForm:row.form_name||"",isForm:true,
+      global:true,syntheticForm:true,custom:false,
+      image:row.image_url||formSpriteGuess(row),shinyImage:row.shiny_image_url||"",
+      formApiName:formApiNameFromRow(row),manualImage:!!row.image_url,
+      manualShinyImage:!!row.shiny_image_url,types:[row.type_1,row.type_2].filter(Boolean),
+      prompt:row.reading_prompt||"",fact:row.dex_fact||"",sortOrder:row.sort_order??99999
+    });
+  }
+  return mons;
+}
 function achievementTagFilterMatches(p){
   const value=document.getElementById("achievementTagFilter")?.value||"all";
   if(value==="all")return true;
