@@ -891,7 +891,18 @@ async function toggleSiteMaintenance(){
  }
 }
 function specialEventBySlug(slug){return specialEvents.find(e=>String(e.slug)===String(slug))||null}
-function specialEventIsLive(slug){return specialEventBySlug(slug)?.enabled===true}
+function specialEventIsLive(slug){
+ const event=specialEventBySlug(slug);
+ if(!event||event.enabled!==true)return false;
+ if(event.ends_on){
+   // Date comparison is in Central local calendar dates; no early UTC cutoff.
+   const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+   const map=Object.fromEntries(parts.map(p=>[p.type,p.value]));
+   const centralDate=map.year+'-'+map.month+'-'+map.day;
+   if(centralDate>event.ends_on)return false;
+ }
+ return true;
+}
 function specialEventEndLabel(value){
  if(!value)return "No end date set";
  const d=new Date(String(value)+"T12:00:00");
