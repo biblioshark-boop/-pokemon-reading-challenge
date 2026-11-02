@@ -1628,8 +1628,17 @@ async function downloadAchievementBinder(mode="all"){
 }
 /* RF_INCLUDE:source-fragments/achievement-shell-render.js */
 
-function loadAdminTestMode(){
-  adminTestMode=isAdmin&&localStorage.getItem(ADMIN_TEST_MODE_KEY)==="1";
+async function loadAdminTestMode(){
+  // Main Hub is the shared Test Mode controller for the owner across challenges.
+  let hubEnabled=false;
+  if(isAdmin&&user){
+    const {data,error}=await sb.from("rf_test_modes").select("enabled").eq("area","main-hub").maybeSingle();
+    if(error)console.warn("Could not read shared Main Hub Test Mode",error);
+    else hubEnabled=data?.enabled===true;
+  }
+  adminTestMode=!!(isAdmin&&hubEnabled);
+  if(adminTestMode)localStorage.setItem(ADMIN_TEST_MODE_KEY,"1");
+  else localStorage.removeItem(ADMIN_TEST_MODE_KEY);
   if(adminTestMode){
     const sandbox=readAdminTestSandbox();
     if(sandbox)applyChallengePayload(sandbox);
@@ -1720,7 +1729,7 @@ document.getElementById("adminMaintenanceCard")?.classList.toggle("hidden",!isAd
 document.getElementById("adminSpecialEventsCard")?.classList.toggle("hidden",!isAdmin);
 document.getElementById("adminMonthlyBonusCard")?.classList.toggle("hidden",!isAdmin);
 renderAdminSpecialEvents();
-loadAdminTestMode();
+await loadAdminTestMode();
 renderSiteMaintenance();
 adminImageEditBar?.classList.toggle("hidden",!isAdmin);
 adminDetailEditBar?.classList.toggle("hidden",!canEditPokemonDetails);
