@@ -1661,40 +1661,14 @@ function renderAdminTestMode(){
     status.classList.toggle("on",!!adminTestMode);
   }
   if(btn){
-    btn.textContent=adminTestMode?"Turn Test Mode OFF":"Turn Test Mode ON";
-    btn.classList.toggle("danger",!!adminTestMode);
-    btn.classList.toggle("primary",!adminTestMode);
+    btn.textContent="Controlled in Main Hub Settings";
+    btn.disabled=true;
+    btn.title="Test Mode applies across Reading Frenzy. Change it in Main Hub Settings, then reload this page.";
   }
   resetBtn?.classList.toggle("hidden",!adminTestMode);
 }
 async function toggleAdminTestMode(){
-  if(!isAdmin||!user)return;
-  clearTimeout(saveTimer);
-  if(!adminTestMode){
-    clearAdminTestSandbox();
-    startFreshAdminTestSandbox();
-    adminTestMode=true;
-    localStorage.setItem(ADMIN_TEST_MODE_KEY,"1");
-    saveAdminTestSandbox();
-  }else{
-    adminTestMode=false;
-    localStorage.removeItem(ADMIN_TEST_MODE_KEY);
-    clearAdminTestSandbox();
-    try{
-      const real=await fetchRealChallengePayload();
-      applyChallengePayload(real);
-    }catch(err){
-      console.error(err);
-      toast("Could not reload your real challenge save.");
-    }
-  }
-  renderAdminTestMode();
-  document.documentElement.classList.toggle("admin-test-mode",!!adminTestMode);
-  finishLoad();
-  syncAdminTestModeFeatures();
-  syncSafariShinyTestGate();
-  window.dispatchEvent(new CustomEvent("rf-admin-test-mode-change",{detail:{enabled:!!adminTestMode}}));
-  toast(adminTestMode?"Admin Test Mode enabled — test changes are isolated":"Test Mode disabled — real progress restored");
+  toast("Test Mode is controlled from Main Hub Settings. Change it there, then reload Pokémon.");
 }
 function isAdminTestMode(){return !!(isAdmin&&adminTestMode)}
 
