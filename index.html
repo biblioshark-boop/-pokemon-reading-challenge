@@ -106,10 +106,10 @@ const RF_SITE_THEME_KEY="rf_site_theme";
 </div><h3 class="section-title">Regions</h3><div id="regionGrid" class="region-grid"></div></section><section id="dexPage" class="page">
 <div id="rfEvolutionPreview" class="hidden" style="margin:14px 0 22px;padding:20px;border:2px solid #7b6ab1;border-radius:16px;background:#181c35;color:#f6f3ff">
  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
-  <div><small style="letter-spacing:.12em;color:#d7c9ff">OWNER TEST MODE · DEVELOPMENT PREVIEW</small><h2 style="margin:5px 0;color:#fff">Evolution Chain Lock-In</h2></div>
+  <div><small style="letter-spacing:.12em;color:#d7c9ff">OWNER PREVIEW · DEVELOPMENT ONLY</small><h2 style="margin:5px 0;color:#fff">Evolution Chain Lock-In</h2></div>
   <span style="background:#363256;border-radius:20px;padding:6px 12px">50/50 shiny odds · planned</span>
  </div>
- <p style="color:#ded8ed;margin:8px 0 14px">Choose a complete evolution path before catching any Pokémon in that chain. Catch in order or the chain breaks permanently. This is a preview of eligibility and paths; locking and odds are not active yet.</p>
+ <p style="color:#ded8ed;margin:8px 0 14px">Choose a complete evolution path before catching any Pokémon in that chain. Catch in order or the chain breaks permanently. This owner-only preview shows eligibility and paths; locking and odds are not active yet.</p>
  <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px">
   <button type="button" class="secondary" onclick="rfEvolutionPreviewFilter='all';rfRenderEvolutionPreview()">All</button>
   <button type="button" class="secondary" onclick="rfEvolutionPreviewFilter='available';rfRenderEvolutionPreview()">Available</button>
@@ -4585,7 +4585,8 @@ function rfRenderEvolutionPreview(){
  const box=document.getElementById('rfEvolutionPreview');
  const list=document.getElementById('rfEvolutionPreviewList');
  if(!box||!list)return;
- const show=!publicMode&&isAdminTestMode();
+ // Preview is read-only; owner visibility must not depend on cross-site Test Mode loading.
+ const show=!publicMode&&!!user&&user.id==="4040f1b9-c82b-4c0b-b99b-ae4a01daa15c";
  box.classList.toggle('hidden',!show);
  if(!show)return;
  const chains=RF_EVOLUTION_PREVIEW_CHAINS.map(c=>{
