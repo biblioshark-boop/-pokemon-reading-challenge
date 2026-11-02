@@ -109,7 +109,7 @@ const RF_SITE_THEME_KEY="rf_site_theme";
   <div><small style="letter-spacing:.12em;color:#d7c9ff">OWNER TEST MODE · DEVELOPMENT PREVIEW</small><h2 style="margin:5px 0;color:#fff">Evolution Chain Lock-In</h2></div>
   <span style="background:#363256;border-radius:20px;padding:6px 12px">50/50 shiny odds · planned</span>
  </div>
- <p style="color:#ded8ed;margin:8px 0 14px">Choose a complete evolution path before catching any Pokémon in that chain. Catch in order or the chain breaks permanently. This is a preview of eligibility and paths; locking and odds are not active yet.</p>
+ <p style="color:#ded8ed;margin:8px 0 14px">Choose a complete evolution path before catching any Pokémon in that chain. Catch in order or the chain breaks permanently. Owner sandbox: lock-in and catch-order tracking are testable. The boosted shiny roll is NOT active yet.</p>
  <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px">
   <button type="button" class="secondary" onclick="rfEvolutionPreviewFilter='all';rfRenderEvolutionPreview()">All</button>
   <button type="button" class="secondary" onclick="rfEvolutionPreviewFilter='available';rfRenderEvolutionPreview()">Available</button>
@@ -585,7 +585,7 @@ function cloneChallengePayload(payload){
   try{return JSON.parse(JSON.stringify(payload||{}))}catch{return {}}
 }
 function currentChallengePayload(){
-  return {challengeData:cloneChallengePayload(challengeData),customPokemon:cloneChallengePayload(customPokemon),genres:cloneChallengePayload(genres),achievementClaims:cloneChallengePayload(achievementClaims),safariShinyRollState:cloneChallengePayload(safariShinyRollState),hauntedSafariShinyRollState:cloneChallengePayload(hauntedSafariShinyRollState),gymCurrentlyChallenging:cloneChallengePayload(gymCurrentlyChallenging),isPublic:!!isPublic};
+  return {challengeData:cloneChallengePayload(challengeData),customPokemon:cloneChallengePayload(customPokemon),genres:cloneChallengePayload(genres),achievementClaims:cloneChallengePayload(achievementClaims),safariShinyRollState:cloneChallengePayload(safariShinyRollState),hauntedSafariShinyRollState:cloneChallengePayload(hauntedSafariShinyRollState),gymCurrentlyChallenging:cloneChallengePayload(gymCurrentlyChallenging),rfEvolutionTestState:cloneChallengePayload(rfEvolutionTestState),isPublic:!!isPublic};
 }
 function applyChallengePayload(payload){
   const p=payload&&typeof payload==="object"?payload:{};
@@ -596,6 +596,7 @@ function applyChallengePayload(payload){
   safariShinyRollState=p.safariShinyRollState&&typeof p.safariShinyRollState==="object"?cloneChallengePayload(p.safariShinyRollState):{date:"",used:0};
   hauntedSafariShinyRollState=p.hauntedSafariShinyRollState&&typeof p.hauntedSafariShinyRollState==="object"?cloneChallengePayload(p.hauntedSafariShinyRollState):{date:"",used:0};
   gymCurrentlyChallenging=p.gymCurrentlyChallenging&&typeof p.gymCurrentlyChallenging==="object"?cloneChallengePayload(p.gymCurrentlyChallenging):{};
+  rfEvolutionTestState=rfEvolutionTestNormalize(p.rfEvolutionTestState);
   if(typeof p.isPublic==="boolean")isPublic=p.isPublic;
 }
 function saveAdminTestSandbox(){
@@ -4581,6 +4582,43 @@ const RF_EVOLUTION_PREVIEW_CHAINS=[
  {id:'dratini',names:['Dratini','Dragonair','Dragonite'],dex:[147,148,149]}
 ];
 let rfEvolutionPreviewFilter='all';
+let rfEvolutionTestState={active:null,broken:[],completed:[]};
+function rfEvolutionTestNormalize(value){
+ const v=value&&typeof value==='object'?value:{};
+ return {active:v.active&&typeof v.active==='object'?v.active:null,broken:Array.isArray(v.broken)?v.broken:[],completed:Array.isArray(v.completed)?v.completed:[]};
+}
+function rfEvolutionTestLock(id){
+ if(!isAdminTestMode()||publicMode)return;
+ const c=RF_EVOLUTION_PREVIEW_CHAINS.find(x=>x.id===id);
+ if(!c||rfEvolutionTestState.active)return;
+ if(rfEvolutionTestState.broken.includes(id)||rfEvolutionTestState.completed.includes(id))return;
+ if(c.dex.some(n=>all().some(p=>Number(p.dex)===n&&!!challengeData[p.id]?.caught)))return toast('This chain has already been started.');
+ if(!confirm('Lock in '+c.names.join(' → ')+'? Catching a different Pokémon will permanently break this chain. There is no cancel button.'))return;
+ rfEvolutionTestState.active={id,step:0};
+ saveNow();rfRenderEvolutionPreview();
+ toast('Chain locked! Catch '+c.names[0]+' next.');
+}
+function rfEvolutionTestOnCatch(p){
+ if(!isAdminTestMode()||!rfEvolutionTestState.active||!p||p.custom)return;
+ const active=rfEvolutionTestState.active;
+ const c=RF_EVOLUTION_PREVIEW_CHAINS.find(x=>x.id===active.id);
+ if(!c)return;
+ const expected=c.dex[active.step];
+ if(Number(p.dex)===expected){
+   active.step++;
+   if(active.step>=c.dex.length){
+     rfEvolutionTestState.completed.push(c.id);
+     rfEvolutionTestState.active=null;
+     toast('Evolution chain completed! '+c.names.join(' → '));
+   }else toast('Chain progress: '+active.step+'/'+c.dex.length+'. Next: '+c.names[active.step]);
+ }else{
+   rfEvolutionTestState.broken.push(c.id);
+   rfEvolutionTestState.active=null;
+   toast('Evolution chain broken. This chain is no longer available.');
+ }
+ rfRenderEvolutionPreview();
+}
+
 function rfRenderEvolutionPreview(){
  const box=document.getElementById('rfEvolutionPreview');
  const list=document.getElementById('rfEvolutionPreviewList');
@@ -4588,15 +4626,22 @@ function rfRenderEvolutionPreview(){
  const show=!publicMode&&isAdminTestMode();
  box.classList.toggle('hidden',!show);
  if(!show)return;
+ const active=rfEvolutionTestState.active;
  const chains=RF_EVOLUTION_PREVIEW_CHAINS.map(c=>{
   const seen=c.dex.some(n=>all().some(p=>Number(p.dex)===n&&!!challengeData[p.id]?.caught));
-  return {...c,seen};
- }).filter(c=>rfEvolutionPreviewFilter==='all'||(rfEvolutionPreviewFilter==='started'?c.seen:!c.seen));
- list.innerHTML=chains.map(c=>'<div style="padding:12px;border:1px solid '+(c.seen?'#735e67':'#7469a0')+';border-radius:12px;background:#252943">'+
+  const status=active?.id===c.id?'active':rfEvolutionTestState.broken.includes(c.id)?'broken':rfEvolutionTestState.completed.includes(c.id)?'completed':seen?'started':'available';
+  return {...c,status};
+ }).filter(c=>rfEvolutionPreviewFilter==='all'||(rfEvolutionPreviewFilter==='started'?c.status==='started'||c.status==='broken':c.status==='available'));
+ list.innerHTML=chains.map(c=>{
+  const current=active?.id===c.id?active:null;
+  const details=current?'Active · '+current.step+'/'+c.dex.length+' · Next: '+c.names[current.step]:c.status==='broken'?'Chain broken — permanently unavailable':c.status==='completed'?'Completed':c.status==='started'?'Already started — unavailable':'Available — untouched';
+  const canLock=c.status==='available'&&!active;
+  return '<div style="padding:12px;border:1px solid '+(current?'#9ee3b3':'#7469a0')+';border-radius:12px;background:#252943">'+
   '<strong style="color:#fff">'+c.names.join(' → ')+'</strong>'+
   (c.branch?'<div style="font-size:12px;color:#c5b9e9;margin-top:5px">Branch: '+c.branch+'</div>':'')+
-  '<div style="margin:9px 0;color:'+(c.seen?'#ffbbb6':'#b4efcc')+'">'+(c.seen?'Already started — unavailable':'Available — untouched')+'</div>'+
-  '<button type="button" disabled style="opacity:.6;padding:8px;border-radius:8px;width:100%">'+(c.seen?'Unavailable':'Lock In (coming soon)')+'</button></div>').join('');
+  '<div style="margin:9px 0;color:'+(c.status==='available'||current||c.status==='completed'?'#b4efcc':'#ffbbb6')+'">'+details+'</div>'+
+  '<button type="button" '+(canLock?'onclick="rfEvolutionTestLock(\''+c.id+'\')"':'disabled')+' style="opacity:'+(canLock?'1':'.6')+';padding:8px;border-radius:8px;width:100%">'+(current?'Locked In':canLock?'Lock In':c.status==='available'?'Another chain is active':'Unavailable')+'</button></div>';
+ }).join('');
  if(!chains.length)list.innerHTML='<p>No chains in this filter.</p>';
 }
 
@@ -4612,6 +4657,7 @@ async function toggleCaught(){
  const wasCaught=!!e.caught;
  e.caught=!e.caught;
  if(!wasCaught&&e.caught&&e.safariMarked)e.safariCatch=true;
+ if(!wasCaught&&e.caught&&!e.safariMarked)rfEvolutionTestOnCatch(p);
  if(!wasCaught&&e.caught&&e.shinySaved&&isShinyEligiblePokemon(p)){
    e.shinyCaught=true;
    e.shinyView="shiny";
