@@ -1632,9 +1632,9 @@ async function loadAdminTestMode(){
   // Main Hub is the shared Test Mode controller for the owner across challenges.
   let hubEnabled=false;
   if(isAdmin&&user){
-    const {data,error}=await sb.from("rf_test_modes").select("enabled").eq("area","main-hub").maybeSingle();
+    const {data,error}=await sb.rpc("rf_owner_main_hub_test_mode_enabled");
     if(error)console.warn("Could not read shared Main Hub Test Mode",error);
-    else hubEnabled=data?.enabled===true;
+    else hubEnabled=data===true;
   }
   adminTestMode=!!(isAdmin&&hubEnabled);
   if(adminTestMode)localStorage.setItem(ADMIN_TEST_MODE_KEY,"1");
