@@ -4587,6 +4587,20 @@ function rfEvolutionTestNormalize(value){
  const v=value&&typeof value==='object'?value:{};
  return {active:v.active&&typeof v.active==='object'?v.active:null,broken:Array.isArray(v.broken)?v.broken:[],completed:Array.isArray(v.completed)?v.completed:[]};
 }
+function rfEvolutionPrepareTestChain(id){
+ if(!isAdminTestMode()||publicMode||rfEvolutionTestState.active)return;
+ const c=RF_EVOLUTION_PREVIEW_CHAINS.find(x=>x.id===id);
+ if(!c)return;
+ if(!confirm('Prepare '+c.names.join(' → ')+' for testing? This resets catch flags for these Pokémon in your private TEST copy only. Your real Pokédex and shinies are not changed.'))return;
+ for(const p of all()){
+  if(c.dex.includes(Number(p.dex))&&challengeData[p.id]){
+   challengeData[p.id].caught=false;
+   challengeData[p.id].currentlyCatching=false;
+  }
+ }
+ saveNow();rfRenderEvolutionPreview();
+ toast('Test chain prepared. You can now lock it in.');
+}
 function rfEvolutionTestLock(id){
  if(!isAdminTestMode()||publicMode)return;
  const c=RF_EVOLUTION_PREVIEW_CHAINS.find(x=>x.id===id);
@@ -4640,7 +4654,7 @@ function rfRenderEvolutionPreview(){
   '<strong style="color:#fff">'+c.names.join(' → ')+'</strong>'+
   (c.branch?'<div style="font-size:12px;color:#c5b9e9;margin-top:5px">Branch: '+c.branch+'</div>':'')+
   '<div style="margin:9px 0;color:'+(c.status==='available'||current||c.status==='completed'?'#b4efcc':'#ffbbb6')+'">'+details+'</div>'+
-  '<button type="button" '+(canLock?'onclick="rfEvolutionTestLock(\''+c.id+'\')"':'disabled')+' style="opacity:'+(canLock?'1':'.6')+';padding:8px;border-radius:8px;width:100%">'+(current?'Locked In':canLock?'Lock In':c.status==='available'?'Another chain is active':'Unavailable')+'</button></div>';
+  '<button type="button" '+(canLock?'onclick="rfEvolutionTestLock(\''+c.id+'\')"':'disabled')+' style="opacity:'+(canLock?'1':'.6')+';padding:8px;border-radius:8px;width:100%">'+(current?'Locked In':canLock?'Lock In':c.status==='available'?'Another chain is active':'Unavailable')+'</button>'+(c.status==='started'&&!active?'<button type="button" onclick="rfEvolutionPrepareTestChain(\''+c.id+'\')" style="width:100%;margin-top:6px;padding:7px;border-radius:8px">Prepare Test Chain</button>':'')+'</div>';
  }).join('');
  if(!chains.length)list.innerHTML='<p>No chains in this filter.</p>';
 }
