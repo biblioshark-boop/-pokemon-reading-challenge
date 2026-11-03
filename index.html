@@ -109,7 +109,7 @@ const RF_SITE_THEME_KEY="rf_site_theme";
   <div><small style="letter-spacing:.12em;color:#d7c9ff">OWNER TEST MODE · DEVELOPMENT PREVIEW</small><h2 style="margin:5px 0;color:#fff">Evolution Chain Lock-In</h2></div>
   <span style="background:#363256;border-radius:20px;padding:6px 12px">50/50 shiny odds · planned</span>
  </div>
- <p style="color:#ded8ed;margin:8px 0 14px">Choose a two- or three-stage evolution path before catching any Pokémon in that family. For branches, pick just one path; the others become unavailable. Catch in order or the chain breaks permanently. Owner-only preview: choose Fresh (new books in separate chain slots) or Legacy (credit prior catches). Shiny odds are estimates only — no rewards are enabled. Fresh book prompts and reading dates are not yet server-verified.</p>
+ <p style="color:#ded8ed;margin:8px 0 14px">Choose a two- or three-stage evolution path before catching any Pokémon in that family. Each branching path may be attempted once, with a fresh start for that path. Catch in order or the chain breaks permanently. Owner-only preview: choose Fresh (new books in separate chain slots) or Legacy (credit prior catches). Shiny odds are estimates only — no rewards are enabled. Fresh book prompts and reading dates are not yet server-verified.</p>
  <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px">
   <button type="button" class="secondary" onclick="rfEvolutionPreviewFilter='all';rfRenderEvolutionPreview()">All</button>
   <button type="button" class="secondary" onclick="rfEvolutionPreviewFilter='available';rfRenderEvolutionPreview()">Available</button>
@@ -1651,6 +1651,7 @@ async function loadAdminTestMode(){
   syncAdminTestModeFeatures();
   syncSafariShinyTestGate();
   window.dispatchEvent(new CustomEvent("rf-admin-test-mode-change",{detail:{enabled:!!adminTestMode}}));
+  if(typeof rfRenderEvolutionPreview==="function")rfRenderEvolutionPreview();
 }
 function renderAdminTestMode(){
   const card=document.getElementById("adminTestModeCard");
@@ -4588,8 +4589,8 @@ function rfEvolutionTestNormalize(value){
  const v=value&&typeof value==='object'?value:{};
  return {active:v.active&&typeof v.active==='object'?v.active:null,broken:Array.isArray(v.broken)?v.broken:[],completed:Array.isArray(v.completed)?v.completed:[]};
 }
-function rfEvolutionTestFamilyUsed(familyKey){
- return rfEvolutionAllChains().some(c=>c.familyKey===familyKey&&(rfEvolutionTestState.broken.includes(c.id)||rfEvolutionTestState.completed.includes(c.id)));
+function rfEvolutionTestPathUsed(id){
+ return rfEvolutionTestState.broken.includes(id)||rfEvolutionTestState.completed.includes(id);
 }
 function rfEvolutionLegacyCaught(c){
  return c.dex.filter(n=>all().some(p=>Number(p.dex)===n&&!!challengeData[p.id]?.caught));
@@ -4597,17 +4598,17 @@ function rfEvolutionLegacyCaught(c){
 function rfEvolutionTestLock(id){
  if(!isEvolutionOwnerTestMode())return;
  const c=rfEvolutionAllChains().find(x=>x.id===id);
- if(!c||rfEvolutionTestState.active||rfEvolutionTestFamilyUsed(c.familyKey))return;
+ if(!c||rfEvolutionTestState.active||rfEvolutionTestPathUsed(c.id))return;
  const existing=rfEvolutionLegacyCaught(c);
- const familyCaught=rfEvolutionAllChains().filter(x=>x.familyKey===c.familyKey).flatMap(x=>x.dex);
- const familyHasCaught=[...new Set(familyCaught)].some(n=>all().some(p=>Number(p.dex)===n&&!!challengeData[p.id]?.caught));
+ const pathDex=c.dex;
+ const familyHasCaught=[...new Set(pathDex)].some(n=>all().some(p=>Number(p.dex)===n&&!!challengeData[p.id]?.caught));
  const mode=familyHasCaught?window.prompt('Choose your mode for '+c.names.join(' → ')+'\\nType FRESH for a new book at every stage (50% planned).\\nType LEGACY to credit existing catches and read only missing stages (50/40/30% planned).','FRESH'):'FRESH';
  if(mode===null)return;
  const choice=String(mode).trim().toLowerCase();
  if(!['fresh','legacy'].includes(choice))return toast('Choose FRESH or LEGACY.');
  if(choice==='legacy'&&existing.length===c.dex.length)return toast('This path is already complete. Choose Fresh Challenge instead.');
  const odds=choice==='fresh'?50:Math.max(0,50-existing.length*10);
- if(!confirm('Confirm '+choice.toUpperCase()+' for '+c.names.join(' → ')+'? This uses your only attempt for the whole family. Planned shiny odds: '+odds+'% per new book. Real shiny rolls are NOT enabled. You cannot switch modes or paths.'))return;
+ if(!confirm('Confirm '+choice.toUpperCase()+' for '+c.names.join(' → ')+'? This uses your only attempt for this path. Planned shiny odds: '+odds+'% per new book. Real shiny rolls are NOT enabled. You cannot switch modes or paths.'))return;
  const progress=choice==='legacy'?c.dex.map(n=>existing.includes(n)):c.dex.map(()=>false);
  rfEvolutionTestState.active={id,mode:choice,step:progress.findIndex(x=>!x),progress,odds,books:{},startedAt:new Date().toISOString()};
  saveNow();rfRenderEvolutionPreview();
@@ -4672,19 +4673,19 @@ function rfRenderEvolutionPreview(){
  const familyCounts=new Map();
  for(const c of allChains)familyCounts.set(c.familyKey,(familyCounts.get(c.familyKey)||0)+1);
  const chains=allChains.filter(c=>rfEvolutionGenerationFilter==='all'||String(c.generation)===rfEvolutionGenerationFilter).map(c=>{
-  const familyDex=new Set(allChains.filter(x=>x.familyKey===c.familyKey).flatMap(x=>x.dex));
-  const seen=[...familyDex].some(n=>all().some(p=>Number(p.dex)===n&&!!challengeData[p.id]?.caught));
-  const familyFinished=rfEvolutionAllChains().some(x=>x.familyKey===c.familyKey&&(rfEvolutionTestState.completed.includes(x.id)||rfEvolutionTestState.broken.includes(x.id)));
-  const status=active?.id===c.id?'active':rfEvolutionTestState.broken.includes(c.id)?'broken':rfEvolutionTestState.completed.includes(c.id)?'completed':familyFinished?'family-used':seen?'started':'available';
+  const pathDex=new Set(c.dex);
+  const seen=[...pathDex].some(n=>all().some(p=>Number(p.dex)===n&&!!challengeData[p.id]?.caught));
+  const pathFinished=rfEvolutionTestPathUsed(c.id);
+  const status=active?.id===c.id?'active':rfEvolutionTestState.broken.includes(c.id)?'broken':rfEvolutionTestState.completed.includes(c.id)?'completed':pathFinished?'family-used':seen?'started':'available';
   return {...c,status};
  }).filter(c=>rfEvolutionPreviewFilter==='all'||(rfEvolutionPreviewFilter==='started'?c.status==='started'||c.status==='broken':c.status==='available'));
  list.innerHTML=chains.map(c=>{
   const current=active?.id===c.id?active:null;
-  const details=current?'Active · '+current.step+'/'+c.dex.length+' · Next: '+c.names[current.step]:c.status==='broken'?'Chain broken — permanently unavailable':c.status==='family-used'?'Another path from this family was used — unavailable':c.status==='completed'?'Completed':c.status==='started'?'Existing catches — Fresh or Legacy available':'Available — untouched';
+  const details=current?'Active · '+current.step+'/'+c.dex.length+' · Next: '+c.names[current.step]:c.status==='broken'?'Chain broken — permanently unavailable':c.status==='family-used'?'This path has already been attempted — unavailable':c.status==='completed'?'Completed':c.status==='started'?'Existing catches — Fresh or Legacy available':'Available — untouched';
   const canLock=(c.status==='available'||c.status==='started')&&!active;
   return '<div style="padding:12px;border:1px solid '+(current?'#9ee3b3':'#7469a0')+';border-radius:12px;background:#252943">'+
   '<strong style="color:#fff">'+c.names.join(' → ')+'</strong><span style="display:inline-block;margin-left:7px;padding:2px 7px;border-radius:12px;background:#474168;color:#f6edff;font-size:11px">Gen '+c.generation+'</span>'+
-  (familyCounts.get(c.familyKey)>1?'<div style="font-size:12px;color:#c5b9e9;margin-top:5px">Pick a Path · One path per evolution family</div>':'')+
+  (familyCounts.get(c.familyKey)>1?'<div style="font-size:12px;color:#c5b9e9;margin-top:5px">Choose a branch · One attempt per path</div>':'')+
   (current?'<div style="font-size:12px;margin-top:6px">Mode: '+(current.mode||'legacy').toUpperCase()+' · Planned shiny chance: '+(current.odds||0)+'% per new catch (NOT ACTIVE)</div><div style="font-size:12px;margin-top:5px">'+c.names.map((n,i)=>(current.progress?.[i]?'✓ ':'○ ')+n).join(' → ')+'</div>':'')+
   (current?.mode==='fresh'?'<button type="button" onclick="rfEvolutionTestAddBook()" style="width:100%;margin-top:9px;padding:8px;border-radius:8px">Add new chain-only book for '+c.names[current.step]+'</button>':'')+
 
