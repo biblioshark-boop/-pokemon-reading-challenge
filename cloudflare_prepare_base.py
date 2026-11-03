@@ -180,9 +180,19 @@ def main():
     # Apply the reviewed event patch with exact context checks.
     # Exact context checks prevent silently applying it to incompatible future edits.
     patch_file = ROOT / "pokemon-special-event-controls.patch.json"
-    for change in json.loads(patch_file.read_text(encoding="utf-8")):
+    for index, change in enumerate(json.loads(patch_file.read_text(encoding="utf-8"))):
+        # The first historical patch only rewrites build-label metadata. Those
+        # labels change with every new release and are explicitly set again
+        # below, so requiring the old label here blocks valid deployments.
+        # Keep strict context validation for every functional event patch.
+        if index == 0 and (
+            change["old"].startswith("<!DOCTYPE html><!-- RF_BUILD:")
+            and change["new"].startswith("<!DOCTYPE html><!-- RF_BUILD:")
+            and change["old"].endswith('const RF_PATCH_NAME="Patch #274 — Refresh Top Recruiter Badge Image";\\n')
+        ):
+            continue
         if text.count(change["old"]) != 1:
-            raise SystemExit("ERROR: Special Event patch context changed; review the source before deploying.")
+            raise SystemExit(f"ERROR: Special Event patch #{index + 1} context changed; review the source before deploying.")
         text = text.replace(change["old"], change["new"])
 
     extracted_dir = DIST_ASSETS / "extracted-inline"
