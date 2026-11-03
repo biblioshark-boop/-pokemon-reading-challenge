@@ -1672,6 +1672,7 @@ async function toggleAdminTestMode(){
   toast("Test Mode is controlled from Main Hub Settings. Change it there, then reload Pokémon.");
 }
 function isAdminTestMode(){return !!(isAdmin&&adminTestMode)}
+function isEvolutionOwnerTestMode(){return !!(isAdminTestMode()&&!publicMode&&user&&user.id==="4040f1b9-c82b-4c0b-b99b-ae4a01daa15c")}
 
 async function loadAdminStatus(){
 if(!user||publicMode){isAdmin=false;canEditPokemonDetails=false;adminTestMode=false;document.documentElement.classList.remove("admin-test-mode");return}
@@ -4588,7 +4589,7 @@ function rfEvolutionTestNormalize(value){
  return {active:v.active&&typeof v.active==='object'?v.active:null,broken:Array.isArray(v.broken)?v.broken:[],completed:Array.isArray(v.completed)?v.completed:[]};
 }
 function rfEvolutionPrepareTestChain(id){
- if(!isAdminTestMode()||publicMode||rfEvolutionTestState.active)return;
+ if(!isEvolutionOwnerTestMode()||rfEvolutionTestState.active)return;
  const c=RF_EVOLUTION_PREVIEW_CHAINS.find(x=>x.id===id);
  if(!c)return;
  if(!confirm('Prepare '+c.names.join(' → ')+' for testing? This resets catch flags for these Pokémon in your private TEST copy only. Your real Pokédex and shinies are not changed.'))return;
@@ -4602,7 +4603,7 @@ function rfEvolutionPrepareTestChain(id){
  toast('Test chain prepared. You can now lock it in.');
 }
 function rfEvolutionTestLock(id){
- if(!isAdminTestMode()||publicMode)return;
+ if(!isEvolutionOwnerTestMode())return;
  const c=RF_EVOLUTION_PREVIEW_CHAINS.find(x=>x.id===id);
  if(!c||rfEvolutionTestState.active)return;
  if(rfEvolutionTestState.broken.includes(id)||rfEvolutionTestState.completed.includes(id))return;
@@ -4613,7 +4614,7 @@ function rfEvolutionTestLock(id){
  toast('Chain locked! Catch '+c.names[0]+' next.');
 }
 function rfEvolutionTestOnCatch(p){
- if(!isAdminTestMode()||!rfEvolutionTestState.active||!p||p.custom)return;
+ if(!isEvolutionOwnerTestMode()||!rfEvolutionTestState.active||!p||p.custom)return;
  const active=rfEvolutionTestState.active;
  const c=RF_EVOLUTION_PREVIEW_CHAINS.find(x=>x.id===active.id);
  if(!c)return;
@@ -4637,7 +4638,7 @@ function rfRenderEvolutionPreview(){
  const box=document.getElementById('rfEvolutionPreview');
  const list=document.getElementById('rfEvolutionPreviewList');
  if(!box||!list)return;
- const show=!publicMode&&isAdminTestMode();
+ const show=isEvolutionOwnerTestMode();
  box.classList.toggle('hidden',!show);
  if(!show)return;
  const active=rfEvolutionTestState.active;
