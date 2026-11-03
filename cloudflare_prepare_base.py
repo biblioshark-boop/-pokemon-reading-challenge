@@ -188,7 +188,7 @@ def main():
         if index == 0 and (
             change["old"].startswith("<!DOCTYPE html><!-- RF_BUILD:")
             and change["new"].startswith("<!DOCTYPE html><!-- RF_BUILD:")
-            and change["old"].endswith('const RF_PATCH_NAME="Patch #274 — Refresh Top Recruiter Badge Image";\\n')
+            and 'const RF_PATCH_NAME="Patch #274 — Refresh Top Recruiter Badge Image";' in change["old"]
         ):
             continue
         if text.count(change["old"]) != 1:
