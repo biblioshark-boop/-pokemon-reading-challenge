@@ -1,4 +1,4 @@
-/* RF_CHALLENGE_PUMPKINS: 20261002184000 — optional live browse overlay. */
+/* Pokémon-only seasonal hunt overlay. Dinosaur remains disabled server-side. */
 (() => {
   'use strict';
   if (window.__rfChallengePumpkinV1) return;
@@ -9,6 +9,7 @@
   const KEY = 'sb_publishable_1NoVsY53V4CBFMg_i09Lcg_DCf8w_Lb';
   const AUTH_KEY = 'sb-yamjfaacvewvrinxytep-auth-token';
   const HUB = 'https://thereadingfrenzy.com/';
+  const LEAF_CHOICE_KEY = 'rf-pokemon-pending-leaf-choice-v1';
   let currentView = '', attemptedView = '', generation = 0;
   let rolling = false, claiming = false, active = null, expiryTimer = null, dialog = null;
   let initial = true;
@@ -71,7 +72,9 @@
   }
   function asset(path) {
     const url = new URL(path || '', HUB);
-    if (url.origin !== new URL(HUB).origin || !url.pathname.startsWith('/assets/images/events/pumpkin-hunt-2026/')) throw new Error('Unexpected pumpkin image.');
+    const hubArt = url.origin === new URL(HUB).origin && url.pathname.startsWith('/assets/images/events/pumpkin-hunt-2026/');
+    const seasonalArt = url.origin === new URL(API).origin && url.pathname.startsWith('/storage/v1/object/public/rf-hunt-public-art/');
+    if (!hubArt && !seasonalArt) throw new Error('Unexpected collectible image.');
     return url.href;
   }
   function position(button) {
@@ -96,17 +99,80 @@
     expiryTimer = setTimeout(clearPumpkin, Math.max(0, Math.min(120000, expires - Date.now())));
   }
   function element(tag, text) { const node=document.createElement(tag);node.textContent=text;return node; }
+  // Gold Leaf tickets must accept the same final, searchable Pokémon choice as on the Hub.
+  // A pending ticket is remembered locally so a refresh cannot silently hide the choice.
+  function pendingLeafTicket(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(LEAF_CHOICE_KEY)||'null');
+      return saved?.userId===session()?.user?.id && typeof saved.ticketId==='string'?saved.ticketId:null;
+    }catch(_){return null}
+  }
+  function rememberLeafTicket(ticketId){
+    try{const userId=session()?.user?.id;if(userId)localStorage.setItem(LEAF_CHOICE_KEY,JSON.stringify({userId,ticketId}));}catch(_){}
+  }
+  function clearLeafTicket(){try{localStorage.removeItem(LEAF_CHOICE_KEY)}catch(_){}}
+  function addLeafShinyChoice(card,ticketId){
+    rememberLeafTicket(ticketId);
+    const block=document.createElement('section');
+    block.style.cssText='padding:12px;margin:14px 0;background:#fff2cb;border:2px solid #b58a45;border-radius:12px;text-align:left';
+    block.append(element('p','🎟️ Gold Leaf: choose your guaranteed shiny Pokémon! This choice is FINAL and cannot be switched.'));
+    const label=element('label','Search for your Pokémon');label.htmlFor='rf-leaf-pokemon-choose';label.style.cssText='display:block;font-weight:bold;margin:8px 0';
+    const input=document.createElement('input');input.id=label.htmlFor;input.maxLength=80;input.placeholder='Search Pokémon…';
+    input.style.cssText='width:100%;box-sizing:border-box;padding:10px;border:1px solid #9a845e;border-radius:8px';
+    const results=document.createElement('div');results.setAttribute('role','listbox');
+    results.style.cssText='max-height:180px;overflow-y:auto;margin:6px 0';
+    const status=element('p','Loading Pokémon choices…');status.setAttribute('role','status');
+    const submit=element('button','Confirm final Pokémon choice');submit.type='button';submit.disabled=true;
+    submit.style.cssText='padding:10px;background:#206e54;color:white;border:none;border-radius:8px;font-weight:bold';
+    let selected='';let choices=[];
+    function search(){
+      selected='';submit.disabled=true;results.replaceChildren();
+      const value=input.value.trim().toLowerCase();
+      if(!value)return;
+      choices.filter(p=>p.toLowerCase().includes(value)).slice(0,16).forEach(name=>{
+        const option=element('button',name);option.type='button';
+        option.style.cssText='display:block;width:100%;padding:8px;text-align:left;background:white;border:1px solid #d0c098;border-radius:6px;margin:2px 0;color:#32291e';
+        option.onclick=()=>{selected=name;input.value=name;results.replaceChildren();submit.disabled=false};
+        results.append(option);
+      });
+      if(!results.childElementCount)results.append(element('p','No matching Pokémon.'));
+    }
+    input.addEventListener('input',search);
+    submit.onclick=async()=>{
+      if(!selected||input.value.trim()!==selected)return;
+      if(!confirm('FINAL CHOICE: '+selected+'\n\nYou cannot switch this Pokémon after submitting. Confirm?'))return;
+      submit.disabled=true;status.textContent='Saving your choice…';
+      try{
+        await rpc('rf_submit_leaf_shiny_choice',{p_ticket_id:ticketId,p_pokemon:selected});
+        clearLeafTicket();
+        status.textContent='Your final shiny Pokémon choice is saved and sent to Reading Frenzy staff!';
+        input.disabled=true;results.replaceChildren();
+      }catch(err){status.textContent=err.message||'Could not submit Pokémon. Try again.';submit.disabled=false;}
+    };
+    block.append(label,input,results,submit,status);card.append(block);
+    const auth=session();
+    if(!auth){status.textContent='Sign in on the Hub to finish your Pokémon choice.';return;}
+    fetch('https://yamjfaacvewvrinxytep.supabase.co/rest/v1/pokemon_catalog?select=name,form_name,dex_number&is_active=eq.true&limit=2000',{
+      headers:{apikey:KEY,Authorization:'Bearer '+auth.access_token}
+    }).then(async response=>{if(!response.ok)throw new Error('Unable to load Pokémon choices');
+      const list=await response.json();
+      choices=[...new Set(list.map(p=>p.form_name||p.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      status.textContent='Search and select a Pokémon from the results.';
+    }).catch(err=>{status.textContent=err.message+'. Visit the Hub or contact staff if needed.'});
+  }
   function showReward(result) {
     dialog?.remove();
     dialog = document.createElement('div');dialog.id='rf-challenge-pumpkin-reward';
     dialog.style.cssText='position:fixed;inset:0;z-index:4900;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box';
     const card=document.createElement('div');
-    card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Pumpkin reward');
+    card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label',result.seasonal?'Seasonal collectible reward':'Pumpkin reward');
     card.style.cssText='width:100%;max-width:380px;max-height:85vh;overflow:auto;padding:22px;box-sizing:border-box;border-radius:20px;background:#fff8ed;color:#312718;text-align:center;font:16px/1.4 Arial,sans-serif';
     const image=document.createElement('img');image.src=asset(result.asset_path);image.alt=result.display_name||'Pumpkin';image.style.cssText='width:110px;height:110px;object-fit:contain';
-    card.append(image,element('h2',result.rarity==='gold'?'You found a Golden Pumpkin!':'Pumpkin found!'),element('p',result.display_name||'Pumpkin'),element('p','+'+(Number(result.points_awarded)||0)+' Reading Frenzy Points'),element('p',result.is_new?'Added to your Collectibles.':'You already own this pumpkin, but still receive its reward.'));
+    card.append(image,element('h2',result.seasonal?(result.rarity==='gold'?'You found a Gold Leaf!':'Leaf found!'):(result.rarity==='gold'?'You found a Golden Pumpkin!':'Pumpkin found!')),element('p',result.display_name||(result.seasonal?'Leaf':'Pumpkin')),element('p','+'+(Number(result.points_awarded)||0)+' Reading Frenzy Points'),element('p',result.is_new?'Added to your Collectibles.':'You already own this collectible.'));
     if (Number(result.find_count)>1) card.append(element('p','Found '+result.find_count+' times.'));
-    if (result.shiny_ticket_id) {
+    if (result.shiny_ticket_id && result.seasonal) {
+      addLeafShinyChoice(card,result.shiny_ticket_id);
+    } else if (result.shiny_ticket_id) {
       card.append(element('p','You also received a Shiny Ticket!'));
       const label=element('label','Discord username (optional)');label.htmlFor='rf-challenge-ticket-discord';
       const input=document.createElement('input');input.id=label.htmlFor;input.maxLength=100;input.placeholder='Your Discord username';input.style.cssText='width:100%;box-sizing:border-box;padding:10px;margin:8px 0';
@@ -127,11 +193,11 @@
     if (claiming || key!==currentView) return;
     claiming=true;button.disabled=true;
     try {
-      const result=await rpc('claim_rf_pumpkin_browse_spawn',{p_spawn_key:item.spawn_key});
+      const result=await rpc(item.seasonal?(item.action_key?'rf_claim_seasonal_action':'rf_claim_seasonal_browse'):'claim_rf_pumpkin_browse_spawn',{p_spawn_key:item.spawn_key});
       if (!result?.collectible_key) throw new Error('Could not confirm the pumpkin reward.');
-      clearPumpkin();showReward(result);
+      clearPumpkin();showReward({...result,seasonal:!!item.seasonal});
     } catch (err) {
-      console.warn('Pumpkin claim unavailable',err);
+      console.warn('Seasonal collectible claim unavailable',err);
       if(button.isConnected){button.disabled=false;button.setAttribute('aria-label',err.message+' Click to retry.');}
     } finally {claiming=false;}
   }
@@ -139,10 +205,20 @@
     rolling=true;attemptedView=key;
     const navigationType=initial&&performance.getEntriesByType('navigation')[0]?.type==='reload'?'reload':'navigate';initial=false;
     try {
-      const item=await rpc('roll_rf_challenge_pumpkin_browse_spawn',{p_site_area:site,p_navigation_type:navigationType});
+      // Use the same active seasonal hunt and shared cooldown/state as the main hub.
+      // Do not fall back to the expired Pumpkin Hunt after November 1.
+      const hunt=await rpc('rf_current_seasonal_event');
+      if(!hunt?.event_key) return;
+      const action=await rpc('rf_roll_seasonal_action');
       if(version!==generation || key!==currentView || viewKey()!==key) return;
-      if(item?.spawned&&item.spawn_key)showPumpkin(item,key);
-    } catch(err) {console.warn('Optional Pumpkin Hunt unavailable',err);}
+      if(action?.spawned&&action.spawn_key){
+        showPumpkin({...action,seasonal:true},key);
+        return;
+      }
+      const item=await rpc('rf_roll_seasonal_browse',{p_navigation_type:navigationType});
+      if(version!==generation || key!==currentView || viewKey()!==key) return;
+      if(item?.spawned&&item.spawn_key)showPumpkin({...item,seasonal:true},key);
+    } catch(err) {console.warn('Optional seasonal hunt unavailable',err);}
     finally{rolling=false;}
   }
   function tick() {
@@ -153,6 +229,21 @@
     } catch(err) {console.warn('Optional Pumpkin Hunt check unavailable',err);}
   }
   // A separate timer observes completed navigation; challenge functions stay untouched.
-  function start(){setTimeout(()=>{tick();setInterval(tick,700);},1500);}
+  function start(){setTimeout(()=>{
+    const pending=pendingLeafTicket();
+    if(pending){showPendingLeafChoice(pending);}else tick();
+    setInterval(tick,700);
+  },1500);}
+  function showPendingLeafChoice(ticketId){
+    if(!session())return;
+    dialog?.remove();dialog=document.createElement('div');dialog.id='rf-challenge-pumpkin-reward';
+    dialog.style.cssText='position:fixed;inset:0;z-index:4900;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:18px';
+    const card=document.createElement('div');card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
+    card.style.cssText='width:min(100%,390px);max-height:88vh;overflow:auto;padding:18px;box-sizing:border-box;border-radius:16px;background:#fff8ed;color:#312718';
+    card.append(element('h2','Finish your Gold Leaf Pokémon choice'));
+    addLeafShinyChoice(card,ticketId);
+    const close=element('button','Continue Challenge');close.type='button';close.onclick=()=>{dialog?.remove();dialog=null};
+    card.append(close);dialog.append(card);document.body.append(dialog);
+  }
   if(document.readyState==='complete')start();else window.addEventListener('load',start,{once:true});
 })();
