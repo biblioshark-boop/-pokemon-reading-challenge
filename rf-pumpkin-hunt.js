@@ -72,7 +72,7 @@
   }
   function asset(path) {
     const url = new URL(path || '', HUB);
-    const hubArt = url.origin === new URL(HUB).origin && url.pathname.startsWith('/assets/images/events/pumpkin-hunt-2026/');
+    const hubArt = url.origin === new URL(HUB).origin && (/^\/assets\/images\/events\/(pumpkin|leaf)-hunt-2026\//.test(url.pathname));
     const seasonalArt = url.origin === new URL(API).origin && url.pathname.startsWith('/storage/v1/object/public/rf-hunt-public-art/');
     if (!hubArt && !seasonalArt) throw new Error('Unexpected collectible image.');
     return url.href;
@@ -156,7 +156,7 @@
       headers:{apikey:KEY,Authorization:'Bearer '+auth.access_token}
     }).then(async response=>{if(!response.ok)throw new Error('Unable to load Pokémon choices');
       const list=await response.json();
-      choices=[...new Set(list.map(p=>{const f=p.form_name?.trim();return !f?p.name:['Alolan','Galarian','Hisuian','Paldean'].includes(f)?f+' '+p.name:f.toLowerCase().includes(p.name.toLowerCase())||['Nidoran (F)','Nidoran (M)'].includes(f)?f:p.name+' ('+f+')';}).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      choices=[...new Set(list.map(p=>p.form_name||p.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
       status.textContent='Search and select a Pokémon from the results.';
     }).catch(err=>{status.textContent=err.message+'. Visit the Hub or contact staff if needed.'});
   }
