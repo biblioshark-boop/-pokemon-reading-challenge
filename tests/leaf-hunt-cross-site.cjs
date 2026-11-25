@@ -12,5 +12,5 @@ assert.match(script,/storage\/v1\/object\/public\/rf-hunt-public-art\//,'Allow p
 assert.match(script,/rf_submit_leaf_shiny_choice/,'Gold-leaf shiny choice is available directly from the Pokémon popup');
 assert.match(script,/LEAF_CHOICE_KEY/,'Pending Gold-leaf choice is recoverable after reload');
 assert.doesNotMatch(script,/rpc\('roll_rf_challenge_pumpkin_browse_spawn'/,'No expired Pumpkin Hunt rolls');
-assert.match(build,/rf-pumpkin-hunt\.js\?v=20261105141600/,'Deploy uses updated, uncached seasonal integration');
+assert.match(build,/rf-pumpkin-hunt\.js\?v=20261125123000/,'Deploy uses updated, uncached seasonal integration');
 console.log('Pokémon seasonal Leaf Hunt integration checks passed');

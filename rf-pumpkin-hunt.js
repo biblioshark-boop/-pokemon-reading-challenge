@@ -12,7 +12,7 @@
   const LEAF_CHOICE_KEY = 'rf-pokemon-pending-leaf-choice-v1';
   let currentView = '', attemptedView = '', generation = 0;
   let rolling = false, claiming = false, active = null, expiryTimer = null, dialog = null;
-  let initial = true;
+  let initial = true, retryAt = 0;
 
   function session() {
     try {
@@ -72,7 +72,7 @@
   }
   function asset(path) {
     const url = new URL(path || '', HUB);
-    const hubArt = url.origin === new URL(HUB).origin && url.pathname.startsWith('/assets/images/events/pumpkin-hunt-2026/');
+    const hubArt = url.origin === new URL(HUB).origin && (/^\/assets\/images\/events\/(pumpkin|leaf)-hunt-2026\//.test(url.pathname));
     const seasonalArt = url.origin === new URL(API).origin && url.pathname.startsWith('/storage/v1/object/public/rf-hunt-public-art/');
     if (!hubArt && !seasonalArt) throw new Error('Unexpected collectible image.');
     return url.href;
@@ -92,7 +92,7 @@
     button.setAttribute('aria-label', 'Claim ' + (item.display_name || 'pumpkin'));
     const image = document.createElement('img');image.src = asset(item.asset_path);image.alt = item.display_name || 'Pumpkin';
     image.style.cssText = 'display:block;width:100%;height:100%;object-fit:contain;pointer-events:none';
-    image.onerror = () => clearPumpkin();
+    image.onerror = () => { image.onerror=null; image.remove(); button.textContent='🍂'; button.style.fontSize='52px'; };
     button.appendChild(image);position(button);document.body.appendChild(button);
     active = {item, key};button.onclick = () => claim(item, key, button);
     const expires = new Date(item.expires_at).getTime();
@@ -218,14 +218,19 @@
       const item=await rpc('rf_roll_seasonal_browse',{p_navigation_type:navigationType});
       if(version!==generation || key!==currentView || viewKey()!==key) return;
       if(item?.spawned&&item.spawn_key)showPumpkin({...item,seasonal:true},key);
-    } catch(err) {console.warn('Optional seasonal hunt unavailable',err);}
+    } catch(err) {attemptedView='';retryAt=Date.now()+10000;console.warn('Optional seasonal hunt unavailable',err);}
     finally{rolling=false;}
   }
   function tick() {
     try {
       const key=viewKey();
-      if(key!==currentView){currentView=key;generation++;clearPumpkin();}
-      if(key && key!==attemptedView && !rolling && !claiming && !dialog) void roll(key,generation);
+      if(key!==currentView){
+        const sameUser=key && currentView && key.split(':')[0]===currentView.split(':')[0];
+        currentView=key;generation++;attemptedView='';
+        if(active && sameUser){active.key=key;const button=document.getElementById('rf-challenge-pumpkin');if(button)button.onclick=()=>claim(active.item,currentView,button);attemptedView=key;}
+        else clearPumpkin();
+      }
+      if(key && key!==attemptedView && !active && !rolling && !claiming && !dialog && Date.now()>=retryAt) void roll(key,generation);
     } catch(err) {console.warn('Optional Pumpkin Hunt check unavailable',err);}
   }
   // A separate timer observes completed navigation; challenge functions stay untouched.
